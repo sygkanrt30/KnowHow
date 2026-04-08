@@ -91,7 +91,7 @@ BEGIN
 END;
 $$ language plpgsql;
 
-CREATE TRIGGER update_balance_updated_at
+CREATE TRIGGER update_balance_updated_at_column
     BEFORE UPDATE
     ON balance
     FOR EACH ROW
@@ -117,7 +117,7 @@ BEGIN
 END;
 $$ language plpgsql;
 
-CREATE TRIGGER update_balance_updated_at
+CREATE TRIGGER update_status_of_course
     AFTER UPDATE
         OF moderation_score
     ON course
