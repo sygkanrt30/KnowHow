@@ -1,6 +1,9 @@
 spring:
   application:
     name: KnowHow
+    rest:
+      api:
+        prefix: /api
   datasource:
     url: jdbc:postgresql://localhost:5436/know_how_db
     username: user
@@ -30,9 +33,34 @@ spring:
 
 server:
   port: 8080
+  base-url:
+    auth: /api/v1/auth
+    profile: api/v1/profile
+    user: api/v1/user
+    course: api/v1/courses
+    balance: api/v1/balance
+
+
+csrf:
+  token:
+    header-name: X-CSRF-TOKEN
+
+jwt:
+  cookie-token-key: '{"kty":"oct","k":"956PBFst1FguLr5irJD-aQ"}'
+
+moderator:
+  code: 'Sqwe414jmgjdgsrf32!.o;o24f'
+
+coins:
+  start-amount: 100
+
+frontend:
+  base:
+    url: http://localhost:5173
 
 logging:
   level:
     root: info
+    org.springframework.security: debug
   pattern:
     console: '%d{dd.MM.yyyy HH:mm:ss.SSS} [%thread] %clr(%-5level) %logger{36} - %msg%n'

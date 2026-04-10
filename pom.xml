@@ -63,31 +63,9 @@
             <scope>runtime</scope>
         </dependency>
         <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-data-jpa-test</artifactId>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-security-test</artifactId>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-webmvc-test</artifactId>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.instancio</groupId>
-            <artifactId>instancio-junit</artifactId>
-            <version>5.5.0</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.mockito</groupId>
-            <artifactId>mockito-core</artifactId>
-            <version>5.18.0</version>
-            <scope>test</scope>
+            <groupId>org.springdoc</groupId>
+            <artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
+            <version>2.8.9</version>
         </dependency>
         <dependency>
             <groupId>com.nimbusds</groupId>
@@ -165,7 +143,6 @@
                             <jvmFlag>-XX:MaxRAMPercentage=80.0</jvmFlag>
                             <jvmFlag>-XX:InitialRAMPercentage=50.0</jvmFlag>
                             <jvmFlag>-XX:+UseG1GC</jvmFlag>
-                            <jvmFlag>-Xlog:gc*:stdout:time,level,tags</jvmFlag>
                             <jvmFlag>-XX:+ExitOnOutOfMemoryError</jvmFlag>
                             <jvmFlag>-XX:+UseContainerSupport</jvmFlag>
                         </jvmFlags>
