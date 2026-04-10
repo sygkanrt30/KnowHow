@@ -25,7 +25,9 @@ public class TokenCookieJweStringDeserializer implements Function<String, Token>
             var encryptedJWT = EncryptedJWT.parse(string);
             encryptedJWT.decrypt(jweDecrypter);
             var claimsSet = encryptedJWT.getJWTClaimsSet();
-            return new Token(UUID.fromString(claimsSet.getJWTID()), claimsSet.getSubject(),
+            return new Token(
+                    UUID.fromString(claimsSet.getJWTID()),
+                    claimsSet.getSubject(),
                     claimsSet.getLongClaim(ClaimName.USER_ID.getName()),
                     claimsSet.getStringListClaim(ClaimName.ROLE.getName()),
                     claimsSet.getIssueTime().toInstant(),

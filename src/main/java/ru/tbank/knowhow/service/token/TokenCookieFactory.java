@@ -18,11 +18,14 @@ public class TokenCookieFactory implements Function<Authentication, Token> {
     @Override
     public Token apply(Authentication authentication) {
         var now = Instant.now();
-        return new Token(UUID.randomUUID(), authentication.getName(),
+        return new Token(
+                UUID.randomUUID(),
+                authentication.getName(),
                 (Long) authentication.getCredentials(),
                 authentication.getAuthorities().stream()
                         .map(GrantedAuthority::getAuthority)
                         .toList(),
-                now, now.plus(tokenTtl));
+                now,
+                now.plus(tokenTtl));
     }
 }

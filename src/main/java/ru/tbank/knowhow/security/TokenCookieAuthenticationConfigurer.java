@@ -76,9 +76,11 @@ public class TokenCookieAuthenticationConfigurer
         var cookieAuthenticationFilter = new AuthenticationFilter(
                 builder.getSharedObject(AuthenticationManager.class),
                 new TokenCookieAuthenticationConverter(tokenCookieJweStringDeserializer, jdbcTemplate));
+
         cookieAuthenticationFilter.setSuccessHandler(
                 (request, response, authentication) -> {
                 });
+
         cookieAuthenticationFilter.setFailureHandler(
                 new AuthenticationEntryPointFailureHandler(
                         new Http403ForbiddenEntryPoint()

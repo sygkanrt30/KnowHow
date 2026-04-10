@@ -9,6 +9,7 @@ BEGIN
 END ;
 $$ LANGUAGE plpgsql;
 
+
 CREATE TABLE IF NOT EXISTS balance
 (
     id           BIGSERIAL PRIMARY KEY,
