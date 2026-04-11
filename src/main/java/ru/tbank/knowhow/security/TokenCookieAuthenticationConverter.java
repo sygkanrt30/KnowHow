@@ -18,8 +18,6 @@ public class TokenCookieAuthenticationConverter implements AuthenticationConvert
     private final static String FIND_IN_DEACTIVATED_TOKEN =
             "SELECT COUNT(*) FROM deactivated_token WHERE id = ?";
 
-    private static final String ATTRIBUTE_NAME = "userId";
-
     private final Function<String, Token> tokenCookieStringDeserializer;
     private final JdbcTemplate jdbcTemplate;
 
@@ -35,7 +33,7 @@ public class TokenCookieAuthenticationConverter implements AuthenticationConvert
                         if (Objects.nonNull(rowsCount) && rowsCount > 0) {
                             return null;
                         }
-                        request.setAttribute(ATTRIBUTE_NAME, token.userId());
+                        request.setAttribute(AttributeName.USER_ID.getValue(), token.userId());
                         return new PreAuthenticatedAuthenticationToken(token, cookie.getValue());
                     })
                     .orElse(null);
