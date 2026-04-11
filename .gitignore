@@ -10,5 +10,7 @@ target
 *.iml
 *.ipr
 .mvn
+*.bash
+*.sh
 
 .vscode/

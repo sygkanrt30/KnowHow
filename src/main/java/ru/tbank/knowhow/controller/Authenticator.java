@@ -29,7 +29,6 @@ final class Authenticator {
             SecurityContextHolder.getContext().setAuthentication(authentication);
             tokenCookieSessionAuthenticationStrategy.onAuthentication(authentication, request, response);
         } catch (Exception e) {
-            log.error(e.getMessage(), e);
             throw new RegistrationException("Authentication failed after registration", e);
         }
         log.debug("successfully authenticated user with username ({}) after registration", username);
