@@ -4,12 +4,14 @@ import lombok.Setter;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import ru.tbank.knowhow.model.Token;
+import ru.tbank.knowhow.model.User;
 
 import java.time.Duration;
 import java.time.Instant;
 import java.util.UUID;
 import java.util.function.Function;
 
+@SuppressWarnings("DataFlowIssue")
 @Setter
 public class TokenCookieFactory implements Function<Authentication, Token> {
 
@@ -21,7 +23,7 @@ public class TokenCookieFactory implements Function<Authentication, Token> {
         return new Token(
                 UUID.randomUUID(),
                 authentication.getName(),
-                (Long) authentication.getCredentials(),
+                ((User) authentication.getPrincipal()).getId(),
                 authentication.getAuthorities().stream()
                         .map(GrantedAuthority::getAuthority)
                         .toList(),
