@@ -39,6 +39,11 @@ public class UserService implements GetUserInfoService, SaveUserService {
     }
 
     @Override
+    public Optional<User> findById(Long id) {
+        return userRepository.findById(id);
+    }
+
+    @Override
     @Transactional
     public void save(String username, byte[] password, String email, byte[] moderatorCode) {
         Role role = getRole(moderatorCode);
