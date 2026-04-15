@@ -3,10 +3,9 @@ package ru.tbank.knowhow.controller;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
-import ru.tbank.knowhow.model.dto.BalanceHistoryResponse;
+import org.springframework.web.bind.annotation.*;
+import ru.tbank.knowhow.model.dto.request.UpdateBalanceRequest;
+import ru.tbank.knowhow.model.dto.response.BalanceHistoryResponse;
 import ru.tbank.knowhow.service.balance.BalanceService;
 
 @RestController
@@ -18,7 +17,14 @@ public class BalanceController {
 
     @GetMapping("/history")
     public ResponseEntity<BalanceHistoryResponse> getBalanceHistory(HttpServletRequest request) {
-        Long id = RequestAttributeExtractor.extractUserId(request);
-        return ResponseEntity.ok(balanceService.getBalanceHistory(id));
+        Long userId = RequestAttributeExtractor.extractUserId(request);
+        return ResponseEntity.ok(balanceService.getBalanceHistory(userId));
+    }
+
+    @PatchMapping
+    public ResponseEntity<BalanceDto> updateBalance(HttpServletRequest request,
+                                                    @RequestBody UpdateBalanceRequest updateBalanceRequest) {
+        Long userId = RequestAttributeExtractor.extractUserId(request);
+        return ResponseEntity.ok(balanceService.updateBalance(updateBalanceRequest, userId));
     }
 }

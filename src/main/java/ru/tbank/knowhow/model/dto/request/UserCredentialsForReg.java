@@ -1,4 +1,4 @@
-package ru.tbank.knowhow.model.dto;
+package ru.tbank.knowhow.model.dto.request;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
