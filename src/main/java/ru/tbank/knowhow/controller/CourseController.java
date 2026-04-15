@@ -16,8 +16,8 @@ class CourseController {
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteCourse(@PathVariable Long id) {
-        log.info("DELETE /api/v1/courses/{}", id);
+        log.trace("DELETE /api/v1/courses/{}", id);
         deleteCourseService.deleteCourse(id);
-        return ResponseEntity.noContent().build();
+        return ResponseEntity.ok().build();
     }
 }
