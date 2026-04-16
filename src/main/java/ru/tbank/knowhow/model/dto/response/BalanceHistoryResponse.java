@@ -1,4 +1,4 @@
-package ru.tbank.knowhow.model.dto;
+package ru.tbank.knowhow.model.dto.response;
 
 import java.util.List;
 
