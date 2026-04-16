@@ -1,7 +1,7 @@
 package ru.tbank.knowhow.model;
 
 public enum CourseStatus {
-    AWAITING_MODERATION,
+    NOT_ACCEPTED,
     ON_MODERATION,
     PASSED_MODERATION
 }

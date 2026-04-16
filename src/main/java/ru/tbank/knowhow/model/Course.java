@@ -33,8 +33,7 @@ public class Course {
 
     @JdbcTypeCode(SqlTypes.NAMED_ENUM)
     @Column(nullable = false, columnDefinition = "status")
-    @Builder.Default
-    private CourseStatus status = CourseStatus.AWAITING_MODERATION;
+    private CourseStatus status;
 
     @Column(name = "course_text", nullable = false, columnDefinition = "TEXT")
     private String courseText;

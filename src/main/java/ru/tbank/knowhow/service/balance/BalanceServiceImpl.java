@@ -3,7 +3,6 @@ package ru.tbank.knowhow.service.balance;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.jspecify.annotations.NonNull;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.tbank.knowhow.controller.BalanceDto;
@@ -12,7 +11,6 @@ import ru.tbank.knowhow.model.User;
 import ru.tbank.knowhow.model.dto.request.UpdateBalanceRequest;
 import ru.tbank.knowhow.model.dto.response.BalanceHistoryResponse;
 import ru.tbank.knowhow.model.mapper.BalanceMapper;
-import ru.tbank.knowhow.repository.BalanceRepository;
 import ru.tbank.knowhow.service.user.GetUserInfoService;
 
 import java.util.ArrayList;

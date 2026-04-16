@@ -1,5 +1,5 @@
 CREATE TYPE usr_role AS ENUM ('USER', 'MODERATOR', 'ADMIN');
-CREATE TYPE status AS ENUM ('AWAITING_MODERATION', 'ON_MODERATION', 'PASSED_MODERATION');
+CREATE TYPE status AS ENUM ('NOT_ACCEPTED', 'ON_MODERATION', 'PASSED_MODERATION');
 
 CREATE OR REPLACE FUNCTION is_not_empty_string(string VARCHAR)
     RETURNS BOOLEAN AS
@@ -57,7 +57,7 @@ CREATE TABLE IF NOT EXISTS course
     id               BIGSERIAL PRIMARY KEY,
     title            VARCHAR(100)  NOT NULL UNIQUE,
     description      TEXT          NOT NULL,
-    status           status        NOT NULL DEFAULT 'AWAITING_MODERATION',
+    status           status        NOT NULL,
     course_text      TEXT          NOT NULL,
     price            BIGINT        NOT NULL,
     tags             VARCHAR(50)[] NOT NULL DEFAULT '{}',
