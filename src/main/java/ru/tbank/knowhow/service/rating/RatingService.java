@@ -1,5 +1,6 @@
 package ru.tbank.knowhow.service.rating;
 
+import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -23,10 +24,10 @@ public class RatingService {
     @Transactional
     public boolean addRating(Long courseId, Integer grade, String username) {
         Course course = courseRepository.findById(courseId)
-                .orElseThrow(() -> new RuntimeException("Курс не найден"));
+                .orElseThrow(() -> new EntityNotFoundException("Курс не найден"));
 
         User user = userRepository.findByUsername(username)
-                .orElseThrow(() -> new RuntimeException("Пользователь не найден"));
+                .orElseThrow(() -> new EntityNotFoundException("Пользователь не найден"));
 
         boolean alreadyRated = ratingRepository.existsByCourseAndUser(course, user);
         if (alreadyRated) {
