@@ -12,6 +12,7 @@ import ru.tbank.knowhow.model.Role;
 import ru.tbank.knowhow.model.User;
 import ru.tbank.knowhow.repository.UserRepository;
 
+import java.util.Objects;
 import java.util.Optional;
 
 @Service
@@ -45,7 +46,7 @@ public class UserService implements GetUserInfoService, SaveUserService {
 
     @Override
     @Transactional
-    public void save(String username, byte[] password, String email, byte[] moderatorCode) {
+    public void save(String username, byte[] password, String email, String moderatorCode) {
         Role role = getRole(moderatorCode);
         try {
             var balance = new Balance(startCoins);
@@ -63,8 +64,8 @@ public class UserService implements GetUserInfoService, SaveUserService {
         }
     }
 
-    private Role getRole(byte[] moderatorCode) {
-        if (this.moderatorCode.equals(new String(moderatorCode))) {
+    private Role getRole(String moderatorCode) {
+        if (Objects.nonNull(moderatorCode) && this.moderatorCode.equals(moderatorCode)) {
             return Role.MODERATOR;
         }
         return Role.USER;

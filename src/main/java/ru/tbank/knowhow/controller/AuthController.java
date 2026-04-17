@@ -30,7 +30,7 @@ class AuthController {
             @RequestBody @Valid UserCredentialsForReg userCredentials) {
         var username = userCredentials.username();
         var password = userCredentials.password().getBytes();
-        userService.save(username, password, userCredentials.email(), userCredentials.moderatorCode().getBytes());
+        userService.save(username, password, userCredentials.email(), userCredentials.moderatorCode());
         authenticator.authenticateAndSetCookie(request, response, username, password);
         return ResponseEntity.ok("Sign up successful");
     }
