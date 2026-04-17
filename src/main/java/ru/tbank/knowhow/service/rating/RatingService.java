@@ -11,6 +11,8 @@ import ru.tbank.knowhow.model.User;
 import ru.tbank.knowhow.repository.CourseRepository;
 import ru.tbank.knowhow.repository.RatingRepository;
 import ru.tbank.knowhow.repository.UserRepository;
+import ru.tbank.knowhow.service.course.CourseService;
+import ru.tbank.knowhow.service.user.UserService;
 
 @Slf4j
 @Service
@@ -20,6 +22,8 @@ public class RatingService {
     private final CourseRepository courseRepository;
     private final RatingRepository ratingRepository;
     private final UserRepository userRepository;
+    private final CourseService courseService;
+    private final UserService userService;
 
     @Transactional
     public boolean addRating(Long courseId, Integer grade, String username) {
@@ -42,6 +46,13 @@ public class RatingService {
 
         ratingRepository.save(rating);
         log.debug("Rating saved: user={}, course={}, grade={}", username, courseId, grade);
+
+        Double avgRating = ratingRepository.getAverageRatingForCourse(courseId);
+        if (avgRating == null) avgRating = 0.0;
+        courseService.updateCourseRating(courseId, avgRating);
+
+        userService.recalculateTeacherLevel(course.getAuthor().getId());
+
         return true;
     }
 }
