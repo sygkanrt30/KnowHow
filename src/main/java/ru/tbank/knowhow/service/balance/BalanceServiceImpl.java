@@ -5,7 +5,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import ru.tbank.knowhow.controller.BalanceDto;
+import ru.tbank.knowhow.model.dto.response.BalanceDto;
 import ru.tbank.knowhow.model.Balance;
 import ru.tbank.knowhow.model.User;
 import ru.tbank.knowhow.model.dto.request.UpdateBalanceRequest;
