@@ -5,6 +5,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import ru.tbank.knowhow.model.dto.request.UpdateBalanceRequest;
+import ru.tbank.knowhow.model.dto.response.BalanceDto;
 import ru.tbank.knowhow.model.dto.response.BalanceHistoryResponse;
 import ru.tbank.knowhow.service.balance.BalanceService;
 

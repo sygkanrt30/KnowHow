@@ -1,4 +1,4 @@
-package ru.tbank.knowhow.controller;
+package ru.tbank.knowhow.model.dto.response;
 
 public record BalanceDto(
         Long id,
