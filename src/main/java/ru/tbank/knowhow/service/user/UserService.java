@@ -1,5 +1,6 @@
 package ru.tbank.knowhow.service.user;
 
+import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,6 +11,8 @@ import ru.tbank.knowhow.ecxeption.RegistrationException;
 import ru.tbank.knowhow.model.Balance;
 import ru.tbank.knowhow.model.Role;
 import ru.tbank.knowhow.model.User;
+import ru.tbank.knowhow.model.dto.response.UsernameAndBalanceResponse;
+import ru.tbank.knowhow.model.mapper.UsernameAndBalanceResponseMapper;
 import ru.tbank.knowhow.repository.UserRepository;
 
 import java.util.Objects;
@@ -22,16 +25,20 @@ public class UserService implements GetUserInfoService, SaveUserService {
     private final long startCoins;
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
+    private final UsernameAndBalanceResponseMapper usernameAndBalanceResponseMapper;
     private final String moderatorCode;
 
     @Autowired
-    public UserService(UserRepository userRepository, PasswordEncoder passwordEncoder,
+    public UserService(UserRepository userRepository,
+                       PasswordEncoder passwordEncoder,
+                       UsernameAndBalanceResponseMapper usernameAndBalanceResponseMapper,
                        @Value("${moderator.code}") String moderatorCode,
                        @Value("${coins.start-amount}") long startCoins) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
         this.moderatorCode = moderatorCode;
         this.startCoins = startCoins;
+        this.usernameAndBalanceResponseMapper = usernameAndBalanceResponseMapper;
     }
 
     @Override
@@ -42,6 +49,16 @@ public class UserService implements GetUserInfoService, SaveUserService {
     @Override
     public Optional<User> findById(Long id) {
         return userRepository.findById(id);
+    }
+
+    @Override
+    @Transactional
+    public UsernameAndBalanceResponse getCurrentUser(Long id) {
+        User user = this.findById(id).orElseThrow(
+                () -> new EntityNotFoundException("User not found with id: " + id)
+        );
+        log.trace("Current user: {}; balance id: {}", user.getUsername(),  user.getBalance().getId());
+        return usernameAndBalanceResponseMapper.toUsernameAndBalanceResponse(user);
     }
 
     @Override
