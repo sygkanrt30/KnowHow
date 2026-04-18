@@ -29,7 +29,7 @@ public class BalanceServiceImpl implements BalanceService {
     public BalanceHistoryResponse getBalanceHistory(Long userId) {
         User user = getUser(userId);
         List<String> history = new ArrayList<>(user.getBalance().getBalanceHistories());
-        return  new BalanceHistoryResponse(history);
+        return new BalanceHistoryResponse(history);
     }
 
     private User getUser(Long userId) {
@@ -45,7 +45,7 @@ public class BalanceServiceImpl implements BalanceService {
         long coins = balance.getCoins();
         if (request.isIncreaseBalance()) {
             coins += request.coins();
-        } else  {
+        } else {
             coins -= request.coins();
         }
         balance.setCoins(coins);
