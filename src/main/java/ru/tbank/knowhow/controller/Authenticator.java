@@ -14,7 +14,7 @@ import ru.tbank.knowhow.security.TokenCookieSessionAuthenticationStrategy;
 @RequiredArgsConstructor
 @Component
 @Slf4j
-final class Authenticator {
+class Authenticator {
 
     private final TokenCookieSessionAuthenticationStrategy tokenCookieSessionAuthenticationStrategy;
     private final AuthenticationManager authenticationManager;

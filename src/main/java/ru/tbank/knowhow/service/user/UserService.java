@@ -57,7 +57,6 @@ public class UserService implements GetUserInfoService, SaveUserService {
         User user = this.findById(id).orElseThrow(
                 () -> new EntityNotFoundException("User not found with id: " + id)
         );
-        log.trace("Current user: {}; balance id: {}", user.getUsername(),  user.getBalance().getId());
         return usernameAndBalanceResponseMapper.toUsernameAndBalanceResponse(user);
     }
 
