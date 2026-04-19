@@ -60,24 +60,6 @@ public class User implements UserDetails {
     @ToString.Exclude
     private Instant createdAt;
 
-    @ManyToMany(fetch = FetchType.LAZY)
-    @JoinTable(
-            name = "purchased_course",
-            joinColumns = @JoinColumn(name = "user_id"),
-            inverseJoinColumns = @JoinColumn(name = "course_id")
-    )
-    @ToString.Exclude
-    @Builder.Default
-    private List<Course> purchasedCourses = new ArrayList<>();
-
-    public void addPurchasedCourse(Course course) {
-        purchasedCourses.add(course);
-    }
-
-    public void removePurchasedCourse(Course course) {
-        purchasedCourses.remove(course);
-    }
-
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @ToString.Exclude
     @Builder.Default

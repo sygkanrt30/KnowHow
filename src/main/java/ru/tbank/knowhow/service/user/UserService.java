@@ -1,18 +1,21 @@
 package ru.tbank.knowhow.service.user;
 
-import jakarta.transaction.Transactional;
+import jakarta.persistence.EntityNotFoundException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import ru.tbank.knowhow.ecxeption.RegistrationException;
 import ru.tbank.knowhow.model.Balance;
 import ru.tbank.knowhow.model.Role;
 import ru.tbank.knowhow.model.User;
-import ru.tbank.knowhow.repository.CourseRepository;
+import ru.tbank.knowhow.model.dto.response.UsernameAndBalanceResponse;
+import ru.tbank.knowhow.model.mapper.UsernameAndBalanceResponseMapper;
 import ru.tbank.knowhow.repository.UserRepository;
 
+import java.util.Objects;
 import java.util.Optional;
 
 @Service
@@ -22,16 +25,20 @@ public class UserService implements GetUserInfoService, SaveUserService {
     private final long startCoins;
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
+    private final UsernameAndBalanceResponseMapper usernameAndBalanceResponseMapper;
     private final String moderatorCode;
 
     @Autowired
-    public UserService(UserRepository userRepository,  CourseRepository courseRepository, PasswordEncoder passwordEncoder,
+    public UserService(UserRepository userRepository,
+                       PasswordEncoder passwordEncoder,
+                       UsernameAndBalanceResponseMapper usernameAndBalanceResponseMapper,
                        @Value("${moderator.code}") String moderatorCode,
                        @Value("${coins.start-amount}") long startCoins) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
         this.moderatorCode = moderatorCode;
         this.startCoins = startCoins;
+        this.usernameAndBalanceResponseMapper = usernameAndBalanceResponseMapper;
     }
 
     @Override
@@ -46,7 +53,16 @@ public class UserService implements GetUserInfoService, SaveUserService {
 
     @Override
     @Transactional
-    public void save(String username, byte[] password, String email, byte[] moderatorCode) {
+    public UsernameAndBalanceResponse getCurrentUser(Long id) {
+        User user = this.findById(id).orElseThrow(
+                () -> new EntityNotFoundException("User not found with id: " + id)
+        );
+        return usernameAndBalanceResponseMapper.toUsernameAndBalanceResponse(user);
+    }
+
+    @Override
+    @Transactional
+    public void save(String username, byte[] password, String email, String moderatorCode) {
         Role role = getRole(moderatorCode);
         try {
             var balance = new Balance(startCoins);
@@ -64,8 +80,8 @@ public class UserService implements GetUserInfoService, SaveUserService {
         }
     }
 
-    private Role getRole(byte[] moderatorCode) {
-        if (this.moderatorCode.equals(new String(moderatorCode))) {
+    private Role getRole(String moderatorCode) {
+        if (Objects.nonNull(moderatorCode) && this.moderatorCode.equals(moderatorCode)) {
             return Role.MODERATOR;
         }
         return Role.USER;
