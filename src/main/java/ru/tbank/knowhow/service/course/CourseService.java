@@ -7,7 +7,6 @@ import org.springframework.transaction.annotation.Transactional;
 import jakarta.persistence.EntityNotFoundException;
 import ru.tbank.knowhow.model.Course;
 import ru.tbank.knowhow.repository.CourseRepository;
-import java.math.BigDecimal;
 
 @Service
 @Slf4j
@@ -30,16 +29,5 @@ public class CourseService implements DeleteCourseService {
 
         courseRepository.delete(course);
         log.debug("Course deleted successfully: {}", id);
-    }
-    @Transactional
-    public void updateCourseRating(Long courseId, Double newRating) {
-        log.debug("Updating course rating for course id: {}", courseId);
-
-        Course course = courseRepository.findById(courseId)
-                .orElseThrow(() -> new EntityNotFoundException("Course not found with id: " + courseId));
-
-        course.setRating(BigDecimal.valueOf(newRating));
-        courseRepository.save(course);
-        log.debug("Course rating updated successfully: {} -> {}", courseId, newRating);
     }
 }

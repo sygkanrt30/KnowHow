@@ -8,13 +8,11 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import ru.tbank.knowhow.ecxeption.RegistrationException;
 import ru.tbank.knowhow.model.Balance;
-import ru.tbank.knowhow.model.Course;
 import ru.tbank.knowhow.model.Role;
 import ru.tbank.knowhow.model.User;
 import ru.tbank.knowhow.repository.CourseRepository;
 import ru.tbank.knowhow.repository.UserRepository;
 
-import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -25,14 +23,12 @@ public class UserService implements GetUserInfoService, SaveUserService {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
     private final String moderatorCode;
-    private final CourseRepository courseRepository;
 
     @Autowired
     public UserService(UserRepository userRepository,  CourseRepository courseRepository, PasswordEncoder passwordEncoder,
                        @Value("${moderator.code}") String moderatorCode,
                        @Value("${coins.start-amount}") long startCoins) {
         this.userRepository = userRepository;
-        this.courseRepository = courseRepository;
         this.passwordEncoder = passwordEncoder;
         this.moderatorCode = moderatorCode;
         this.startCoins = startCoins;
@@ -73,28 +69,5 @@ public class UserService implements GetUserInfoService, SaveUserService {
             return Role.MODERATOR;
         }
         return Role.USER;
-    }
-
-    @Transactional
-    public void recalculateTeacherLevel(Long teacherId) {
-        log.debug("Recalculating level for teacher id: {}", teacherId);
-
-        List<Course> courses = courseRepository.findByAuthorId(teacherId);
-
-        if (courses.isEmpty()) {
-            userRepository.updateLevel(teacherId, 1);
-            return;
-        }
-
-        double avgRating = courses.stream()
-                .mapToDouble(course -> course.getRating().doubleValue())
-                .average()
-                .orElse(0.0);
-
-        int newLevel = (int) Math.round(avgRating);
-        if (newLevel < 1) newLevel = 1;
-
-        userRepository.updateLevel(teacherId, newLevel);
-        log.debug("Teacher {} new level: {}", teacherId, newLevel);
     }
 }
