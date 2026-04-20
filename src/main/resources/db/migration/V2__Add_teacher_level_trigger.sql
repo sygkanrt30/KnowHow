@@ -1,7 +1,5 @@
 ALTER TABLE app_user ADD COLUMN IF NOT EXISTS level INTEGER DEFAULT 1;
 
-DROP FUNCTION IF EXISTS recalculate_teacher_level() CASCADE;
-
 CREATE OR REPLACE FUNCTION recalculate_teacher_level()
 RETURNS TRIGGER AS $$
 BEGIN

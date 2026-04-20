@@ -7,11 +7,17 @@ import ru.tbank.knowhow.model.Rating;
 import ru.tbank.knowhow.model.User;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
+import org.springframework.data.jpa.repository.Modifying;
 
 @Repository
 public interface RatingRepository extends JpaRepository<Rating, Long> {
+
     boolean existsByCourseAndUser(Course course, User user);
 
     @Query("SELECT AVG(r.grade) FROM Rating r WHERE r.course.id = :courseId")
     Double getAverageRatingForCourse(@Param("courseId") Long courseId);
+
+    @Modifying
+    @Query("DELETE FROM Rating r WHERE r.course.id = :courseId")
+    void deleteByCourseId(@Param("courseId") Long courseId);
 }
