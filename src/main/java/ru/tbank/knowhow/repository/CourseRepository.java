@@ -6,4 +6,6 @@ import ru.tbank.knowhow.model.Course;
 
 @Repository
 public interface CourseRepository extends JpaRepository<Course, Long> {
+
+    boolean existsByAuthorId(Long authorId);
 }

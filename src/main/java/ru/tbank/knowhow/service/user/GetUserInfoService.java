@@ -9,4 +9,6 @@ public interface GetUserInfoService {
     Optional<User> findByUsername(String username);
 
     Optional<User> findById(Long id);
+
+    void deleteById(Long id);
 }
