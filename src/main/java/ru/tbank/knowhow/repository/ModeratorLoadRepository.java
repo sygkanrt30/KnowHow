@@ -10,7 +10,7 @@ import java.util.Optional;
 
 public interface ModeratorLoadRepository extends JpaRepository<ModeratorLoad, Long> {
 
-    @Query("SELECT ml FROM ModeratorLoad ml ORDER BY ml.coursesInModeration ASC")
+    @Query("SELECT ml FROM ModeratorLoad ml ORDER BY ml.coursesInModeration ASC LIMIT 1")
     Optional<ModeratorLoad> findModeratorWithMinLoad();
 
     @Modifying

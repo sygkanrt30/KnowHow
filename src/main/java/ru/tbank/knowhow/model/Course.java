@@ -51,10 +51,6 @@ public class Course {
     @ToString.Exclude
     private User moderator;
 
-    @Column(name = "moderation_score")
-    @Builder.Default
-    private Integer moderationScore = 0;
-
     @Column(precision = 2, scale = 1, nullable = false)
     @Builder.Default
     private BigDecimal rating = BigDecimal.ZERO;

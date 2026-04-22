@@ -12,8 +12,6 @@ import ru.tbank.knowhow.repository.CourseRepository;
 import ru.tbank.knowhow.repository.RatingRepository;
 import ru.tbank.knowhow.repository.UserRepository;
 
-import java.math.BigDecimal;
-
 @Slf4j
 @Service
 @RequiredArgsConstructor
@@ -44,15 +42,6 @@ public class RatingServiceImpl implements RatingService {
                 .build();
 
         ratingRepository.save(rating);
-        log.debug("Rating saved: user={}, course={}, grade={}", username, courseId, grade);
-
-        Double avgRating = ratingRepository.getAverageRatingForCourse(courseId);
-        if (avgRating == null) avgRating = 0.0;
-
-        course.setRating(BigDecimal.valueOf(avgRating));
-        courseRepository.save(course);
-
-        log.debug("Course rating updated: {} -> {}", courseId, avgRating);
         return true;
     }
 }

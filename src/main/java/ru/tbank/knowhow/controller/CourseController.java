@@ -1,6 +1,5 @@
 package ru.tbank.knowhow.controller;
 
-import jakarta.persistence.EntityNotFoundException;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -13,8 +12,7 @@ import ru.tbank.knowhow.model.dto.request.CreateCourseRequest;
 import ru.tbank.knowhow.model.dto.response.CourseDto;
 import ru.tbank.knowhow.service.course.DeleteCourseService;
 import ru.tbank.knowhow.service.course.GetCourseService;
-import ru.tbank.knowhow.service.user.UserService;
-import ru.tbank.knowhow.model.User;
+import ru.tbank.knowhow.service.course.CreateCourseService;
 
 @Slf4j
 @RestController
@@ -24,11 +22,10 @@ public class CourseController {
 
     private final DeleteCourseService deleteCourseService;
     private final GetCourseService getCourseService;
-    private final UserService userService;
+    private final CreateCourseService createCourseService;
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteCourse(@PathVariable Long id) {
-        log.debug("DELETE /api/v1/courses/{}", id);
         deleteCourseService.deleteCourse(id);
         return ResponseEntity.ok().build();
     }
@@ -38,13 +35,6 @@ public class CourseController {
     public CourseDto createCourse(
             @RequestBody @Valid CreateCourseRequest request,
             @AuthenticationPrincipal UserDetails userDetails) {
-        log.debug("POST /api/v1/courses");
-
-        String username = userDetails.getUsername();
-
-        User author = userService.findByUsername(username)
-                .orElseThrow(() -> new EntityNotFoundException("User not found: " + username));
-
-        return getCourseService.createCourse(request, author.getId());
+        return createCourseService.createCourse(request, userDetails.getUsername());
     }
 }

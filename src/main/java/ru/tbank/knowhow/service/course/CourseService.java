@@ -20,18 +20,22 @@ import ru.tbank.knowhow.repository.UserRepository;
 import ru.tbank.knowhow.repository.ModeratorLoadRepository;
 import ru.tbank.knowhow.repository.RatingRepository;
 import ru.tbank.knowhow.model.ModeratorLoad;
+import org.springframework.beans.factory.annotation.Value;
 
 import java.math.BigDecimal;
 
 @Service
 @Slf4j
-public class CourseService implements DeleteCourseService, GetCourseService {
+public class CourseService implements DeleteCourseService, GetCourseService, CreateCourseService {
 
     private final CourseRepository courseRepository;
     private final CourseMapper courseMapper;
     private final UserRepository userRepository;
     private final ModeratorLoadRepository moderatorLoadRepository;
     private final RatingRepository ratingRepository;
+
+    @Value("${course.price-multiplier:20}")
+    private Long priceMultiplier;
 
     @Autowired
     public CourseService(CourseRepository courseRepository,
@@ -71,34 +75,20 @@ public class CourseService implements DeleteCourseService, GetCourseService {
 
     @Override
     @Transactional
-    public CourseDto createCourse(CreateCourseRequest request, Long authorId) {
-        log.debug("Creating course for author id: {}", authorId);
-
-        User author = userRepository.findById(authorId)
-                .orElseThrow(() -> new EntityNotFoundException("User not found with id: " + authorId));
+    public CourseDto createCourse(CreateCourseRequest request, String username) {
+        User author = userRepository.findByUsername(username)
+                .orElseThrow(() -> new EntityNotFoundException("User not found: " + username));
 
         User moderator = assignModerator();
-        log.debug("Assigned moderator id: {}", moderator.getId());
 
         int userLevel = author.getLevel() != null ? author.getLevel() : 1;
-        Long price = 20L * userLevel;
-        log.debug("Calculated price: {} (user level: {})", price, userLevel);
+        Long price = priceMultiplier * userLevel;
 
-        Course course = new Course();
-        course.setTitle(request.title());
-        course.setDescription(request.description());
-        course.setCourseText(request.courseText());
-        course.setTags(request.tags() != null ? request.tags() : new String[0]);
-        course.setPrice(price);
+        Course course = courseMapper.toEntity(request, author, moderator, price);
         course.setStatus(CourseStatus.ON_MODERATION);
         course.setRating(BigDecimal.ZERO);
-        course.setModerationScore(0);
-        course.setAuthor(author);
-        course.setModerator(moderator);
 
         Course saved = courseRepository.save(course);
-        log.debug("Course created successfully with id: {}, price: {}", saved.getId(), price);
-
         return courseMapper.toDto(saved);
     }
 
