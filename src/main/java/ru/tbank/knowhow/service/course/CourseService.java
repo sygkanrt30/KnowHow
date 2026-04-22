@@ -14,6 +14,8 @@ import ru.tbank.knowhow.model.dto.response.CourseDto;
 import ru.tbank.knowhow.model.mapper.CourseMapper;
 import ru.tbank.knowhow.repository.CourseRepository;
 
+import java.util.List;
+
 @Service
 @Slf4j
 public class CourseService implements DeleteCourseService, GetCourseService {
@@ -45,6 +47,14 @@ public class CourseService implements DeleteCourseService, GetCourseService {
         var pageable = PageRequest.of(page, size, sort);
         return courseRepository.findPurchasedCoursesByUserId(userId, pageable)
                 .map(courseMapper::toDto);
+    }
+
+    @Override
+    public List<CourseDto> findAllPurchasedCourses(Long userId) {
+        return courseRepository.findPurchasedCoursesByUserId(userId)
+                .stream()
+                .map(courseMapper::toDto)
+                .toList();
     }
 
     private Sort getSort(SortRequest sortRequest) {
