@@ -8,6 +8,8 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 import ru.tbank.knowhow.model.Course;
 
+import java.util.List;
+
 @Repository
 public interface CourseRepository extends JpaRepository<Course, Long> {
 
@@ -21,4 +23,11 @@ public interface CourseRepository extends JpaRepository<Course, Long> {
         """,
             nativeQuery = true)
     Page<Course> findPurchasedCoursesByUserId(@Param("userId") Long userId, Pageable pageable);
+
+    @Query(value = """
+        SELECT c.* FROM course c
+        INNER JOIN purchased_course pc ON c.id = pc.course_id
+        WHERE pc.user_id = :userId
+        """, nativeQuery = true)
+    List<Course> findPurchasedCoursesByUserId(@Param("userId") Long userId);
 }
