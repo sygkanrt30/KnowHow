@@ -13,6 +13,7 @@ import ru.tbank.knowhow.model.Role;
 import ru.tbank.knowhow.model.User;
 import ru.tbank.knowhow.model.dto.response.UsernameAndBalanceResponse;
 import ru.tbank.knowhow.model.mapper.UsernameAndBalanceResponseMapper;
+import ru.tbank.knowhow.repository.CourseRepository;
 import ru.tbank.knowhow.repository.UserRepository;
 
 import java.util.Objects;
@@ -20,21 +21,23 @@ import java.util.Optional;
 
 @Service
 @Slf4j
-public class UserService implements GetUserInfoService, SaveUserService {
+public class UserService implements GetUserInfoService, SaveUserService, DeleteUserService {
 
     private final long startCoins;
     private final UserRepository userRepository;
+    private final CourseRepository courseRepository;
     private final PasswordEncoder passwordEncoder;
     private final UsernameAndBalanceResponseMapper usernameAndBalanceResponseMapper;
     private final String moderatorCode;
 
     @Autowired
-    public UserService(UserRepository userRepository,
+    public UserService(UserRepository userRepository, CourseRepository courseRepository,
                        PasswordEncoder passwordEncoder,
-                       UsernameAndBalanceResponseMapper usernameAndBalanceResponseMapper,
                        @Value("${moderator.code}") String moderatorCode,
+                       UsernameAndBalanceResponseMapper usernameAndBalanceResponseMapper,
                        @Value("${coins.start-amount}") long startCoins) {
         this.userRepository = userRepository;
+        this.courseRepository = courseRepository;
         this.passwordEncoder = passwordEncoder;
         this.moderatorCode = moderatorCode;
         this.startCoins = startCoins;
@@ -85,5 +88,17 @@ public class UserService implements GetUserInfoService, SaveUserService {
             return Role.MODERATOR;
         }
         return Role.USER;
+    }
+
+    @Override
+    @Transactional
+    public void deleteById(Long id) {
+        if (!userRepository.existsById(id)) {
+            throw new EntityNotFoundException("User not found by id: " + id);
+        }
+        if (courseRepository.existsByAuthorId(id)) {
+            throw new IllegalStateException("Cannot delete user with authored courses");
+        }
+        userRepository.deleteById(id);
     }
 }

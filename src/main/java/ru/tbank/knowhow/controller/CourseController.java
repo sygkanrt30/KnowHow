@@ -10,8 +10,9 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 import ru.tbank.knowhow.model.dto.request.CreateCourseRequest;
 import ru.tbank.knowhow.model.dto.response.CourseDto;
-import ru.tbank.knowhow.service.course.DeleteCourseService;
 import ru.tbank.knowhow.service.course.CreateCourseService;
+import ru.tbank.knowhow.service.course.DeleteCourseService;
+import ru.tbank.knowhow.service.course.PurchaseCourseService;
 
 @Slf4j
 @RestController
@@ -21,6 +22,7 @@ public class CourseController {
 
     private final DeleteCourseService deleteCourseService;
     private final CreateCourseService createCourseService;
+    private final PurchaseCourseService purchaseCourseService;
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteCourse(@PathVariable Long id) {
@@ -34,5 +36,13 @@ public class CourseController {
             @RequestBody @Valid CreateCourseRequest request,
             @AuthenticationPrincipal UserDetails userDetails) {
         return createCourseService.createCourse(request, userDetails.getUsername());
+    }
+
+    @PostMapping("/{id}/pay")
+    public ResponseEntity<CourseDto> payForCourse(
+            @PathVariable Long id,
+            @AuthenticationPrincipal UserDetails userDetails) {
+        Long userId = Long.valueOf(userDetails.getUsername());
+        return ResponseEntity.ok(purchaseCourseService.payForCourse(id, userId));
     }
 }

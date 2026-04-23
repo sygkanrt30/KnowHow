@@ -17,8 +17,11 @@ import java.util.stream.Collectors;
 @Slf4j
 public class MethodLoggingAspect {
 
-    @Pointcut("execution(* ru.tbank.knowhow..*.*(..)) && " +
-            "!within(ru.tbank.knowhow.ecxeption..*)")
+    @Pointcut("""
+                    execution(* ru.tbank.knowhow..*.*(..)) &&
+                    !within(ru.tbank.knowhow.ecxeption..*) &&
+                    !within(ru.tbank.knowhow.config..*)           
+            """)
     public void applicationPackageMethods() {}
 
     @Around("applicationPackageMethods()")

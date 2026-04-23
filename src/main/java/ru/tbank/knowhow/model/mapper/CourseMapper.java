@@ -14,5 +14,7 @@ public interface CourseMapper {
     @Mapping(target = "authorId", source = "course.author.id")
     CourseDto toDto(Course course);
 
+    @Mapping(target = "id", ignore = true)
+    @Mapping(target = "createdAt", ignore = true)
     Course toEntity(CreateCourseRequest request, User author, User moderator, Long price);
 }
