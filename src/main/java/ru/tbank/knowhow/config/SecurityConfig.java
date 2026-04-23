@@ -66,6 +66,7 @@ public class SecurityConfig {
                 .addFilterAfter(new GetCsrfTokenFilter(), ExceptionTranslationFilter.class)
                 .authorizeHttpRequests(authorizeHttpRequests ->
                         authorizeHttpRequests
+                                .requestMatchers(authUrl + "/me").authenticated()
                                 .requestMatchers(authUrl + "/**").permitAll()
                                 .requestMatchers(
                                         "/swagger-ui/**",

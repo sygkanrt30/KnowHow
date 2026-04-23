@@ -5,7 +5,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import ru.tbank.knowhow.controller.BalanceDto;
+import ru.tbank.knowhow.model.dto.response.BalanceDto;
 import ru.tbank.knowhow.model.Balance;
 import ru.tbank.knowhow.model.User;
 import ru.tbank.knowhow.model.dto.request.UpdateBalanceRequest;
@@ -29,7 +29,7 @@ public class BalanceServiceImpl implements BalanceService {
     public BalanceHistoryResponse getBalanceHistory(Long userId) {
         User user = getUser(userId);
         List<String> history = new ArrayList<>(user.getBalance().getBalanceHistories());
-        return  new BalanceHistoryResponse(history);
+        return new BalanceHistoryResponse(history);
     }
 
     private User getUser(Long userId) {
@@ -45,7 +45,7 @@ public class BalanceServiceImpl implements BalanceService {
         long coins = balance.getCoins();
         if (request.isIncreaseBalance()) {
             coins += request.coins();
-        } else  {
+        } else {
             coins -= request.coins();
         }
         balance.setCoins(coins);

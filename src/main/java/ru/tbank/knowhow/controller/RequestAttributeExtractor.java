@@ -8,7 +8,7 @@ import java.util.Objects;
 import static ru.tbank.knowhow.security.AttributeName.USER_ID;
 
 @Slf4j
-final class RequestAttributeExtractor {
+class RequestAttributeExtractor {
 
     static Long extractUserId(HttpServletRequest request) {
         Long userId = (Long) request.getAttribute(USER_ID.getValue());
