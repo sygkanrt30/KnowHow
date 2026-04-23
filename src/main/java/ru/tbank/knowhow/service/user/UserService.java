@@ -6,7 +6,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 import ru.tbank.knowhow.ecxeption.RegistrationException;
 import ru.tbank.knowhow.model.Balance;
 import ru.tbank.knowhow.model.Role;
@@ -25,16 +24,20 @@ public class UserService implements GetUserInfoService, SaveUserService {
     private final CourseRepository courseRepository;
     private final PasswordEncoder passwordEncoder;
     private final String moderatorCode;
+    private final UsernameAndBalanceResponseMapper usernameAndBalanceResponseMapper;
 
     @Autowired
-    public UserService(UserRepository userRepository, CourseRepository courseRepository, PasswordEncoder passwordEncoder,
+    public UserService(UserRepository userRepository, CourseRepository courseRepository,
+                       PasswordEncoder passwordEncoder,
                        @Value("${moderator.code}") String moderatorCode,
+                       UsernameAndBalanceResponseMapper usernameAndBalanceResponseMapper,
                        @Value("${coins.start-amount}") long startCoins) {
         this.userRepository = userRepository;
         this.courseRepository = courseRepository;
         this.passwordEncoder = passwordEncoder;
         this.moderatorCode = moderatorCode;
         this.startCoins = startCoins;
+        this.usernameAndBalanceResponseMapper = usernameAndBalanceResponseMapper;
     }
 
     @Override

@@ -1,27 +1,23 @@
 package ru.tbank.knowhow.service.course;
 
+import jakarta.persistence.EntityNotFoundException;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import jakarta.persistence.EntityNotFoundException;
 import ru.tbank.knowhow.model.Course;
 import ru.tbank.knowhow.model.User;
 import ru.tbank.knowhow.repository.CourseRepository;
 import ru.tbank.knowhow.service.user.GetUserInfoService;
 
 @Service
+@RequiredArgsConstructor
 @Slf4j
 public class CourseService implements DeleteCourseService {
 
     private final CourseRepository courseRepository;
     private final GetUserInfoService getUserInfoService;
-
-    @Autowired
-    public CourseService(CourseRepository courseRepository, GetUserInfoService getUserInfoService) {
-        this.courseRepository = courseRepository;
-        this.getUserInfoService = getUserInfoService;
-    }
+    private final CourseMapper courseMapper;
 
     @Override
     @Transactional
