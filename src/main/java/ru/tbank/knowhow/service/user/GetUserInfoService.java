@@ -11,5 +11,7 @@ public interface GetUserInfoService {
 
     Optional<User> findById(Long id);
 
+    void deleteById(Long id);
+  
     UsernameAndBalanceResponse getCurrentUser(Long id);
 }

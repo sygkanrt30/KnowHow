@@ -13,6 +13,8 @@ import java.util.List;
 @Repository
 public interface CourseRepository extends JpaRepository<Course, Long> {
 
+    boolean existsByAuthorId(Long authorId);
+  
     @Query(value = """
         SELECT c.* FROM course c
         INNER JOIN purchased_course pc ON c.id = pc.course_id
