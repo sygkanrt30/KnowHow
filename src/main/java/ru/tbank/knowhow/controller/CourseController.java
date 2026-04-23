@@ -11,7 +11,6 @@ import org.springframework.web.bind.annotation.*;
 import ru.tbank.knowhow.model.dto.request.CreateCourseRequest;
 import ru.tbank.knowhow.model.dto.response.CourseDto;
 import ru.tbank.knowhow.service.course.DeleteCourseService;
-import ru.tbank.knowhow.service.course.GetCourseService;
 import ru.tbank.knowhow.service.course.CreateCourseService;
 
 @Slf4j
@@ -21,7 +20,6 @@ import ru.tbank.knowhow.service.course.CreateCourseService;
 public class CourseController {
 
     private final DeleteCourseService deleteCourseService;
-    private final GetCourseService getCourseService;
     private final CreateCourseService createCourseService;
 
     @DeleteMapping("/{id}")

@@ -14,9 +14,6 @@ public interface RatingRepository extends JpaRepository<Rating, Long> {
 
     boolean existsByCourseAndUser(Course course, User user);
 
-    @Query("SELECT AVG(r.grade) FROM Rating r WHERE r.course.id = :courseId")
-    Double getAverageRatingForCourse(@Param("courseId") Long courseId);
-
     @Modifying
     @Query("DELETE FROM Rating r WHERE r.course.id = :courseId")
     void deleteByCourseId(@Param("courseId") Long courseId);

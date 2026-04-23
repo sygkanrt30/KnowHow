@@ -33,28 +33,26 @@ public class CourseService implements DeleteCourseService, GetCourseService, Cre
     private final UserRepository userRepository;
     private final ModeratorLoadRepository moderatorLoadRepository;
     private final RatingRepository ratingRepository;
-
-    @Value("${course.price-multiplier:20}")
-    private Long priceMultiplier;
+    private final Long priceMultiplier;
 
     @Autowired
     public CourseService(CourseRepository courseRepository,
                          CourseMapper courseMapper,
                          UserRepository userRepository,
                          ModeratorLoadRepository moderatorLoadRepository,
-                         RatingRepository ratingRepository) {
+                         RatingRepository ratingRepository,
+                         @Value("${course.price-multiplier:20}") Long priceMultiplier) {
         this.courseRepository = courseRepository;
         this.courseMapper = courseMapper;
         this.userRepository = userRepository;
         this.moderatorLoadRepository = moderatorLoadRepository;
         this.ratingRepository = ratingRepository;
+        this.priceMultiplier = priceMultiplier;
     }
 
     @Override
     @Transactional
     public void deleteCourse(Long id) {
-        log.debug("Deleting course with id: {}", id);
-
         Course course = courseRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Course not found with id: " + id));
 
@@ -74,7 +72,6 @@ public class CourseService implements DeleteCourseService, GetCourseService, Cre
     }
 
     @Override
-    @Transactional
     public CourseDto createCourse(CreateCourseRequest request, String username) {
         User author = userRepository.findByUsername(username)
                 .orElseThrow(() -> new EntityNotFoundException("User not found: " + username));
