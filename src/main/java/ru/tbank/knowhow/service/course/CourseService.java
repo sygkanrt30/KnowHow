@@ -3,18 +3,15 @@ package ru.tbank.knowhow.service.course;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-import ru.tbank.knowhow.model.Course;
-import ru.tbank.knowhow.model.User;
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import ru.tbank.knowhow.ecxeption.AttemptPayForYourselfException;
+import ru.tbank.knowhow.ecxeption.InsufficientFundsException;
 import ru.tbank.knowhow.model.Course;
+import ru.tbank.knowhow.model.User;
 import ru.tbank.knowhow.model.dto.request.SortRequest;
 import ru.tbank.knowhow.model.dto.response.CourseDto;
 import ru.tbank.knowhow.model.mapper.CourseMapper;
@@ -26,7 +23,7 @@ import java.util.List;
 @Service
 @RequiredArgsConstructor
 @Slf4j
-public class CourseService implements DeleteCourseService, GetCourseService {
+public class CourseService implements DeleteCourseService, GetCourseService, PurchaseCourseService {
 
     private final CourseRepository courseRepository;
     private final GetUserInfoService getUserInfoService;
@@ -46,27 +43,33 @@ public class CourseService implements DeleteCourseService, GetCourseService {
 
     @Override
     @Transactional
-    public void payForCourse(Long courseId, Long userId) {
+    public CourseDto payForCourse(Long courseId, Long userId) {
         Course course = courseRepository.findById(courseId)
                 .orElseThrow(() -> new EntityNotFoundException("Course not found with id: " + courseId));
         User user = getUserInfoService.findById(userId)
                 .orElseThrow(() -> new EntityNotFoundException("User not found by id: " + userId));
 
-        if (course.getAuthor().getId().equals(userId)) {
-            throw new IllegalStateException("You cannot purchase your own course");
+        User author = course.getAuthor();
+        if (author.getId().equals(user.getId())) {
+            throw new AttemptPayForYourselfException("You can't pay for yourself!");
         }
-        if (user.getPurchasedCourses().stream().anyMatch(purchased -> purchased.getId().equals(courseId))) {
-            throw new IllegalStateException("Course is already purchased");
+        if (courseRepository.findPurchasedCourseByUserAndCourseId(userId, courseId).isPresent()) {
+            log.warn("Course with id: {} has already been purchased", courseId);
+            return courseMapper.toDto(course);
         }
+        long coinsBalance = user.getBalance().getCoins();
+        long price = course.getPrice();
+        if (coinsBalance <= 0L || coinsBalance < price) {
+            throw new InsufficientFundsException("Insufficient funds!");
+        }
+        user.getBalance().setCoins(user.getBalance().getCoins() - price);
+        author.getBalance().setCoins(author.getBalance().getCoins() + price);
+        courseRepository.insertCourseToPurchased(userId, courseId);
+        log.info("Course with id: {} has been purchased", courseId);
+        return courseMapper.toDto(course);
+    }
 
-        long currentCoins = user.getBalance().getCoins();
-        if (currentCoins < course.getPrice()) {
-            throw new IllegalStateException("Insufficient balance to buy this course");
-        }
-
-        user.getBalance().setCoins(currentCoins - course.getPrice());
-        user.addPurchasedCourse(course);
-      
+    @Override
     public Page<CourseDto> findAllPurchasedCourses(Long userId, int page, int size, SortRequest sortRequest) {
         Sort sort = getSort(sortRequest);
         var pageable = PageRequest.of(page, size, sort);

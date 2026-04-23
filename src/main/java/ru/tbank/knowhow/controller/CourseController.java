@@ -8,7 +8,9 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import ru.tbank.knowhow.model.dto.response.CourseDto;
 import ru.tbank.knowhow.service.course.DeleteCourseService;
+import ru.tbank.knowhow.service.course.PurchaseCourseService;
 
 @RestController
 @RequestMapping("${server.base-url.course}")
@@ -16,6 +18,7 @@ import ru.tbank.knowhow.service.course.DeleteCourseService;
 class CourseController {
 
     private final DeleteCourseService deleteCourseService;
+    private final PurchaseCourseService purchaseCourseService;
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteCourse(@PathVariable Long id) {
@@ -23,11 +26,9 @@ class CourseController {
         return ResponseEntity.ok().build();
     }
 
-    @PostMapping("/{id}/pay")
-    public ResponseEntity<Void> payForCourse(@PathVariable Long id, HttpServletRequest request) {
+    @PostMapping("/pay/{id}")
+    public ResponseEntity<CourseDto> payForCourse(@PathVariable Long id, HttpServletRequest request) {
         Long userId = RequestAttributeExtractor.extractUserId(request);
-        log.trace("POST /api/v1/courses/{}/pay by user {}", id, userId);
-        deleteCourseService.payForCourse(id, userId);
-        return ResponseEntity.ok().build();
+        return ResponseEntity.ok(purchaseCourseService.payForCourse(id, userId));
     }
 }
