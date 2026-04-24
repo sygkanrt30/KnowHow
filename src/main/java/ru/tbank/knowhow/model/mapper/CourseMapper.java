@@ -16,5 +16,10 @@ public interface CourseMapper {
 
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "createdAt", ignore = true)
+    @Mapping(target = "author", source = "author")
+    @Mapping(target = "moderator", source = "moderator")
+    @Mapping(target = "price", source = "price")
+    @Mapping(target = "status", constant = "ON_MODERATION")
+    @Mapping(target = "rating", constant = "0")
     Course toEntity(CreateCourseRequest request, User author, User moderator, Long price);
 }

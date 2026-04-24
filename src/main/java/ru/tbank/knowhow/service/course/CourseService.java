@@ -61,8 +61,6 @@ public class CourseService implements DeleteCourseService, GetCourseService, Pur
     @Override
     @Transactional
     public void deleteCourse(Long id) {
-        log.debug("Deleting course with id: {}", id);
-
         Course course = courseRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Course not found with id: " + id));
 
@@ -74,7 +72,6 @@ public class CourseService implements DeleteCourseService, GetCourseService, Pur
     }
 
     @Override
-    @Transactional
     public CourseDto createCourse(CreateCourseRequest request, String username) {
         User author = userRepository.findByUsername(username)
                 .orElseThrow(() -> new EntityNotFoundException("User not found: " + username));
@@ -85,8 +82,6 @@ public class CourseService implements DeleteCourseService, GetCourseService, Pur
         Long price = priceMultiplier * userLevel;
 
         Course course = courseMapper.toEntity(request, author, moderator, price);
-        course.setStatus(CourseStatus.ON_MODERATION);
-        course.setRating(BigDecimal.ZERO);
 
         Course saved = courseRepository.save(course);
         return courseMapper.toDto(saved);
