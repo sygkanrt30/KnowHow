@@ -46,6 +46,10 @@ public class User implements UserDetails {
     @Column(nullable = false, name = "role", columnDefinition = "usr_role")
     private Role role;
 
+    @Column(name = "level")
+    @Builder.Default
+    private Integer level = 1;
+
     @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "balance_id", nullable = false, unique = true)
     @ToString.Exclude

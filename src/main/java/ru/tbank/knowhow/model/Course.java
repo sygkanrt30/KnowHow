@@ -46,9 +46,10 @@ public class Course {
     @Builder.Default
     private String[] tags = new String[0];
 
-    @Column(name = "moderation_score")
-    @Builder.Default
-    private Integer moderationScore = 0;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "moderator_id")
+    @ToString.Exclude
+    private User moderator;
 
     @Column(precision = 2, scale = 1, nullable = false)
     @Builder.Default
