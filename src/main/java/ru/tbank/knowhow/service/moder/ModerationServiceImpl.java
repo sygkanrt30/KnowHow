@@ -3,13 +3,9 @@ package ru.tbank.knowhow.service.moder;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import ru.tbank.knowhow.model.Course;
-import ru.tbank.knowhow.model.CourseStatus;
-import ru.tbank.knowhow.model.ModerationReview;
-import ru.tbank.knowhow.model.ModeratorLoad;
-import ru.tbank.knowhow.model.User;
+import org.springframework.stereotype.Service;
+import ru.tbank.knowhow.model.*;
 import ru.tbank.knowhow.repository.CourseRepository;
 import ru.tbank.knowhow.repository.ModerationReviewRepository;
 import ru.tbank.knowhow.repository.ModeratorLoadRepository;
@@ -20,7 +16,7 @@ import ru.tbank.knowhow.repository.UserRepository;
 @Service
 public class ModerationServiceImpl implements ModerationService {
 
-    private final ModeratorLoadRepository moderatorLoadRepository;
+    private final ModeratorLoadRepository  moderatorLoadRepository;
     private final UserRepository userRepository;
     private final CourseRepository courseRepository;
     private final ModerationReviewRepository moderationReviewRepository;
@@ -31,7 +27,6 @@ public class ModerationServiceImpl implements ModerationService {
                 .orElseThrow(() -> new EntityNotFoundException("No moderators available"));
 
         moderatorLoadRepository.incrementCoursesInModeration(moderatorLoad.getModerator().getId());
-        log.debug("Assigned moderator {} to new course", moderatorLoad.getModerator().getId());
 
         return moderatorLoad.getModerator();
     }
@@ -62,6 +57,6 @@ public class ModerationServiceImpl implements ModerationService {
         course.setStatus(CourseStatus.PASSED_MODERATION);
         courseRepository.save(course);
 
-        log.debug("Course {} approved by moderator {}", courseId, moderator.getId());
+        log.info("Course {} approved by moderator {}", courseId, moderator.getId());
     }
 }

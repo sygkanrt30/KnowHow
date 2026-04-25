@@ -1,0 +1,151 @@
+[33mcommit 82a22e12c19b2927c78525af1d802edcb0c10bb8[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mfeature/add-moderation-approve[m[33m)[m
+Author: anastasia <bolobanav6203214yandex.ru>
+Date:   Sat Apr 25 18:22:53 2026 +0300
+
+    эндпоинт одобрения модератором
+
+[1mdiff --git a/src/main/java/ru/tbank/knowhow/controller/ModerationController.java b/src/main/java/ru/tbank/knowhow/controller/ModerationController.java[m
+[1mnew file mode 100644[m
+[1mindex 0000000..519e15d[m
+[1m--- /dev/null[m
+[1m+++ b/src/main/java/ru/tbank/knowhow/controller/ModerationController.java[m
+[36m@@ -0,0 +1,29 @@[m
+[32m+[m[32mpackage ru.tbank.knowhow.controller;[m
+[32m+[m
+[32m+[m[32mimport lombok.RequiredArgsConstructor;[m
+[32m+[m[32mimport lombok.extern.slf4j.Slf4j;[m
+[32m+[m[32mimport org.springframework.http.ResponseEntity;[m
+[32m+[m[32mimport org.springframework.security.core.annotation.AuthenticationPrincipal;[m
+[32m+[m[32mimport org.springframework.security.core.userdetails.UserDetails;[m
+[32m+[m[32mimport org.springframework.web.bind.annotation.*;[m
+[32m+[m[32mimport ru.tbank.knowhow.service.moder.ModerationService;[m
+[32m+[m[32mimport java.util.Map;[m
+[32m+[m
+[32m+[m[32m@Slf4j[m
+[32m+[m[32m@RestController[m
+[32m+[m[32m@RequestMapping("${server.base-url.course}/moderation")[m
+[32m+[m[32m@RequiredArgsConstructor[m
+[32m+[m
+[32m+[m[32mpublic class ModerationController {[m
+[32m+[m[32m    private final ModerationService moderationService;[m
+[32m+[m
+[32m+[m[32m    @PostMapping("/{id}/approve")[m
+[32m+[m[32m    public ResponseEntity<Map<String, String>> approveCourse([m
+[32m+[m[32m            @PathVariable Long id,[m
+[32m+[m[32m            @AuthenticationPrincipal UserDetails userDetails) {[m
+[32m+[m
+[32m+[m[32m        moderationService.approveCourse(id, userDetails.getUsername());[m
+[32m+[m[32m        return ResponseEntity.ok(Map.of("message", "Курс одобрен"));[m
+[32m+[m[32m    }[m
+[32m+[m
+[32m+[m[32m}[m
+[1mdiff --git a/src/main/java/ru/tbank/knowhow/repository/ModerationReviewRepository.java b/src/main/java/ru/tbank/knowhow/repository/ModerationReviewRepository.java[m
+[1mindex 1d22cc7..c571d68 100644[m
+[1m--- a/src/main/java/ru/tbank/knowhow/repository/ModerationReviewRepository.java[m
+[1m+++ b/src/main/java/ru/tbank/knowhow/repository/ModerationReviewRepository.java[m
+[36m@@ -4,4 +4,6 @@[m [mimport org.springframework.data.jpa.repository.JpaRepository;[m
+ import ru.tbank.knowhow.model.ModerationReview;[m
+ [m
+ public interface ModerationReviewRepository extends JpaRepository<ModerationReview, Long> {[m
+[32m+[m
+[32m+[m[32m    boolean existsByCourseIdAndModeratorId(Long courseId, Long moderatorId);[m
+ }[m
+[1mdiff --git a/src/main/java/ru/tbank/knowhow/repository/ModeratorLoadRepository.java b/src/main/java/ru/tbank/knowhow/repository/ModeratorLoadRepository.java[m
+[1mindex 6cbf21c..8bb190f 100644[m
+[1m--- a/src/main/java/ru/tbank/knowhow/repository/ModeratorLoadRepository.java[m
+[1m+++ b/src/main/java/ru/tbank/knowhow/repository/ModeratorLoadRepository.java[m
+[36m@@ -16,4 +16,8 @@[m [mpublic interface ModeratorLoadRepository extends JpaRepository<ModeratorLoad, Lo[m
+     @Modifying[m
+     @Query("UPDATE ModeratorLoad ml SET ml.coursesInModeration = ml.coursesInModeration + 1 WHERE ml.moderator.id = :moderatorId")[m
+     void incrementCoursesInModeration(@Param("moderatorId") Long moderatorId);[m
+[32m+[m
+[32m+[m[32m    @Modifying[m
+[32m+[m[32m    @Query("UPDATE ModeratorLoad ml SET ml.coursesInModeration = ml.coursesInModeration - 1 WHERE ml.moderator.id = :moderatorId")[m
+[32m+[m[32m    void decrementCoursesInModeration(@Param("moderatorId") Long moderatorId);[m
+ }[m
+[1mdiff --git a/src/main/java/ru/tbank/knowhow/service/moder/ModerationService.java b/src/main/java/ru/tbank/knowhow/service/moder/ModerationService.java[m
+[1mindex eea08d4..efe30db 100644[m
+[1m--- a/src/main/java/ru/tbank/knowhow/service/moder/ModerationService.java[m
+[1m+++ b/src/main/java/ru/tbank/knowhow/service/moder/ModerationService.java[m
+[36m@@ -5,4 +5,7 @@[m [mimport ru.tbank.knowhow.model.User;[m
+ public interface ModerationService {[m
+ [m
+     User assignModerator();[m
+[32m+[m
+[32m+[m[32m    void approveCourse(Long courseId, String moderatorUsername);[m
+[32m+[m
+ }[m
+[1mdiff --git a/src/main/java/ru/tbank/knowhow/service/moder/ModerationServiceImpl.java b/src/main/java/ru/tbank/knowhow/service/moder/ModerationServiceImpl.java[m
+[1mindex 05c462a..dd2f3a9 100644[m
+[1m--- a/src/main/java/ru/tbank/knowhow/service/moder/ModerationServiceImpl.java[m
+[1m+++ b/src/main/java/ru/tbank/knowhow/service/moder/ModerationServiceImpl.java[m
+[36m@@ -2,16 +2,28 @@[m [mpackage ru.tbank.knowhow.service.moder;[m
+ [m
+ import jakarta.persistence.EntityNotFoundException;[m
+ import lombok.RequiredArgsConstructor;[m
+[32m+[m[32mimport lombok.extern.slf4j.Slf4j;[m
+ import org.springframework.stereotype.Service;[m
+[32m+[m[32mimport org.springframework.transaction.annotation.Transactional;[m
+[32m+[m[32mimport ru.tbank.knowhow.model.Course;[m
+[32m+[m[32mimport ru.tbank.knowhow.model.CourseStatus;[m
+[32m+[m[32mimport ru.tbank.knowhow.model.ModerationReview;[m
+ import ru.tbank.knowhow.model.ModeratorLoad;[m
+ import ru.tbank.knowhow.model.User;[m
+[32m+[m[32mimport ru.tbank.knowhow.repository.CourseRepository;[m
+[32m+[m[32mimport ru.tbank.knowhow.repository.ModerationReviewRepository;[m
+ import ru.tbank.knowhow.repository.ModeratorLoadRepository;[m
+[32m+[m[32mimport ru.tbank.knowhow.repository.UserRepository;[m
+ [m
+[32m+[m[32m@Slf4j[m
+ @RequiredArgsConstructor[m
+ @Service[m
+ public class ModerationServiceImpl implements ModerationService {[m
+ [m
+[31m-    private final ModeratorLoadRepository  moderatorLoadRepository;[m
+[32m+[m[32m    private final ModeratorLoadRepository moderatorLoadRepository;[m
+[32m+[m[32m    private final UserRepository userRepository;[m
+[32m+[m[32m    private final CourseRepository courseRepository;[m
+[32m+[m[32m    private final ModerationReviewRepository moderationReviewRepository;[m
+ [m
+     @Override[m
+     public User assignModerator() {[m
+[36m@@ -19,7 +31,37 @@[m [mpublic class ModerationServiceImpl implements ModerationService {[m
+                 .orElseThrow(() -> new EntityNotFoundException("No moderators available"));[m
+ [m
+         moderatorLoadRepository.incrementCoursesInModeration(moderatorLoad.getModerator().getId());[m
+[32m+[m[32m        log.debug("Assigned moderator {} to new course", moderatorLoad.getModerator().getId());[m
+ [m
+         return moderatorLoad.getModerator();[m
+     }[m
+[31m-}[m
+[32m+[m
+[32m+[m[32m    @Override[m
+[32m+[m[32m    @Transactional[m
+[32m+[m[32m    public void approveCourse(Long courseId, String moderatorUsername) {[m
+[32m+[m[32m        User moderator = userRepository.findByUsername(moderatorUsername)[m
+[32m+[m[32m                .orElseThrow(() -> new EntityNotFoundException("Модератор не найден"));[m
+[32m+[m
+[32m+[m[32m        Course course = courseRepository.findById(courseId)[m
+[32m+[m[32m                .orElseThrow(() -> new EntityNotFoundException("Курс не найден"));[m
+[32m+[m
+[32m+[m[32m        if (moderationReviewRepository.existsByCourseIdAndModeratorId(courseId, moderator.getId())) {[m
+[32m+[m[32m            log.warn("Moderator {} already voted on course {}", moderator.getId(), courseId);[m
+[32m+[m[32m            throw new RuntimeException("Вы уже проголосовали за этот курс");[m
+[32m+[m[32m        }[m
+[32m+[m
+[32m+[m[32m        ModerationReview review = ModerationReview.builder()[m
+[32m+[m[32m                .moderator(moderator)[m
+[32m+[m[32m                .course(course)[m
+[32m+[m[32m                .approved(true)[m
+[32m+[m[32m                .build();[m
+[32m+[m[32m        moderationReviewRepository.save(review);[m
+[32m+[m
+[32m+[m[32m        moderatorLoadRepository.decrementCoursesInModeration(moderator.getId());[m
+[32m+[m
+[32m+[m[32m        course.setStatus(CourseStatus.PASSED_MODERATION);[m
+[32m+[m[32m        courseRepository.save(course);[m
+[32m+[m
+[32m+[m[32m        log.debug("Course {} approved by moderator {}", courseId, moderator.getId());[m
+[32m+[m[32m    }[m
+[32m+[m[32m}[m
+\ No newline at end of file[m
