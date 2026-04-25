@@ -5,6 +5,7 @@ import jakarta.persistence.EntityNotFoundException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ProblemDetail;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -23,6 +24,11 @@ public class GlobalExceptionHandler {
     @ExceptionHandler({EntityNotFoundException.class, UsernameNotFoundException.class})
     public ProblemDetail catchNotFoundException(Exception e) {
         return getAppErrorHandlerResponseDto(e, HttpStatus.NOT_FOUND);
+    }
+
+    @ExceptionHandler()
+    public ProblemDetail catchAccessDeniedException(AccessDeniedException e) {
+        return getAppErrorHandlerResponseDto(e, HttpStatus.FORBIDDEN);
     }
 
     @ExceptionHandler

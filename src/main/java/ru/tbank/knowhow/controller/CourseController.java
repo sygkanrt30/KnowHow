@@ -9,11 +9,11 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 import ru.tbank.knowhow.model.dto.request.CreateCourseRequest;
+import ru.tbank.knowhow.model.dto.request.UpdateCourseRequest;
 import ru.tbank.knowhow.model.dto.response.CourseDto;
-import ru.tbank.knowhow.service.course.CreateCourseService;
+import ru.tbank.knowhow.service.course.SaveCourseService;
 import ru.tbank.knowhow.service.course.DeleteCourseService;
 import ru.tbank.knowhow.service.course.PurchaseCourseService;
-import org.springframework.web.bind.annotation.*;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -27,7 +27,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class CourseController {
 
     private final DeleteCourseService deleteCourseService;
-    private final CreateCourseService createCourseService;
+    private final SaveCourseService saveCourseService;
     private final PurchaseCourseService purchaseCourseService;
 
     @DeleteMapping("/{id}")
@@ -38,15 +38,23 @@ public class CourseController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public CourseDto createCourse(
+    public ResponseEntity<CourseDto> createCourse(
             @RequestBody @Valid CreateCourseRequest request,
             @AuthenticationPrincipal UserDetails userDetails) {
-        return createCourseService.createCourse(request, userDetails.getUsername());
+        return ResponseEntity.ok(saveCourseService.createCourse(request, userDetails.getUsername()));
     }
 
     @PostMapping("/pay/{id}")
     public ResponseEntity<CourseDto> payForCourse(@PathVariable Long id, HttpServletRequest request) {
         Long userId = RequestAttributeExtractor.extractUserId(request);
         return ResponseEntity.ok(purchaseCourseService.payForCourse(id, userId));
+    }
+
+    @PutMapping("/retry-pass-moderation/{id}")
+    public ResponseEntity<CourseDto> retryPassModeration(HttpServletRequest request,
+                                                         @PathVariable Long id,
+                                                         @RequestBody UpdateCourseRequest updateRequest) {
+        Long userId = RequestAttributeExtractor.extractUserId(request);
+        return ResponseEntity.ok(saveCourseService.updateCourse(updateRequest, id, userId));
     }
 }

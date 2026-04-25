@@ -21,5 +21,5 @@ public interface CourseMapper {
     @Mapping(target = "price", source = "price")
     @Mapping(target = "status", constant = "ON_MODERATION")
     @Mapping(target = "rating", constant = "0")
-    Course toEntity(CreateCourseRequest request, User author, User moderator, Long price);
+    Course toEntity(CreateCourseRequest request, User author, User moderator, Integer price);
 }
