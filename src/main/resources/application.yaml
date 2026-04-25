@@ -65,5 +65,5 @@ logging:
   pattern:
     console: '%d{dd.MM.yyyy HH:mm:ss.SSS} [%thread] %clr(%-5level) %logger{36} - %msg%n'
 
-    course:
-      price-multiplier: 20
+course:
+  price-multiplier: 20

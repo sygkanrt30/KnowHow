@@ -22,6 +22,6 @@ class UserController {
         Long userId = RequestAttributeExtractor.extractUserId(request);
         deleteUserService.deleteById(userId);
         log.info("Deleted account for user id={}", userId);
-        return ResponseEntity.ok().build();
+        return ResponseEntity.ok("Deleted account for user id=" + userId);
     }
 }
