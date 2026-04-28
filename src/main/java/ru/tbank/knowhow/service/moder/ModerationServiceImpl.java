@@ -1,5 +1,6 @@
 package ru.tbank.knowhow.service.moder;
 
+import jakarta.persistence.EntityExistsException;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -41,8 +42,7 @@ public class ModerationServiceImpl implements ModerationService {
                 .orElseThrow(() -> new EntityNotFoundException("Курс не найден"));
 
         if (moderationReviewRepository.existsByCourseIdAndModeratorId(courseId, moderator.getId())) {
-            log.warn("Moderator {} already voted on course {}", moderator.getId(), courseId);
-            throw new RuntimeException("Вы уже проголосовали за этот курс");
+            throw new EntityExistsException("Этот курс уже одобрен");
         }
 
         ModerationReview review = ModerationReview.builder()
@@ -55,8 +55,7 @@ public class ModerationServiceImpl implements ModerationService {
         moderatorLoadRepository.decrementCoursesInModeration(moderator.getId());
 
         course.setStatus(CourseStatus.PASSED_MODERATION);
-        courseRepository.save(course);
 
-        log.info("Course {} approved by moderator {}", courseId, moderator.getId());
+        log.debug("Course {} approved by moderator {}", courseId, moderator.getId());
     }
 }
