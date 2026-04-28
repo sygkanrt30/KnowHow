@@ -16,4 +16,8 @@ public interface ModeratorLoadRepository extends JpaRepository<ModeratorLoad, Lo
     @Modifying
     @Query("UPDATE ModeratorLoad ml SET ml.coursesInModeration = ml.coursesInModeration + 1 WHERE ml.moderator.id = :moderatorId")
     void incrementCoursesInModeration(@Param("moderatorId") Long moderatorId);
+
+    @Modifying
+    @Query("UPDATE ModeratorLoad ml SET ml.coursesInModeration = ml.coursesInModeration - 1 WHERE ml.moderator.id = :moderatorId")
+    void decrementCoursesInModeration(@Param("moderatorId") Long moderatorId);
 }
