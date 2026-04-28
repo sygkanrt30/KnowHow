@@ -16,7 +16,7 @@ public class ModerationController {
     private final ModerationService moderationService;
 
     @PostMapping("/{id}/approve")
-    public ResponseEntity approveCourse(
+    public ResponseEntity<String> approveCourse(
             @PathVariable Long id,
             @AuthenticationPrincipal UserDetails userDetails) {
 
