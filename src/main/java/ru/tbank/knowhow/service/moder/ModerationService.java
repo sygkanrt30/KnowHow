@@ -8,4 +8,5 @@ public interface ModerationService {
 
     void approveCourse(Long courseId, String moderatorUsername);
 
+    void rejectCourse(Long courseId, String moderatorUsername, String rejectionReason);
 }
