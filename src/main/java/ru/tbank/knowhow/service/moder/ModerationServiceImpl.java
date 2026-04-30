@@ -42,7 +42,7 @@ public class ModerationServiceImpl implements ModerationService {
                 .orElseThrow(() -> new EntityNotFoundException("Курс не найден"));
 
         if (moderationReviewRepository.existsByCourseIdAndModeratorId(courseId, moderator.getId())) {
-            throw new EntityExistsException("Этот курс уже одобрен");
+            throw new EntityExistsException("Модератор уже обработал этот курс");
         }
 
         ModerationReview review = ModerationReview.builder()
@@ -57,5 +57,31 @@ public class ModerationServiceImpl implements ModerationService {
         course.setStatus(CourseStatus.PASSED_MODERATION);
 
         log.debug("Course {} approved by moderator {}", courseId, moderator.getId());
+    }
+
+    @Override
+    @Transactional
+    public void rejectCourse(Long courseId, String moderatorUsername, String rejectionReason) {
+        User moderator = userRepository.findByUsername(moderatorUsername)
+                .orElseThrow(() -> new EntityNotFoundException("Модератор не найден"));
+
+        Course course = courseRepository.findById(courseId)
+                .orElseThrow(() -> new EntityNotFoundException("Курс не найден"));
+
+        if (moderationReviewRepository.existsByCourseIdAndModeratorId(courseId, moderator.getId())) {
+            throw new EntityExistsException("Модератор уже обработал этот курс");
+        }
+
+        ModerationReview review = ModerationReview.builder()
+                .moderator(moderator)
+                .course(course)
+                .approved(false)
+                .rejectionReason(rejectionReason)
+                .build();
+        moderationReviewRepository.save(review);
+
+        moderatorLoadRepository.decrementCoursesInModeration(moderator.getId());
+
+        course.setStatus(CourseStatus.NOT_ACCEPTED);
     }
 }
