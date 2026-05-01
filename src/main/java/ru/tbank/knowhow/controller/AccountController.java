@@ -3,7 +3,6 @@ package ru.tbank.knowhow.controller;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
@@ -16,7 +15,6 @@ import ru.tbank.knowhow.service.user.DeleteUserService;
 @RestController
 @RequiredArgsConstructor
 @Validated
-@Slf4j
 @RequestMapping("${server.base-url.users}")
 public class AccountController {
 
@@ -35,11 +33,10 @@ public class AccountController {
         return ResponseEntity.ok(purchasedCourses);
     }
 
-    @DeleteMapping()
+    @DeleteMapping
     public ResponseEntity<?> deleteUserById(HttpServletRequest request) {
         Long userId = RequestAttributeExtractor.extractUserId(request);
         deleteUserService.deleteById(userId);
-        log.info("Deleted account for user id={}", userId);
-        return ResponseEntity.ok("Deleted account for user id=" + userId);
+        return ResponseEntity.ok("Account has been deleted");
     }
 }

@@ -48,4 +48,11 @@ public interface CourseRepository extends JpaRepository<Course, Long> {
         """, nativeQuery = true)
     @Modifying
     void insertCourseToPurchased(@Param("userId") Long userId, @Param("courseId")  Long courseId);
+
+    @Query(value = """
+            DELETE FROM purchased_course
+            WHERE user_id = :userId
+            """, nativeQuery = true)
+    @Modifying
+    void deleteAllPurchasedCoursesByUserId(Long userId);
 }
