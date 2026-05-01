@@ -96,9 +96,8 @@ public class UserService implements GetUserInfoService, SaveUserService, DeleteU
         if (!userRepository.existsById(id)) {
             throw new EntityNotFoundException("User not found by id: " + id);
         }
-        if (courseRepository.existsByAuthorId(id)) {
-            throw new IllegalStateException("Cannot delete user with authored courses");
-        }
         userRepository.deleteById(id);
+        courseRepository.deleteAllPurchasedCoursesByUserId(id);
+        log.info("Deleted account for user id={}", id);
     }
 }

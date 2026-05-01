@@ -10,5 +10,6 @@ public record CourseDto(
         Long price,
         String[] tags,
         BigDecimal rating,
-        Long authorId) {
+        Long authorId,
+        boolean notForSale) {
 }

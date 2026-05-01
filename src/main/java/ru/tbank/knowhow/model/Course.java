@@ -56,9 +56,13 @@ public class Course {
     private BigDecimal rating = BigDecimal.ZERO;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id", nullable = false)
+    @JoinColumn(name = "user_id")
     @ToString.Exclude
     private User author;
+
+    @Column(name = "not_for_sale")
+    @Builder.Default
+    private boolean notForSale = false;
 
     @CreationTimestamp
     @Column(name = "created_at", updatable = false)
