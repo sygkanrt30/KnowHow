@@ -8,11 +8,8 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.env.Environment;
+import org.springframework.http.HttpMethod;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.security.access.expression.method.DefaultMethodSecurityExpressionHandler;
-import org.springframework.security.access.expression.method.MethodSecurityExpressionHandler;
-import org.springframework.security.access.hierarchicalroles.RoleHierarchy;
-import org.springframework.security.access.hierarchicalroles.RoleHierarchyImpl;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
@@ -29,6 +26,7 @@ import org.springframework.security.web.csrf.CsrfTokenRequestAttributeHandler;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+import ru.tbank.knowhow.model.Role;
 import ru.tbank.knowhow.security.GetCsrfTokenFilter;
 import ru.tbank.knowhow.security.TokenCookieAuthenticationConfigurer;
 import ru.tbank.knowhow.security.TokenCookieSessionAuthenticationStrategy;
@@ -53,7 +51,11 @@ public class SecurityConfig {
             HttpSecurity http,
             TokenCookieSessionAuthenticationStrategy tokenCookieSessionAuthenticationStrategy,
             TokenCookieAuthenticationConfigurer tokenCookieAuthenticationConfigurer,
-            @Value("${server.base-url.auth}") String authUrl) {
+            @Value("${server.base-url.auth}") String authUrl,
+            @Value("${server.base-url.users}") String userUrl,
+            @Value("${server.base-url.course}") String courseUrl,
+            @Value("${server.base-url.profile}") String profileUrl,
+            @Value("${server.base-url.balance}") String balanceUrl) {
 
         return http
                 .with(tokenCookieAuthenticationConfigurer, Customizer.withDefaults())
@@ -68,6 +70,15 @@ public class SecurityConfig {
                         authorizeHttpRequests
                                 .requestMatchers(authUrl + "/me").authenticated()
                                 .requestMatchers(authUrl + "/**").permitAll()
+                                .requestMatchers(HttpMethod.GET, profileUrl).hasRole(Role.USER.name())
+                                .requestMatchers(userUrl + "/purchased-courses").hasRole(Role.USER.name())
+                                .requestMatchers(HttpMethod.DELETE, userUrl).hasRole(Role.USER.name())
+                                .requestMatchers(balanceUrl + "/**").hasRole(Role.USER.name())
+                                .requestMatchers(courseUrl + "/{id}/rating").hasRole(Role.USER.name())
+                                .requestMatchers(HttpMethod.DELETE, courseUrl + "/{id}").hasRole(Role.USER.name())
+                                .requestMatchers(HttpMethod.POST, courseUrl).hasRole(Role.USER.name())
+                                .requestMatchers(courseUrl + "/pay/{id}").hasRole(Role.USER.name())
+                                .requestMatchers(courseUrl + "/retry-pass-moderation/{id}").hasRole(Role.USER.name())
                                 .requestMatchers(
                                         "/swagger-ui/**",
                                         "/swagger-ui.html",
@@ -82,23 +93,6 @@ public class SecurityConfig {
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                         .sessionAuthenticationStrategy(tokenCookieSessionAuthenticationStrategy))
                 .build();
-    }
-
-    @Bean
-    public RoleHierarchy roleHierarchy() {
-        return RoleHierarchyImpl.fromHierarchy("""
-            ROLE_ADMIN > ROLE_MODERATOR
-            ROLE_MODERATOR > ROLE_USER
-            """);
-    }
-
-    @SuppressWarnings("deprecation")
-    @Bean
-    public MethodSecurityExpressionHandler methodSecurityExpressionHandler(
-            RoleHierarchy roleHierarchy) {
-        var handler = new DefaultMethodSecurityExpressionHandler();
-        handler.setRoleHierarchy(roleHierarchy);
-        return handler;
     }
 
     @Bean
