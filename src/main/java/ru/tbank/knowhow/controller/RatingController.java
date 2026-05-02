@@ -1,5 +1,6 @@
 package ru.tbank.knowhow.controller;
 
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -34,5 +35,16 @@ public class RatingController {
             return ResponseEntity.status(HttpStatus.OK)
                     .body(Map.of("message", "Вы уже оценили этот курс"));
         }
+    }
+
+    @PatchMapping("/{courseId}/rating")
+    public ResponseEntity<String> updateRating(
+            @PathVariable Long courseId,
+            @RequestParam Integer grade,
+            HttpServletRequest httpRequest) {
+
+        Long userId = RequestAttributeExtractor.extractUserId(httpRequest);
+        ratingService.updateRating(courseId, userId, grade);
+        return ResponseEntity.ok("Оценка обновлена");
     }
 }

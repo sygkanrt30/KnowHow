@@ -48,4 +48,7 @@ public interface CourseRepository extends JpaRepository<Course, Long> {
         """, nativeQuery = true)
     @Modifying
     void insertCourseToPurchased(@Param("userId") Long userId, @Param("courseId")  Long courseId);
+
+    @Query("SELECT COUNT(pc) > 0 FROM User u JOIN u.purchasedCourses pc WHERE pc.id = :courseId AND u.id = :userId")
+    boolean existsPurchasedCourse(@Param("courseId") Long courseId, @Param("userId") Long userId);
 }
