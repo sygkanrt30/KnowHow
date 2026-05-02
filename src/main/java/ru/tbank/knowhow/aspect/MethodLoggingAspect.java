@@ -20,7 +20,7 @@ public class MethodLoggingAspect {
     @Pointcut("""
                     execution(* ru.tbank.knowhow..*.*(..)) &&
                     !within(ru.tbank.knowhow.ecxeption..*) &&
-                    !within(ru.tbank.knowhow.config..*)           
+                    !within(ru.tbank.knowhow.config..*)
             """)
     public void applicationPackageMethods() {}
 

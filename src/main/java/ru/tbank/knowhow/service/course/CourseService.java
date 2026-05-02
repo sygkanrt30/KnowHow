@@ -12,6 +12,7 @@ import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.tbank.knowhow.ecxeption.AttemptPayForYourselfException;
+import ru.tbank.knowhow.ecxeption.AttemptPayNotForSaleCourseException;
 import ru.tbank.knowhow.ecxeption.InsufficientFundsException;
 import ru.tbank.knowhow.model.Course;
 import ru.tbank.knowhow.model.CourseStatus;
@@ -122,6 +123,11 @@ public class CourseService implements DeleteCourseService, GetCourseService, Pur
     public CourseDto payForCourse(Long courseId, Long userId) {
         Course course = courseRepository.findById(courseId)
                 .orElseThrow(() -> new EntityNotFoundException("Course not found with id: " + courseId));
+
+        if (course.isNotForSale()) {
+            throw new AttemptPayNotForSaleCourseException("Course not for sale");
+        }
+
         User user = getUserInfoService.findById(userId)
                 .orElseThrow(() -> new EntityNotFoundException("User not found by id: " + userId));
 
