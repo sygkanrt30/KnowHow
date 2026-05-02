@@ -3,6 +3,7 @@ package ru.tbank.knowhow.repository;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -11,9 +12,10 @@ import ru.tbank.knowhow.model.Course;
 
 import java.util.List;
 import java.util.Optional;
+import java.math.BigDecimal;
 
 @Repository
-public interface CourseRepository extends JpaRepository<Course, Long> {
+public interface CourseRepository extends JpaRepository<Course, Long>, JpaSpecificationExecutor<Course> {
 
     boolean existsByAuthorId(Long authorId);
   
@@ -48,4 +50,47 @@ public interface CourseRepository extends JpaRepository<Course, Long> {
         """, nativeQuery = true)
     @Modifying
     void insertCourseToPurchased(@Param("userId") Long userId, @Param("courseId")  Long courseId);
+
+    @Query(value = """
+    SELECT * FROM (
+        SELECT c.*,
+               CASE WHEN c.tags @> CAST(:tags AS varchar[]) THEN 1
+                    ELSE 2
+               END as match_priority
+        FROM course c
+        WHERE c.not_for_sale = false
+          AND (:tags IS NULL OR c.tags && CAST(:tags AS varchar[]))
+          AND (:title IS NULL OR c.title ILIKE CONCAT('%', :title, '%'))
+          AND (:authorName IS NULL OR EXISTS (
+              SELECT 1 FROM app_user u
+              WHERE u.id = c.user_id
+                AND u.username ILIKE CONCAT('%', :authorName, '%')
+          ))
+          AND (:minPrice IS NULL OR c.price >= :minPrice)
+          AND (:maxPrice IS NULL OR c.price <= :maxPrice)
+    ) AS sorted
+    ORDER BY match_priority ASC, sorted.created_at DESC
+    """,
+            countQuery = """
+    SELECT COUNT(*) FROM course c
+    WHERE c.not_for_sale = false
+      AND (:tags IS NULL OR c.tags && CAST(:tags AS varchar[]))
+      AND (:title IS NULL OR c.title ILIKE CONCAT('%', :title, '%'))
+      AND (:authorName IS NULL OR EXISTS (
+          SELECT 1 FROM app_user u
+          WHERE u.id = c.user_id
+            AND u.username ILIKE CONCAT('%', :authorName, '%')
+      ))
+      AND (:minPrice IS NULL OR c.price >= :minPrice)
+      AND (:maxPrice IS NULL OR c.price <= :maxPrice)
+    """,
+            nativeQuery = true)
+    Page<Course> searchCourses(
+            @Param("tags") String[] tags,
+            @Param("title") String title,
+            @Param("authorName") String authorName,
+            @Param("minPrice") BigDecimal minPrice,
+            @Param("maxPrice") BigDecimal maxPrice,
+            Pageable pageable
+    );
 }
