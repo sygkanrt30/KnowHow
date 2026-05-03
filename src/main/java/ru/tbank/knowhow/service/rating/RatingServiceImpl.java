@@ -30,6 +30,12 @@ public class RatingServiceImpl implements RatingService {
         User user = userRepository.findByUsername(username)
                 .orElseThrow(() -> new EntityNotFoundException("Пользователь не найден"));
 
+        boolean hasPurchased = courseRepository.existsPurchasedCourse(courseId, user.getId());
+        if (!hasPurchased) {
+            log.warn("User {} tried to rate course {} without purchasing", username, courseId);
+            return false;
+        }
+
         boolean alreadyRated = ratingRepository.existsByCourseAndUser(course, user);
         if (alreadyRated) {
             return false;
@@ -43,5 +49,15 @@ public class RatingServiceImpl implements RatingService {
 
         ratingRepository.save(rating);
         return true;
+    }
+
+    @Override
+    @Transactional
+    public void updateRating(Long courseId, Long userId, Integer newGrade) {
+        Rating rating = ratingRepository.findByCourseIdAndUserId(courseId, userId)
+                .orElseThrow(() -> new EntityNotFoundException("Вы не оценивали этот курс"));
+
+        rating.setGrade(newGrade.shortValue());
+        log.debug("User {} updated rating for course {} to {}", userId, courseId, newGrade);
     }
 }

@@ -9,6 +9,8 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.data.jpa.repository.Modifying;
 
+import java.util.Optional;
+
 @Repository
 public interface RatingRepository extends JpaRepository<Rating, Long> {
 
@@ -17,4 +19,6 @@ public interface RatingRepository extends JpaRepository<Rating, Long> {
     @Modifying
     @Query("DELETE FROM Rating r WHERE r.course.id = :courseId")
     void deleteByCourseId(@Param("courseId") Long courseId);
+
+    Optional<Rating> findByCourseIdAndUserId(Long courseId, Long userId);
 }
