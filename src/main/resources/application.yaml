@@ -35,10 +35,10 @@ server:
   port: 8080
   base-url:
     auth: /api/v1/auth
-    profile: api/v1/profile
-    users: api/v1/users
-    course: api/v1/courses
-    balance: api/v1/balance
+    profile: /api/v1/profile
+    users: /api/v1/users
+    course: /api/v1/courses
+    balance: /api/v1/balance
 
 
 csrf:

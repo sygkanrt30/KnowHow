@@ -51,4 +51,11 @@ public interface CourseRepository extends JpaRepository<Course, Long> {
 
     @Query("SELECT COUNT(pc) > 0 FROM User u JOIN u.purchasedCourses pc WHERE pc.id = :courseId AND u.id = :userId")
     boolean existsPurchasedCourse(@Param("courseId") Long courseId, @Param("userId") Long userId);
+           
+    @Query(value = """
+            DELETE FROM purchased_course
+            WHERE user_id = :userId
+            """, nativeQuery = true)
+    @Modifying
+    void deleteAllPurchasedCoursesByUserId(Long userId);
 }
