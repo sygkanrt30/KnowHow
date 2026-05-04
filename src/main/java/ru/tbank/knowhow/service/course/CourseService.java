@@ -174,10 +174,7 @@ public class CourseService implements DeleteCourseService, GetCourseService, Pur
     public Page<CourseDto> searchCourses(CourseSearchRequest request, Pageable pageable) {
         log.debug("Searching courses with filters: {}", request);
 
-        String[] tagsArray = request.tags() != null && !request.tags().isEmpty()
-                ? request.tags().toArray(new String[0])
-                : null;
-
+        String[] tagsArray = request.tags();
         Page<Course> coursePage = courseRepository.searchCourses(
                 tagsArray,
                 request.title(),

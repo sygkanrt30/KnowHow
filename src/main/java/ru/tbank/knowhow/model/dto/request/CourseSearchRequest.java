@@ -5,7 +5,7 @@ import java.util.List;
 
 public record CourseSearchRequest(
         String title,
-        List<String> tags,
+        String[] tags,
         String authorName,
         BigDecimal minPrice,
         BigDecimal maxPrice
