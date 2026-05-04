@@ -65,11 +65,13 @@ public class CourseService implements DeleteCourseService, GetCourseService, Pur
         Course course = courseRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Course not found with id: " + id));
 
-        ratingRepository.deleteByCourseId(id);
-        log.debug("Deleted all ratings for course id: {}", id);
+        boolean isPurchased = courseRepository.existsPurchasedCourseByCourseId(id);
+        if (isPurchased) {
+            throw new IllegalStateException("Cannot delete course that has already been purchased");
+        }
 
+        ratingRepository.deleteByCourseId(id);
         courseRepository.delete(course);
-        log.debug("Course deleted successfully: {}", id);
     }
 
     @Override

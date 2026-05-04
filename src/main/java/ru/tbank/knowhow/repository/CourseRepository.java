@@ -49,7 +49,7 @@ public interface CourseRepository extends JpaRepository<Course, Long> {
     @Modifying
     void insertCourseToPurchased(@Param("userId") Long userId, @Param("courseId")  Long courseId);
 
-    @Query("SELECT COUNT(pc) > 0 FROM User u JOIN u.purchasedCourses pc WHERE pc.id = :courseId AND u.id = :userId")
+    @Query(value = "SELECT EXISTS (SELECT 1 FROM purchased_course WHERE course_id = :courseId AND user_id = :userId)", nativeQuery = true)
     boolean existsPurchasedCourse(@Param("courseId") Long courseId, @Param("userId") Long userId);
            
     @Query(value = """
@@ -58,4 +58,7 @@ public interface CourseRepository extends JpaRepository<Course, Long> {
             """, nativeQuery = true)
     @Modifying
     void deleteAllPurchasedCoursesByUserId(Long userId);
+
+    @Query(value = "SELECT EXISTS (SELECT 1 FROM purchased_course WHERE course_id = :courseId)", nativeQuery = true)
+    boolean existsPurchasedCourseByCourseId(@Param("courseId") Long courseId);
 }
