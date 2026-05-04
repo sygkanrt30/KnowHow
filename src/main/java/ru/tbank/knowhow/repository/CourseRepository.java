@@ -15,7 +15,7 @@ import java.util.Optional;
 import java.math.BigDecimal;
 
 @Repository
-public interface CourseRepository extends JpaRepository<Course, Long>, JpaSpecificationExecutor<Course> {
+public interface CourseRepository extends JpaRepository<Course, Long>{
 
     boolean existsByAuthorId(Long authorId);
 
@@ -59,29 +59,14 @@ public interface CourseRepository extends JpaRepository<Course, Long>, JpaSpecif
     void deleteAllPurchasedCoursesByUserId(@Param("userId") Long userId);
 
     @Query(value = """
-        SELECT * FROM (
-            SELECT c.*,
-                   CASE WHEN c.tags @> CAST(:tags AS varchar[]) THEN 1
-                        ELSE 2
-                   END as match_priority
-            FROM course c
-            WHERE c.not_for_sale = false
-              AND (cardinality(:tags) = 0 OR c.tags && CAST(:tags AS varchar[]))
-              AND (:title IS NULL OR c.title ILIKE CONCAT('%', :title, '%'))
-              AND (:authorName IS NULL OR EXISTS (
-                  SELECT 1 FROM app_user u
-                  WHERE u.id = c.user_id
-                    AND u.username ILIKE CONCAT('%', :authorName, '%')
-              ))
-              AND (:minPrice IS NULL OR c.price >= :minPrice)
-              AND (:maxPrice IS NULL OR c.price <= :maxPrice)
-        ) AS sorted
-        ORDER BY match_priority ASC, sorted.created_at DESC
-        """,
-            countQuery = """
-        SELECT COUNT(*) FROM course c
+    SELECT * FROM (
+        SELECT c.*,
+               CASE WHEN c.tags @> CAST(:tags AS varchar[]) THEN 1
+                    ELSE 2
+               END as match_priority
+        FROM course c
         WHERE c.not_for_sale = false
-          AND (:tags IS NULL OR c.tags && CAST(:tags AS varchar[]))
+          AND (CAST(:tags AS varchar[]) IS NULL OR cardinality(CAST(:tags AS varchar[])) = 0 OR c.tags && CAST(:tags AS varchar[]))
           AND (:title IS NULL OR c.title ILIKE CONCAT('%', :title, '%'))
           AND (:authorName IS NULL OR EXISTS (
               SELECT 1 FROM app_user u
@@ -90,7 +75,22 @@ public interface CourseRepository extends JpaRepository<Course, Long>, JpaSpecif
           ))
           AND (:minPrice IS NULL OR c.price >= :minPrice)
           AND (:maxPrice IS NULL OR c.price <= :maxPrice)
-        """,
+    ) AS sorted
+    ORDER BY match_priority ASC, sorted.created_at DESC
+    """,
+            countQuery = """
+    SELECT COUNT(*) FROM course c
+    WHERE c.not_for_sale = false
+      AND (CAST(:tags AS varchar[]) IS NULL OR cardinality(CAST(:tags AS varchar[])) = 0 OR c.tags && CAST(:tags AS varchar[]))
+      AND (:title IS NULL OR c.title ILIKE CONCAT('%', :title, '%'))
+      AND (:authorName IS NULL OR EXISTS (
+          SELECT 1 FROM app_user u
+          WHERE u.id = c.user_id
+            AND u.username ILIKE CONCAT('%', :authorName, '%')
+      ))
+      AND (:minPrice IS NULL OR c.price >= :minPrice)
+      AND (:maxPrice IS NULL OR c.price <= :maxPrice)
+    """,
             nativeQuery = true)
     Page<Course> searchCourses(
             @Param("tags") String[] tags,
