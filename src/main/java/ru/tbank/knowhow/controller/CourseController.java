@@ -7,10 +7,16 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.web.bind.annotation.*;
 import ru.tbank.knowhow.model.dto.request.CreateCourseRequest;
 import ru.tbank.knowhow.model.dto.request.UpdateCourseRequest;
 import ru.tbank.knowhow.model.dto.response.CourseDto;
+import ru.tbank.knowhow.model.dto.request.CourseSearchRequest;
+import ru.tbank.knowhow.service.course.GetCourseService;
 import ru.tbank.knowhow.service.course.SaveCourseService;
 import ru.tbank.knowhow.service.course.DeleteCourseService;
 import ru.tbank.knowhow.service.course.PurchaseCourseService;
@@ -29,6 +35,7 @@ public class CourseController {
     private final DeleteCourseService deleteCourseService;
     private final SaveCourseService saveCourseService;
     private final PurchaseCourseService purchaseCourseService;
+    private final GetCourseService courseService;
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteCourse(@PathVariable Long id) {
@@ -56,5 +63,14 @@ public class CourseController {
                                                          @RequestBody UpdateCourseRequest updateRequest) {
         Long userId = RequestAttributeExtractor.extractUserId(request);
         return ResponseEntity.ok(saveCourseService.updateCourse(updateRequest, id, userId));
+    }
+
+    @GetMapping("/search")
+    public ResponseEntity<Page<CourseDto>> searchCourses(
+            @ModelAttribute CourseSearchRequest searchRequest,
+            @PageableDefault(size = 20, sort = "created_at", direction = Sort.Direction.DESC) Pageable pageable
+    ) {
+        Page<CourseDto> result = courseService.searchCourses(searchRequest, pageable);
+        return ResponseEntity.ok(result);
     }
 }

@@ -5,6 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.security.access.AccessDeniedException;
@@ -19,6 +20,7 @@ import ru.tbank.knowhow.model.User;
 import ru.tbank.knowhow.model.dto.request.CreateCourseRequest;
 import ru.tbank.knowhow.model.dto.request.SortRequest;
 import ru.tbank.knowhow.model.dto.request.UpdateCourseRequest;
+import ru.tbank.knowhow.model.dto.request.CourseSearchRequest;
 import ru.tbank.knowhow.model.dto.response.CourseDto;
 import ru.tbank.knowhow.model.mapper.CourseMapper;
 import ru.tbank.knowhow.repository.CourseRepository;
@@ -166,6 +168,22 @@ public class CourseService implements DeleteCourseService, GetCourseService, Pur
                 .stream()
                 .map(courseMapper::toDto)
                 .toList();
+    }
+
+    @Override
+    public Page<CourseDto> searchCourses(CourseSearchRequest request, Pageable pageable) {
+        log.debug("Searching courses with filters: {}", request);
+
+        String[] tagsArray = request.tags();
+        Page<Course> coursePage = courseRepository.searchCourses(
+                tagsArray,
+                request.title(),
+                request.authorName(),
+                request.minPrice(),
+                request.maxPrice(),
+                pageable
+        );
+        return coursePage.map(courseMapper::toDto);
     }
 
     private Sort getSort(SortRequest sortRequest) {
