@@ -51,9 +51,6 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(IllegalStateException.class)
     public ProblemDetail catchIllegalStateException(IllegalStateException e) {
-        var problemDetail = ProblemDetail.forStatusAndDetail(HttpStatus.BAD_REQUEST, e.getMessage());
-        problemDetail.setProperty(PropertyName.TIMESTAMP.value(), Instant.now());
-        log.error(e.getMessage(), e.getCause());
-        return problemDetail;
+        return getAppErrorHandlerResponseDto(e, HttpStatus.BAD_REQUEST);
     }
 }

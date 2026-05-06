@@ -69,8 +69,6 @@ public class CourseService implements DeleteCourseService, GetCourseService, Pur
         if (isPurchased) {
             throw new IllegalStateException("Cannot delete course that has already been purchased");
         }
-
-        ratingRepository.deleteByCourseId(id);
         courseRepository.delete(course);
     }
 
