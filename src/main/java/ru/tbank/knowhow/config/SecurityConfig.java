@@ -76,6 +76,7 @@ public class SecurityConfig {
                                 .requestMatchers(HttpMethod.DELETE, userUrl).hasRole(Role.USER.name())
                                 .requestMatchers(balanceUrl + "/**").hasRole(Role.USER.name())
                                 .requestMatchers(courseUrl + "/{id}/rating").hasRole(Role.USER.name())
+                                .requestMatchers(courseUrl + "/{courseId}/rating").hasRole(Role.USER.name())
                                 .requestMatchers(HttpMethod.DELETE, courseUrl + "/{id}").hasRole(Role.USER.name())
                                 .requestMatchers(HttpMethod.POST, courseUrl).hasRole(Role.USER.name())
                                 .requestMatchers(courseUrl + "/pay/{id}").hasRole(Role.USER.name())
