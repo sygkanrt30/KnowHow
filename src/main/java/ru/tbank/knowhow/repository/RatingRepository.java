@@ -5,9 +5,6 @@ import org.springframework.stereotype.Repository;
 import ru.tbank.knowhow.model.Course;
 import ru.tbank.knowhow.model.Rating;
 import ru.tbank.knowhow.model.User;
-import org.springframework.data.jpa.repository.Query;
-import org.springframework.data.repository.query.Param;
-import org.springframework.data.jpa.repository.Modifying;
 
 import java.util.Optional;
 
@@ -15,10 +12,6 @@ import java.util.Optional;
 public interface RatingRepository extends JpaRepository<Rating, Long> {
 
     boolean existsByCourseAndUser(Course course, User user);
-
-    @Modifying
-    @Query("DELETE FROM Rating r WHERE r.course.id = :courseId")
-    void deleteByCourseId(@Param("courseId") Long courseId);
 
     Optional<Rating> findByCourseIdAndUserId(Long courseId, Long userId);
 }

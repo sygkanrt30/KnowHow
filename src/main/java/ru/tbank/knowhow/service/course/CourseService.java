@@ -5,8 +5,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
@@ -17,14 +17,13 @@ import ru.tbank.knowhow.ecxeption.InsufficientFundsException;
 import ru.tbank.knowhow.model.Course;
 import ru.tbank.knowhow.model.CourseStatus;
 import ru.tbank.knowhow.model.User;
+import ru.tbank.knowhow.model.dto.request.CourseSearchRequest;
 import ru.tbank.knowhow.model.dto.request.CreateCourseRequest;
 import ru.tbank.knowhow.model.dto.request.SortRequest;
 import ru.tbank.knowhow.model.dto.request.UpdateCourseRequest;
-import ru.tbank.knowhow.model.dto.request.CourseSearchRequest;
 import ru.tbank.knowhow.model.dto.response.CourseDto;
 import ru.tbank.knowhow.model.mapper.CourseMapper;
 import ru.tbank.knowhow.repository.CourseRepository;
-import ru.tbank.knowhow.repository.RatingRepository;
 import ru.tbank.knowhow.repository.UserRepository;
 import ru.tbank.knowhow.service.moder.ModerationService;
 import ru.tbank.knowhow.service.user.GetUserInfoService;
@@ -41,7 +40,7 @@ public class CourseService implements DeleteCourseService, GetCourseService, Pur
     private final CourseMapper courseMapper;
     private final UserRepository userRepository;
     private final ModerationService moderationService;
-    private final RatingRepository ratingRepository;
+
     private final int priceMultiplier;
 
     @Autowired
@@ -50,14 +49,12 @@ public class CourseService implements DeleteCourseService, GetCourseService, Pur
                          CourseMapper courseMapper,
                          UserRepository userRepository,
                          ModerationService moderationService,
-                         RatingRepository ratingRepository,
                          @Value("${course.price-multiplier}") int priceMultiplier) {
         this.courseRepository = courseRepository;
         this.getUserInfoService = getUserInfoService;
         this.courseMapper = courseMapper;
         this.userRepository = userRepository;
         this.moderationService = moderationService;
-        this.ratingRepository = ratingRepository;
         this.priceMultiplier = priceMultiplier;
     }
 

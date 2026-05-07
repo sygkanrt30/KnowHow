@@ -39,6 +39,7 @@ server:
     users: /api/v1/users
     course: /api/v1/courses
     balance: /api/v1/balance
+    tag: /api/v1/tags
 
 
 csrf:

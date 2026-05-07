@@ -9,7 +9,6 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import ru.tbank.knowhow.model.dto.request.ModerationRejectRequest;
 import ru.tbank.knowhow.service.moder.ModerationService;
-import java.util.Map;
 
 @Validated
 @RestController

@@ -41,16 +41,16 @@ public class GlobalExceptionHandler {
         return getAppErrorHandlerResponseDto(e, e.responseStatus());
     }
 
+    @ExceptionHandler(IllegalStateException.class)
+    public ProblemDetail catchIllegalStateException(IllegalStateException e) {
+        return getAppErrorHandlerResponseDto(e, HttpStatus.BAD_REQUEST);
+    }
+
     private ProblemDetail getAppErrorHandlerResponseDto(Exception e, HttpStatus status) {
         String error = e.getMessage();
         var problemDetail = ProblemDetail.forStatusAndDetail(status, status.getReasonPhrase());
         problemDetail.setProperty(PropertyName.TIMESTAMP.value(), Instant.now());
         log.error(error, e.getCause());
         return problemDetail;
-    }
-
-    @ExceptionHandler(IllegalStateException.class)
-    public ProblemDetail catchIllegalStateException(IllegalStateException e) {
-        return getAppErrorHandlerResponseDto(e, HttpStatus.BAD_REQUEST);
     }
 }
