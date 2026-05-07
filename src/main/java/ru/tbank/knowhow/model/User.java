@@ -65,14 +65,6 @@ public class User implements UserDetails {
     @Builder.Default
     private List<Rating> userRatings = new ArrayList<>();
 
-    public void addUserRatings(Rating rating) {
-        userRatings.add(rating);
-    }
-
-    public void removeUserRatings(Rating rating) {
-        userRatings.remove(rating);
-    }
-
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return List.of(new SimpleGrantedAuthority("ROLE_" + role.name()));

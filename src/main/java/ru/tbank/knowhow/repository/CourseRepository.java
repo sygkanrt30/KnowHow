@@ -3,21 +3,19 @@ package ru.tbank.knowhow.repository;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 import ru.tbank.knowhow.model.Course;
 
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.Optional;
-import java.math.BigDecimal;
+import java.util.stream.Stream;
 
 @Repository
 public interface CourseRepository extends JpaRepository<Course, Long>{
-
-    boolean existsByAuthorId(Long authorId);
 
     @Query(value = """
         SELECT c.* FROM course c
@@ -82,7 +80,7 @@ public interface CourseRepository extends JpaRepository<Course, Long>{
           AND (:minPrice IS NULL OR c.price >= :minPrice)
           AND (:maxPrice IS NULL OR c.price <= :maxPrice)
     ) AS sorted
-    ORDER BY match_priority ASC, sorted.created_at DESC
+    ORDER BY match_priority , sorted.created_at DESC
     """,
             countQuery = """
     SELECT COUNT(*) FROM course c
@@ -106,4 +104,7 @@ public interface CourseRepository extends JpaRepository<Course, Long>{
             @Param("maxPrice") BigDecimal maxPrice,
             Pageable pageable
     );
+
+    @Query(value = "SELECT tags FROM course", nativeQuery = true)
+    Stream<String[]> getTags();
 }

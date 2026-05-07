@@ -55,6 +55,7 @@ public class SecurityConfig {
             @Value("${server.base-url.users}") String userUrl,
             @Value("${server.base-url.course}") String courseUrl,
             @Value("${server.base-url.profile}") String profileUrl,
+            @Value("${server.base-url.tag}") String tagUrl,
             @Value("${server.base-url.balance}") String balanceUrl) {
 
         return http
@@ -79,6 +80,9 @@ public class SecurityConfig {
                                 .requestMatchers(HttpMethod.POST, courseUrl).hasRole(Role.USER.name())
                                 .requestMatchers(courseUrl + "/pay/{id}").hasRole(Role.USER.name())
                                 .requestMatchers(courseUrl + "/retry-pass-moderation/{id}").hasRole(Role.USER.name())
+                                .requestMatchers(courseUrl + "/moderation/**").hasRole(Role.MODERATOR.name())
+                                .requestMatchers(courseUrl + "/search").permitAll()
+                                .requestMatchers(HttpMethod.GET, tagUrl).permitAll()
                                 .requestMatchers(
                                         "/swagger-ui/**",
                                         "/swagger-ui.html",
