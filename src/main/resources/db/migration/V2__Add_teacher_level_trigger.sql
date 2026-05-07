@@ -8,7 +8,7 @@ BEGIN
     UPDATE app_user
     SET level = (SELECT COALESCE(ROUND(AVG(c.rating)), 1)
                  FROM course c
-                 WHERE c.user_id = app_user.id)
+                 WHERE c.user_id = app_user.id AND c.rating > 0)
     WHERE id = (SELECT user_id
                 FROM course
                 WHERE id = NEW.id);
