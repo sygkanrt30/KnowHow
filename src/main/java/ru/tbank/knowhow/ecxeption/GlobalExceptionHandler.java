@@ -48,4 +48,9 @@ public class GlobalExceptionHandler {
         log.error(error, e.getCause());
         return problemDetail;
     }
+
+    @ExceptionHandler(IllegalStateException.class)
+    public ProblemDetail catchIllegalStateException(IllegalStateException e) {
+        return getAppErrorHandlerResponseDto(e, HttpStatus.BAD_REQUEST);
+    }
 }
