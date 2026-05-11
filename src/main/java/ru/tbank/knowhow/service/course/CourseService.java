@@ -72,6 +72,7 @@ public class CourseService implements DeleteCourseService, GetCourseService, Pur
     }
 
     @Override
+    @Transactional
     public CourseDto createCourse(CreateCourseRequest request, String username) {
         User author = userRepository.findByUsername(username)
                 .orElseThrow(() -> new EntityNotFoundException("User not found: " + username));

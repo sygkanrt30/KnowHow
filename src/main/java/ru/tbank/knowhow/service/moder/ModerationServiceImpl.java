@@ -23,6 +23,7 @@ public class ModerationServiceImpl implements ModerationService {
     private final ModerationReviewRepository moderationReviewRepository;
 
     @Override
+    @Transactional
     public User assignModerator() {
         ModeratorLoad moderatorLoad = moderatorLoadRepository.findModeratorWithMinLoad()
                 .orElseThrow(() -> new EntityNotFoundException("No moderators available"));
