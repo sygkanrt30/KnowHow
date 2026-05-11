@@ -65,9 +65,9 @@ public class CourseController {
         return ResponseEntity.ok(saveCourseService.updateCourse(updateRequest, id, userId));
     }
 
-    @GetMapping("/search")
+    @PostMapping("/search")
     public ResponseEntity<Page<CourseDto>> searchCourses(
-            @ModelAttribute CourseSearchRequest searchRequest,
+            @RequestBody CourseSearchRequest searchRequest,
             @PageableDefault(size = 20, sort = "created_at", direction = Sort.Direction.DESC) Pageable pageable
     ) {
         Page<CourseDto> result = courseService.searchCourses(searchRequest, pageable);
