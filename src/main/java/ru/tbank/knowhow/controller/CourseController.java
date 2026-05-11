@@ -26,6 +26,8 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.math.BigDecimal;
+
 @Slf4j
 @RestController
 @RequestMapping("${server.base-url.course}")
@@ -65,11 +67,16 @@ public class CourseController {
         return ResponseEntity.ok(saveCourseService.updateCourse(updateRequest, id, userId));
     }
 
-    @PostMapping("/search")
+    @GetMapping("/search")
     public ResponseEntity<Page<CourseDto>> searchCourses(
-            @RequestBody CourseSearchRequest searchRequest,
+            @RequestParam String title,
+            @RequestParam String[] tags,
+            @RequestParam String authorName,
+            @RequestParam BigDecimal minPrice,
+            @RequestParam BigDecimal maxPrice,
             @PageableDefault(size = 20, sort = "created_at", direction = Sort.Direction.DESC) Pageable pageable
     ) {
+        var searchRequest = new CourseSearchRequest(title, tags, authorName, minPrice, maxPrice);
         Page<CourseDto> result = courseService.searchCourses(searchRequest, pageable);
         return ResponseEntity.ok(result);
     }
