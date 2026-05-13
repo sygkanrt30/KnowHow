@@ -11,6 +11,7 @@ import ru.tbank.knowhow.model.dto.response.UsernameAndBalanceResponse;
 public interface UsernameAndBalanceResponseMapper {
 
     @Mapping(target = "username", source = "user.username")
+    @Mapping(target = "role", source = "user.role")
     @Mapping(target = "balance", expression = "java(toBalanceDto(user))")
     UsernameAndBalanceResponse toUsernameAndBalanceResponse(User user);
 
