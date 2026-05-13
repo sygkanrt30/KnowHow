@@ -11,7 +11,7 @@ import ru.tbank.knowhow.service.user.UserService;
 public class InitDefaultModeratorCommandLineRunner implements CommandLineRunner {
 
     private final UserService userService;
-    private final String  moderatorCode;
+    private final String moderatorCode;
 
     public InitDefaultModeratorCommandLineRunner(UserService userService,
                                                  @Value("${moderator.code}") String moderatorCode) {
@@ -21,7 +21,7 @@ public class InitDefaultModeratorCommandLineRunner implements CommandLineRunner 
 
     @Override
     public void run(String... args) {
-        if (userService.findByUsername("moderator").isEmpty()) {
+        if (userService.findByUsername("moderator123").isEmpty()) {
             userService.save(
                     "moderator123",
                     "moderator123".getBytes(),

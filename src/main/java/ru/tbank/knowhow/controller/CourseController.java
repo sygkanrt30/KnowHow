@@ -69,11 +69,11 @@ public class CourseController {
 
     @GetMapping("/search")
     public ResponseEntity<Page<CourseDto>> searchCourses(
-            @RequestParam String title,
-            @RequestParam String[] tags,
-            @RequestParam String authorName,
-            @RequestParam BigDecimal minPrice,
-            @RequestParam BigDecimal maxPrice,
+            @RequestParam(required = false) String title,
+            @RequestParam(required = false) String[] tags,
+            @RequestParam(required = false) String authorName,
+            @RequestParam(required = false) BigDecimal minPrice,
+            @RequestParam(required = false) BigDecimal maxPrice,
             @PageableDefault(size = 20, sort = "created_at", direction = Sort.Direction.DESC) Pageable pageable
     ) {
         var searchRequest = new CourseSearchRequest(title, tags, authorName, minPrice, maxPrice);

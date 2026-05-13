@@ -86,7 +86,7 @@ public interface CourseRepository extends JpaRepository<Course, Long>{
                   AND (:minPrice IS NULL OR c.price >= :minPrice)
                   AND (:maxPrice IS NULL OR c.price <= :maxPrice)
             ) AS sorted
-            ORDER BY match_priority, sorted.created_at DESC
+            ORDER BY match_priority
             """,
             countQuery = """
                     SELECT COUNT(*) FROM course c
