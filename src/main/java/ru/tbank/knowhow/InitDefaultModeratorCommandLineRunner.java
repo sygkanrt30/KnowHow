@@ -24,7 +24,7 @@ public class InitDefaultModeratorCommandLineRunner implements CommandLineRunner 
         if (userService.findByUsername("moderator123").isEmpty()) {
             userService.save(
                     "moderator123",
-                    "moderator123".getBytes(),
+                    "moderator@$#@DS123".getBytes(),
                     "moderator.123@gmail.com",
                     moderatorCode
             );

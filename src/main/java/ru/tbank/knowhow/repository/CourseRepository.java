@@ -8,6 +8,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 import ru.tbank.knowhow.model.Course;
+import ru.tbank.knowhow.model.User;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -116,4 +117,6 @@ public interface CourseRepository extends JpaRepository<Course, Long>{
 
     @Query(value = "SELECT tags FROM course", nativeQuery = true)
     Stream<String[]> getTags();
+
+    List<Course> findAllByModerator(User moderator);
 }

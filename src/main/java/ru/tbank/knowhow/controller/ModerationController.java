@@ -1,5 +1,6 @@
 package ru.tbank.knowhow.controller;
 
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -7,8 +8,12 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+import ru.tbank.knowhow.model.Course;
 import ru.tbank.knowhow.model.dto.request.ModerationRejectRequest;
+import ru.tbank.knowhow.model.dto.response.CourseDto;
 import ru.tbank.knowhow.service.moder.ModerationService;
+
+import java.util.List;
 
 @Validated
 @RestController
@@ -16,6 +21,7 @@ import ru.tbank.knowhow.service.moder.ModerationService;
 @RequiredArgsConstructor
 
 public class ModerationController {
+
     private final ModerationService moderationService;
 
     @PostMapping("/{id}/approve")
@@ -35,5 +41,11 @@ public class ModerationController {
 
         moderationService.rejectCourse(id, userDetails.getUsername(), request.getReason());
         return ResponseEntity.ok("Курс отклонён");
+    }
+
+    @GetMapping("/queue/on_moderation")
+    public ResponseEntity<List<CourseDto>> onModeration(HttpServletRequest request) {
+        Long moderationId = RequestAttributeExtractor.extractUserId(request);
+        return ResponseEntity.ok(moderationService.findAllCoursesOnModeration(moderationId));
     }
 }

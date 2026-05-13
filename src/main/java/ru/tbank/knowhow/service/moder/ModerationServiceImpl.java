@@ -7,10 +7,14 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.stereotype.Service;
 import ru.tbank.knowhow.model.*;
+import ru.tbank.knowhow.model.dto.response.CourseDto;
+import ru.tbank.knowhow.model.mapper.CourseMapper;
 import ru.tbank.knowhow.repository.CourseRepository;
 import ru.tbank.knowhow.repository.ModerationReviewRepository;
 import ru.tbank.knowhow.repository.ModeratorLoadRepository;
 import ru.tbank.knowhow.repository.UserRepository;
+
+import java.util.List;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -21,6 +25,7 @@ public class ModerationServiceImpl implements ModerationService {
     private final UserRepository userRepository;
     private final CourseRepository courseRepository;
     private final ModerationReviewRepository moderationReviewRepository;
+    private final CourseMapper courseMapper;
 
     @Override
     @Transactional
@@ -56,6 +61,7 @@ public class ModerationServiceImpl implements ModerationService {
         moderatorLoadRepository.decrementCoursesInModeration(moderator.getId());
 
         course.setStatus(CourseStatus.PASSED_MODERATION);
+        course.setModerator(null);
 
         log.debug("Course {} approved by moderator {}", courseId, moderator.getId());
     }
@@ -84,5 +90,19 @@ public class ModerationServiceImpl implements ModerationService {
         moderatorLoadRepository.decrementCoursesInModeration(moderator.getId());
 
         course.setStatus(CourseStatus.NOT_ACCEPTED);
+        course.setModerator(null);
+    }
+
+    @Override
+    public List<CourseDto> findAllCoursesOnModeration(Long moderationId) {
+        User moderator = userRepository.findById(moderationId)
+                .orElseThrow(() -> new EntityNotFoundException("Moderator not found"));
+
+        List<Course> courses =  courseRepository.findAllByModerator(moderator);
+
+        return courses.stream()
+                .filter(course -> course.getStatus().equals(CourseStatus.ON_MODERATION))
+                .map(courseMapper::toDto)
+                .toList();
     }
 }
