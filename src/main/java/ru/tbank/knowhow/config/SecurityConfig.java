@@ -71,7 +71,7 @@ public class SecurityConfig {
                         authorizeHttpRequests
                                 .requestMatchers(authUrl + "/me").authenticated()
                                 .requestMatchers(authUrl + "/**").permitAll()
-                                .requestMatchers(HttpMethod.GET, profileUrl).hasRole(Role.USER.name())
+                                .requestMatchers(HttpMethod.GET, profileUrl).authenticated()
                                 .requestMatchers(userUrl + "/purchased-courses").hasRole(Role.USER.name())
                                 .requestMatchers(HttpMethod.DELETE, userUrl).hasRole(Role.USER.name())
                                 .requestMatchers(balanceUrl + "/**").hasRole(Role.USER.name())

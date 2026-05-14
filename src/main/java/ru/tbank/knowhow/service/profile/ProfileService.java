@@ -5,6 +5,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.tbank.knowhow.model.Rating;
+import ru.tbank.knowhow.model.Role;
 import ru.tbank.knowhow.model.dto.response.*;
 import ru.tbank.knowhow.model.mapper.BalanceMapper;
 import ru.tbank.knowhow.model.mapper.RatingMapper;
@@ -28,6 +29,14 @@ public class ProfileService implements GetProfileService {
     public ProfileDto getProfile(Long userId) {
         UserProjection user = userRepository.getProjectionById(userId)
                 .orElseThrow(() -> new EntityNotFoundException("User not found"));
+
+        if (user.getRole().equals(Role.MODERATOR)) {
+            return ProfileDto.builder()
+                    .id(user.getId())
+                    .username(user.getUsername())
+                    .email(user.getEmail())
+                    .build();
+        }
 
         BalanceDto balanceDto = balanceMapper.toDto(user.getBalance(), user.getId());
         List<CourseDto> purchasedCourses = getCourseService.findAllPurchasedCourses(userId);
