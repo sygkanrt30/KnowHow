@@ -80,4 +80,9 @@ public class CourseController {
         Page<CourseDto> result = courseService.searchCourses(searchRequest, pageable);
         return ResponseEntity.ok(result);
     }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<CourseDto> getCourse(@PathVariable Long id) {
+        return ResponseEntity.ok(courseService.findCourseById(id));
+    }
 }

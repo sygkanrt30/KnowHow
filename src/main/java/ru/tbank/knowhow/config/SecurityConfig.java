@@ -80,6 +80,7 @@ public class SecurityConfig {
                                 .requestMatchers(HttpMethod.DELETE, courseUrl + "/{id}").hasRole(Role.USER.name())
                                 .requestMatchers(HttpMethod.POST, courseUrl).hasRole(Role.USER.name())
                                 .requestMatchers(courseUrl + "/pay/{id}").hasRole(Role.USER.name())
+                                .requestMatchers(courseUrl + "/{id}").hasRole(Role.USER.name())
                                 .requestMatchers(courseUrl + "/retry-pass-moderation/{id}").hasRole(Role.USER.name())
                                 .requestMatchers(courseUrl + "/moderation/**").hasRole(Role.MODERATOR.name())
                                 .requestMatchers(courseUrl + "/search").permitAll()

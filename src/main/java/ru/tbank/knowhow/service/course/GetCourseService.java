@@ -15,4 +15,6 @@ public interface GetCourseService {
     List<CourseDto> findAllPurchasedCourses(Long userId);
 
     Page<CourseDto> searchCourses(CourseSearchRequest searchRequest, Pageable pageable);
+
+    CourseDto findCourseById(Long id);
 }

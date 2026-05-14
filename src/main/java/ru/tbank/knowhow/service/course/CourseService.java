@@ -184,6 +184,14 @@ public class CourseService implements DeleteCourseService, GetCourseService, Pur
         return coursePage.map(courseMapper::toDto);
     }
 
+    @Override
+    public CourseDto findCourseById(Long id) {
+        return courseMapper.toDto(
+                courseRepository.findById(id)
+                        .orElseThrow(() -> new EntityNotFoundException("Course not found with id: " + id))
+        );
+    }
+
     private Sort getSort(SortRequest sortRequest) {
         if (sortRequest.isACS()) {
             return Sort.by(Sort.Direction.ASC, sortRequest.fieldName().propertyName());
