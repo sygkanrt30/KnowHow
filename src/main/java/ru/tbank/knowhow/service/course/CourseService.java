@@ -5,9 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -19,7 +17,6 @@ import ru.tbank.knowhow.model.CourseStatus;
 import ru.tbank.knowhow.model.User;
 import ru.tbank.knowhow.model.dto.request.CourseSearchRequest;
 import ru.tbank.knowhow.model.dto.request.CreateCourseRequest;
-import ru.tbank.knowhow.model.dto.request.SortRequest;
 import ru.tbank.knowhow.model.dto.request.UpdateCourseRequest;
 import ru.tbank.knowhow.model.dto.response.CourseDto;
 import ru.tbank.knowhow.model.mapper.CourseMapper;
@@ -182,12 +179,5 @@ public class CourseService implements DeleteCourseService, GetCourseService, Pur
                 courseRepository.findById(id)
                         .orElseThrow(() -> new EntityNotFoundException("Course not found with id: " + id))
         );
-    }
-
-    private Sort getSort(SortRequest sortRequest) {
-        if (sortRequest.isACS()) {
-            return Sort.by(Sort.Direction.ASC, sortRequest.fieldName().propertyName());
-        }
-        return Sort.by(Sort.Direction.DESC, sortRequest.fieldName().propertyName());
     }
 }
