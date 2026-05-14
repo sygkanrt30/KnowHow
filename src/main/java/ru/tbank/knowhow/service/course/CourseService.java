@@ -153,14 +153,6 @@ public class CourseService implements DeleteCourseService, GetCourseService, Pur
     }
 
     @Override
-    public Page<CourseDto> findAllPurchasedCourses(Long userId, int page, int size, SortRequest sortRequest) {
-        Sort sort = getSort(sortRequest);
-        var pageable = PageRequest.of(page, size, sort);
-        return courseRepository.findPurchasedCoursesByUserId(userId, pageable)
-                .map(courseMapper::toDto);
-    }
-
-    @Override
     public List<CourseDto> findAllPurchasedCourses(Long userId) {
         return courseRepository.findPurchasedCoursesByUserId(userId)
                 .stream()
