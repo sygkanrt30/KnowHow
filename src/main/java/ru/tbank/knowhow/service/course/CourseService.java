@@ -130,7 +130,7 @@ public class CourseService implements DeleteCourseService, GetCourseService, Pur
                 .orElseThrow(() -> new EntityNotFoundException("User not found by id: " + userId));
 
         User author = course.getAuthor();
-        if (course.getStatus().equals(CourseStatus.PASSED_MODERATION)) {
+        if (course.getStatus().equals(CourseStatus.ON_MODERATION)) {
             throw new IllegalStateException("Can not pay for moderated courses!");
         }
         if (author.getId().equals(user.getId())) {
