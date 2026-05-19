@@ -1,6 +1,7 @@
 package ru.tbank.knowhow.service.token;
 
 import lombok.Setter;
+import org.jspecify.annotations.NonNull;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import ru.tbank.knowhow.model.Token;
@@ -8,6 +9,7 @@ import ru.tbank.knowhow.model.User;
 
 import java.time.Duration;
 import java.time.Instant;
+import java.util.List;
 import java.util.UUID;
 import java.util.function.Function;
 
@@ -20,14 +22,17 @@ public class TokenCookieFactory implements Function<Authentication, Token> {
     @Override
     public Token apply(Authentication authentication) {
         var now = Instant.now();
-        return new Token(
-                UUID.randomUUID(),
+        return new Token(UUID.randomUUID(),
                 authentication.getName(),
                 ((User) authentication.getPrincipal()).getId(),
-                authentication.getAuthorities().stream()
-                        .map(GrantedAuthority::getAuthority)
-                        .toList(),
+                getAuthorities(authentication),
                 now,
                 now.plus(tokenTtl));
+    }
+
+    private @NonNull List<String> getAuthorities(Authentication authentication) {
+        return authentication.getAuthorities().stream()
+                .map(GrantedAuthority::getAuthority)
+                .toList();
     }
 }

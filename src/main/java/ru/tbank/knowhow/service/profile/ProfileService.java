@@ -9,8 +9,8 @@ import ru.tbank.knowhow.model.Role;
 import ru.tbank.knowhow.model.dto.response.*;
 import ru.tbank.knowhow.model.mapper.BalanceMapper;
 import ru.tbank.knowhow.model.mapper.RatingMapper;
-import ru.tbank.knowhow.repository.UserRepository;
 import ru.tbank.knowhow.service.course.GetCourseService;
+import ru.tbank.knowhow.service.user.GetUserInfoService;
 
 import java.util.Comparator;
 import java.util.List;
@@ -19,7 +19,7 @@ import java.util.List;
 @Service
 public class ProfileService implements GetProfileService {
 
-    private final UserRepository userRepository;
+    private final GetUserInfoService getUserInfoService;
     private final GetCourseService getCourseService;
     private final BalanceMapper balanceMapper;
     private final RatingMapper ratingMapper;
@@ -27,7 +27,7 @@ public class ProfileService implements GetProfileService {
     @Override
     @Transactional(readOnly = true)
     public ProfileDto getProfile(Long userId) {
-        UserProjection user = userRepository.getProjectionById(userId)
+        UserProjectionForProfile user = getUserInfoService.getProjectionForProfile(userId)
                 .orElseThrow(() -> new EntityNotFoundException("User not found"));
 
         if (user.getRole().equals(Role.MODERATOR)) {

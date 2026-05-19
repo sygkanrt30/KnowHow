@@ -6,7 +6,7 @@ import ru.tbank.knowhow.model.Role;
 
 import java.util.List;
 
-public interface UserProjection {
+public interface UserProjectionForProfile {
 
     Long getId();
 

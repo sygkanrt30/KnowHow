@@ -22,17 +22,6 @@ public interface CourseRepository extends JpaRepository<Course, Long>{
         SELECT c.* FROM course c
         INNER JOIN purchased_course pc ON c.id = pc.course_id
         WHERE pc.user_id = :userId
-        """,
-            countQuery = """
-        SELECT COUNT(*) FROM purchased_course WHERE user_id = :userId
-        """,
-            nativeQuery = true)
-    Page<Course> findPurchasedCoursesByUserId(@Param("userId") Long userId, Pageable pageable);
-
-    @Query(value = """
-        SELECT c.* FROM course c
-        INNER JOIN purchased_course pc ON c.id = pc.course_id
-        WHERE pc.user_id = :userId
         """, nativeQuery = true)
     List<Course> findPurchasedCoursesByUserId(@Param("userId") Long userId);
 
@@ -53,10 +42,7 @@ public interface CourseRepository extends JpaRepository<Course, Long>{
     @Query(value = "SELECT EXISTS (SELECT 1 FROM purchased_course WHERE course_id = :courseId AND user_id = :userId)", nativeQuery = true)
     boolean existsPurchasedCourse(@Param("courseId") Long courseId, @Param("userId") Long userId);
            
-    @Query(value = """
-        DELETE FROM purchased_course
-        WHERE user_id = :userId
-        """, nativeQuery = true)
+    @Query(value = " DELETE FROM purchased_course WHERE user_id = :userId", nativeQuery = true)
     @Modifying
     void deleteAllPurchasedCoursesByUserId(Long userId);
 

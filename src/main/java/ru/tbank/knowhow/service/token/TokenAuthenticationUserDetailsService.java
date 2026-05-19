@@ -18,9 +18,7 @@ public class TokenAuthenticationUserDetailsService implements
     public UserDetails loadUserDetails(PreAuthenticatedAuthenticationToken authenticationToken)
             throws UsernameNotFoundException {
         if (authenticationToken.getPrincipal() instanceof Token token) {
-            return getUserInfoService.findByUsername(token.username()).orElseThrow(
-                    () ->  new UsernameNotFoundException("Username " + token.username() + " not found")
-            );
+            return getUserInfoService.getByUsernameOrElseThrow(token.username());
         }
         throw new UsernameNotFoundException("Principal must be of type Token");
     }

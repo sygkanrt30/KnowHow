@@ -21,7 +21,6 @@ import ru.tbank.knowhow.model.dto.request.UpdateCourseRequest;
 import ru.tbank.knowhow.model.dto.response.CourseDto;
 import ru.tbank.knowhow.model.mapper.CourseMapper;
 import ru.tbank.knowhow.repository.CourseRepository;
-import ru.tbank.knowhow.repository.UserRepository;
 import ru.tbank.knowhow.service.moder.ModerationService;
 import ru.tbank.knowhow.service.user.GetUserInfoService;
 
@@ -35,22 +34,18 @@ public class CourseService implements DeleteCourseService, GetCourseService, Pur
     private final CourseRepository courseRepository;
     private final GetUserInfoService getUserInfoService;
     private final CourseMapper courseMapper;
-    private final UserRepository userRepository;
     private final ModerationService moderationService;
-
     private final int priceMultiplier;
 
     @Autowired
     public CourseService(CourseRepository courseRepository,
                          GetUserInfoService getUserInfoService,
                          CourseMapper courseMapper,
-                         UserRepository userRepository,
                          ModerationService moderationService,
                          @Value("${course.price-multiplier}") int priceMultiplier) {
         this.courseRepository = courseRepository;
         this.getUserInfoService = getUserInfoService;
         this.courseMapper = courseMapper;
-        this.userRepository = userRepository;
         this.moderationService = moderationService;
         this.priceMultiplier = priceMultiplier;
     }
@@ -71,8 +66,7 @@ public class CourseService implements DeleteCourseService, GetCourseService, Pur
     @Override
     @Transactional
     public CourseDto createCourse(CreateCourseRequest request, String username) {
-        User author = userRepository.findByUsername(username)
-                .orElseThrow(() -> new EntityNotFoundException("User not found: " + username));
+        User author = getUserInfoService.getByUsernameOrElseThrow(username);
 
         User moderator = moderationService.assignModerator();
 
@@ -123,8 +117,7 @@ public class CourseService implements DeleteCourseService, GetCourseService, Pur
             throw new AttemptPayNotForSaleCourseException("Course not for sale");
         }
 
-        User user = getUserInfoService.findById(userId)
-                .orElseThrow(() -> new EntityNotFoundException("User not found by id: " + userId));
+        User user = getUserInfoService.getByIdOrElseThrow(userId);
 
         User author = course.getAuthor();
         if (course.getStatus().equals(CourseStatus.ON_MODERATION)) {

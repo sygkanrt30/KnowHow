@@ -4,6 +4,7 @@ import jakarta.persistence.EntityNotFoundException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -11,6 +12,7 @@ import ru.tbank.knowhow.ecxeption.RegistrationException;
 import ru.tbank.knowhow.model.Balance;
 import ru.tbank.knowhow.model.Role;
 import ru.tbank.knowhow.model.User;
+import ru.tbank.knowhow.model.dto.response.UserProjectionForProfile;
 import ru.tbank.knowhow.model.dto.response.UsernameAndBalanceResponse;
 import ru.tbank.knowhow.model.mapper.UsernameAndBalanceResponseMapper;
 import ru.tbank.knowhow.repository.CourseRepository;
@@ -23,18 +25,19 @@ import java.util.Optional;
 @Slf4j
 public class UserService implements GetUserInfoService, SaveUserService, DeleteUserService {
 
-    private final long startCoins;
     private final UserRepository userRepository;
     private final CourseRepository courseRepository;
     private final PasswordEncoder passwordEncoder;
     private final UsernameAndBalanceResponseMapper usernameAndBalanceResponseMapper;
     private final String moderatorCode;
+    private final long startCoins;
 
     @Autowired
-    public UserService(UserRepository userRepository, CourseRepository courseRepository,
+    public UserService(UserRepository userRepository,
+                       CourseRepository courseRepository,
                        PasswordEncoder passwordEncoder,
-                       @Value("${moderator.code}") String moderatorCode,
                        UsernameAndBalanceResponseMapper usernameAndBalanceResponseMapper,
+                       @Value("${moderator.code}") String moderatorCode,
                        @Value("${coins.start-amount}") long startCoins) {
         this.userRepository = userRepository;
         this.courseRepository = courseRepository;
@@ -50,14 +53,31 @@ public class UserService implements GetUserInfoService, SaveUserService, DeleteU
     }
 
     @Override
+    public User getByUsernameOrElseThrow(String username) {
+        return userRepository.findByUsername(username)
+                .orElseThrow(() -> new UsernameNotFoundException("User with username %s not found".formatted(username)));
+    }
+
+    @Override
     public Optional<User> findById(Long id) {
         return userRepository.findById(id);
     }
 
     @Override
+    public User getByIdOrElseThrow(Long id) {
+        return userRepository.findById(id).orElseThrow(() ->
+                new EntityNotFoundException("User not found by id: " + id));
+    }
+
+    @Override
+    public Optional<UserProjectionForProfile> getProjectionForProfile(Long id) {
+        return userRepository.getProjectionById(id);
+    }
+
+    @Override
     @Transactional
     public UsernameAndBalanceResponse getCurrentUser(Long id) {
-        User user = this.findById(id).orElseThrow(
+        User user = userRepository.findById(id).orElseThrow(
                 () -> new EntityNotFoundException("User not found with id: " + id)
         );
         return usernameAndBalanceResponseMapper.toUsernameAndBalanceResponse(user);

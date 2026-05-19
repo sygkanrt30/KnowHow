@@ -1,14 +1,13 @@
 package ru.tbank.knowhow.service.balance;
 
-import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import ru.tbank.knowhow.model.dto.response.BalanceDto;
 import ru.tbank.knowhow.model.Balance;
 import ru.tbank.knowhow.model.User;
 import ru.tbank.knowhow.model.dto.request.UpdateBalanceRequest;
+import ru.tbank.knowhow.model.dto.response.BalanceDto;
 import ru.tbank.knowhow.model.dto.response.BalanceHistoryResponse;
 import ru.tbank.knowhow.model.mapper.BalanceMapper;
 import ru.tbank.knowhow.service.user.GetUserInfoService;
@@ -27,20 +26,15 @@ public class BalanceServiceImpl implements BalanceService {
     @Override
     @Transactional(readOnly = true)
     public BalanceHistoryResponse getBalanceHistory(Long userId) {
-        User user = getUser(userId);
+        User user = getUserInfoService.getByIdOrElseThrow(userId);
         List<String> history = new ArrayList<>(user.getBalance().getBalanceHistories());
         return new BalanceHistoryResponse(history);
-    }
-
-    private User getUser(Long userId) {
-        return getUserInfoService.findById(userId).orElseThrow(() ->
-                new EntityNotFoundException("User not found by id: " + userId));
     }
 
     @Override
     @Transactional
     public BalanceDto updateBalance(UpdateBalanceRequest request, Long userId) {
-        User user = getUser(userId);
+        User user = getUserInfoService.getByIdOrElseThrow(userId);
         Balance balance = user.getBalance();
         long coins = balance.getCoins();
         if (request.isIncreaseBalance()) {
