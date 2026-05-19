@@ -17,6 +17,10 @@ import java.util.stream.Collectors;
 @Slf4j
 public class MethodLoggingAspect {
 
+    private static final int LOWER_TIME_LIMIT_FOR_SLOW_METHOD = 1000;
+    private static final int RESULT_LENGHT_LIMIT = 500;
+    private static final String PARAM_DELIMITER = ", ";
+
     @Pointcut("""
                     execution(* ru.tbank.knowhow..*.*(..)) &&
                     !within(ru.tbank.knowhow.ecxeption..*) &&
@@ -26,16 +30,12 @@ public class MethodLoggingAspect {
 
     @Around("applicationPackageMethods()")
     public Object logMethodEntryExit(ProceedingJoinPoint joinPoint) throws Throwable {
-        var signature = (MethodSignature) joinPoint.getSignature();
+        MethodSignature signature = (MethodSignature) joinPoint.getSignature();
         String className = signature.getDeclaringType().getSimpleName();
         String methodName = signature.getName();
 
         if (log.isTraceEnabled()) {
-            Object[] args = joinPoint.getArgs();
-            String params = Arrays.stream(args)
-                    .map(arg -> Objects.nonNull(arg) ? arg.toString() : "null")
-                    .collect(Collectors.joining(", "));
-            log.trace("-> Вход в {}.{}({})", className, methodName, params);
+            logMethodStart(joinPoint, className, methodName);
         }
 
         long startTime = System.currentTimeMillis();
@@ -46,15 +46,31 @@ public class MethodLoggingAspect {
         } finally {
             long duration = System.currentTimeMillis() - startTime;
             if (log.isTraceEnabled()) {
-                String resultStr = Objects.nonNull(result) ? result.toString() : "null";
-                if (resultStr.length() > 500) {
-                    resultStr = resultStr.substring(0, 500) + "... [обрезано]";
-                }
-                log.trace("<- Выход из {}.{} -> {} ({} мс)", className, methodName, resultStr, duration);
+                logMethodEnd(result, className, methodName, duration);
             }
-            if (duration > 1000 && log.isInfoEnabled()) {
-                log.info("Медленный метод {}.{}: {} мс", className, methodName, duration);
-            }
+            logIfMethodIsSlow(duration, className, methodName);
+        }
+    }
+
+    private void logMethodStart(ProceedingJoinPoint joinPoint, String className, String methodName) {
+        Object[] args = joinPoint.getArgs();
+        String params = Arrays.stream(args)
+                .map(arg -> Objects.nonNull(arg) ? arg.toString() : "null")
+                .collect(Collectors.joining(PARAM_DELIMITER));
+        log.trace("-> Вход в {}.{}({})", className, methodName, params);
+    }
+
+    private void logMethodEnd(Object result, String className, String methodName, long duration) {
+        String resultStr = Objects.nonNull(result) ? result.toString() : "null";
+        if (resultStr.length() > RESULT_LENGHT_LIMIT) {
+            resultStr = resultStr.substring(0, RESULT_LENGHT_LIMIT) + "... [обрезано]";
+        }
+        log.trace("<- Выход из {}.{} -> {} ({} мс)", className, methodName, resultStr, duration);
+    }
+
+    private void logIfMethodIsSlow(long duration, String className, String methodName) {
+        if (duration > LOWER_TIME_LIMIT_FOR_SLOW_METHOD) {
+            log.info("Медленный метод {}.{}: {} мс", className, methodName, duration);
         }
     }
 }
