@@ -6,6 +6,7 @@ import ru.tbank.knowhow.model.dto.request.CourseSearchRequest;
 import ru.tbank.knowhow.model.dto.response.CourseDto;
 
 import java.util.List;
+import java.util.stream.Stream;
 
 public interface GetCourseService {
 
@@ -14,4 +15,6 @@ public interface GetCourseService {
     Page<CourseDto> searchCourses(CourseSearchRequest searchRequest, Pageable pageable);
 
     CourseDto findCourseById(Long id);
+
+    Stream<String[]> findAllTags();
 }

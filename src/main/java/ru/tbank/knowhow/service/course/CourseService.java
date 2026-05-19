@@ -21,11 +21,13 @@ import ru.tbank.knowhow.model.dto.request.UpdateCourseRequest;
 import ru.tbank.knowhow.model.dto.response.CourseDto;
 import ru.tbank.knowhow.model.mapper.CourseMapper;
 import ru.tbank.knowhow.repository.CourseRepository;
+import ru.tbank.knowhow.service.balance.CoinsRefresher;
 import ru.tbank.knowhow.service.moder.ModerationService;
 import ru.tbank.knowhow.service.user.GetUserInfoService;
 
 import java.util.List;
 import java.util.Objects;
+import java.util.stream.Stream;
 
 @Service
 @Slf4j
@@ -36,6 +38,7 @@ public class CourseService implements DeleteCourseService, GetCourseService, Pur
     private final CourseMapper courseMapper;
     private final ModerationService moderationService;
     private final int priceMultiplier;
+    private final CoinsRefresher coinsRefresher;
 
     @Autowired
     public CourseService(CourseRepository courseRepository,
@@ -48,6 +51,7 @@ public class CourseService implements DeleteCourseService, GetCourseService, Pur
         this.courseMapper = courseMapper;
         this.moderationService = moderationService;
         this.priceMultiplier = priceMultiplier;
+        this.coinsRefresher = new CoinsRefresher();
     }
 
     @Override
@@ -135,8 +139,8 @@ public class CourseService implements DeleteCourseService, GetCourseService, Pur
         if (coinsBalance <= 0L || coinsBalance < price) {
             throw new InsufficientFundsException("Insufficient funds!");
         }
-        user.getBalance().setCoins(user.getBalance().getCoins() - price);
-        author.getBalance().setCoins(author.getBalance().getCoins() + price);
+        coinsRefresher.decrease(user.getBalance(), price);
+        coinsRefresher.increase(author.getBalance(), price);
         courseRepository.insertCourseToPurchased(userId, courseId);
         log.info("Course with id: {} has been purchased", courseId);
         return courseMapper.toDto(course);
@@ -172,5 +176,11 @@ public class CourseService implements DeleteCourseService, GetCourseService, Pur
                 courseRepository.findById(id)
                         .orElseThrow(() -> new EntityNotFoundException("Course not found with id: " + id))
         );
+    }
+
+    @Override
+    @Transactional
+    public Stream<String[]> findAllTags() {
+        return courseRepository.getTags();
     }
 }

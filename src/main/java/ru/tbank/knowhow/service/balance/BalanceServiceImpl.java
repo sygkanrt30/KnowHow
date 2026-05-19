@@ -1,8 +1,8 @@
 package ru.tbank.knowhow.service.balance;
 
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
 import ru.tbank.knowhow.model.Balance;
 import ru.tbank.knowhow.model.User;
@@ -15,13 +15,19 @@ import ru.tbank.knowhow.service.user.GetUserInfoService;
 import java.util.ArrayList;
 import java.util.List;
 
-@RequiredArgsConstructor
 @Service
 @Slf4j
 public class BalanceServiceImpl implements BalanceService {
 
     private final GetUserInfoService getUserInfoService;
     private final BalanceMapper balanceMapper;
+    private final CoinsRefresher coinsRefresher;
+
+    public BalanceServiceImpl(GetUserInfoService getUserInfoService, BalanceMapper balanceMapper) {
+        this.getUserInfoService = getUserInfoService;
+        this.balanceMapper = balanceMapper;
+        coinsRefresher = new CoinsRefresher();
+    }
 
     @Override
     @Transactional(readOnly = true)
@@ -32,17 +38,15 @@ public class BalanceServiceImpl implements BalanceService {
     }
 
     @Override
-    @Transactional
+    @Transactional(isolation = Isolation.SERIALIZABLE)
     public BalanceDto updateBalance(UpdateBalanceRequest request, Long userId) {
         User user = getUserInfoService.getByIdOrElseThrow(userId);
         Balance balance = user.getBalance();
-        long coins = balance.getCoins();
         if (request.isIncreaseBalance()) {
-            coins += request.coins();
+            coinsRefresher.increase(balance, request.coins());
         } else {
-            coins -= request.coins();
+            coinsRefresher.decrease(balance, request.coins());
         }
-        balance.setCoins(coins);
         return balanceMapper.toDto(balance, user.getId());
     }
 }

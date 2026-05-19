@@ -2,8 +2,7 @@ package ru.tbank.knowhow.service.tag;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-import ru.tbank.knowhow.repository.CourseRepository;
+import ru.tbank.knowhow.service.course.GetCourseService;
 
 import java.util.Arrays;
 import java.util.Set;
@@ -13,12 +12,11 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class TagServiceImpl implements TagService {
 
-    private final CourseRepository courseRepository;
+    private final GetCourseService getCourseService;
 
     @Override
-    @Transactional
     public Set<String> findAllTags() {
-        return courseRepository.getTags()
+        return getCourseService.findAllTags()
                 .flatMap(Arrays::stream)
                 .map(String::toLowerCase)
                 .collect(Collectors.toSet());
