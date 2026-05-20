@@ -37,8 +37,8 @@ public class CourseService implements DeleteCourseService, GetCourseService, Pur
     private final GetUserInfoService getUserInfoService;
     private final CourseMapper courseMapper;
     private final ModerationService moderationService;
-    private final int priceMultiplier;
     private final CoinsRefresher coinsRefresher;
+    private final PriceCalculator priceCalculator;
 
     @Autowired
     public CourseService(CourseRepository courseRepository,
@@ -50,8 +50,8 @@ public class CourseService implements DeleteCourseService, GetCourseService, Pur
         this.getUserInfoService = getUserInfoService;
         this.courseMapper = courseMapper;
         this.moderationService = moderationService;
-        this.priceMultiplier = priceMultiplier;
         this.coinsRefresher = new CoinsRefresher();
+        this.priceCalculator = new PriceCalculator(priceMultiplier);
     }
 
     @Override
@@ -74,8 +74,7 @@ public class CourseService implements DeleteCourseService, GetCourseService, Pur
 
         User moderator = moderationService.assignModerator();
 
-        int userLevel = author.getLevel() != null ? author.getLevel() : 1;
-        Integer price = priceMultiplier * userLevel;
+        Integer price = priceCalculator.calculate(author.getLevel());
         Course course = courseMapper.toEntity(request, author, moderator, price);
         Course saved = courseRepository.save(course);
         return courseMapper.toDto(saved);
