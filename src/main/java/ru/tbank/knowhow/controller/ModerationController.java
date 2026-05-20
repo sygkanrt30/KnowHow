@@ -45,6 +45,6 @@ public class ModerationController {
     @GetMapping("/queue/on_moderation")
     public ResponseEntity<List<CourseDto>> onModeration(HttpServletRequest request) {
         Long moderationId = RequestAttributeExtractor.extractUserId(request);
-        return ResponseEntity.ok(moderationService.findAllCoursesOnModeration(moderationId));
+        return ResponseEntity.ok(moderationService.findAllCoursesOnModerationByModeratorId(moderationId));
     }
 }

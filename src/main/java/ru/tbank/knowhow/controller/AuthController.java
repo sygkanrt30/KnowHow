@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.*;
 import ru.tbank.knowhow.model.dto.request.UserCredentialsForAuth;
 import ru.tbank.knowhow.model.dto.request.UserCredentialsForReg;
 import ru.tbank.knowhow.model.dto.response.UsernameAndBalanceResponse;
-import ru.tbank.knowhow.service.user.GetUserInfoService;
+import ru.tbank.knowhow.service.user.GetUserService;
 import ru.tbank.knowhow.service.user.SaveUserService;
 
 
@@ -23,7 +23,7 @@ import ru.tbank.knowhow.service.user.SaveUserService;
 class AuthController {
 
     private final SaveUserService userService;
-    private final GetUserInfoService getUserInfoService;
+    private final GetUserService getUserService;
     private final Authenticator authenticator;
 
     @PostMapping("/reg")
@@ -53,6 +53,6 @@ class AuthController {
     @GetMapping("/me")
     public ResponseEntity<UsernameAndBalanceResponse> getCurrentUser(HttpServletRequest request) {
         Long id = RequestAttributeExtractor.extractUserId(request);
-        return ResponseEntity.ok(getUserInfoService.getCurrentUser(id));
+        return ResponseEntity.ok(getUserService.getCurrentUser(id));
     }
 }

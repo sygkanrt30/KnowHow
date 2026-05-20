@@ -13,8 +13,8 @@ import ru.tbank.knowhow.model.Role;
 import ru.tbank.knowhow.model.dto.response.*;
 import ru.tbank.knowhow.model.mapper.BalanceMapper;
 import ru.tbank.knowhow.model.mapper.RatingMapper;
-import ru.tbank.knowhow.service.course.GetCourseService;
-import ru.tbank.knowhow.service.user.GetUserInfoService;
+import ru.tbank.knowhow.service.course.purchased.PurchasedCourseService;
+import ru.tbank.knowhow.service.user.GetUserService;
 
 import java.time.Instant;
 import java.util.List;
@@ -30,10 +30,10 @@ import static org.mockito.Mockito.*;
 class ProfileServiceTest {
 
     @Mock
-    private GetUserInfoService getUserInfoService;
+    private GetUserService getUserService;
 
     @Mock
-    private GetCourseService getCourseService;
+    private PurchasedCourseService purchasedCourseService;
 
     @Mock
     private BalanceMapper balanceMapper;
@@ -52,7 +52,7 @@ class ProfileServiceTest {
         when(user.getUsername()).thenReturn("moderator");
         when(user.getEmail()).thenReturn("moderator@test.com");
         when(user.getRole()).thenReturn(Role.MODERATOR);
-        when(getUserInfoService.getProjectionForProfile(userId)).thenReturn(Optional.of(user));
+        when(getUserService.getProjectionForProfile(userId)).thenReturn(Optional.of(user));
 
         ProfileDto result = profileService.getProfile(userId);
 
@@ -64,7 +64,7 @@ class ProfileServiceTest {
         assertThat(result.purchasedCourses()).isNull();
         assertThat(result.givenGrades()).isNull();
 
-        verify(getCourseService, never()).findAllPurchasedCourses(any());
+        verify(purchasedCourseService, never()).findAllPurchasedCourses(any());
         verify(balanceMapper, never()).toDto(any(), any());
         verify(ratingMapper, never()).toDto(any());
     }
@@ -72,7 +72,7 @@ class ProfileServiceTest {
     @Test
     void getProfile_ShouldThrowEntityNotFoundException_WhenUserNotFound() {
         Long userId = 999L;
-        when(getUserInfoService.getProjectionForProfile(userId)).thenReturn(Optional.empty());
+        when(getUserService.getProjectionForProfile(userId)).thenReturn(Optional.empty());
 
         assertThatThrownBy(() -> profileService.getProfile(userId))
                 .isInstanceOf(EntityNotFoundException.class)
@@ -108,7 +108,7 @@ class ProfileServiceTest {
         when(user.getRole()).thenReturn(Role.USER);
         when(user.getBalance()).thenReturn(balance);
         when(user.getUserRatings()).thenReturn(ratings);
-        when(getUserInfoService.getProjectionForProfile(userId)).thenReturn(Optional.of(user));
+        when(getUserService.getProjectionForProfile(userId)).thenReturn(Optional.of(user));
 
         BalanceDto balanceDto = Instancio.create(BalanceDto.class);
         when(balanceMapper.toDto(balance, userId)).thenReturn(balanceDto);
@@ -126,7 +126,7 @@ class ProfileServiceTest {
                 .create();
 
         List<CourseDto> courses = List.of(course1, course2);
-        when(getCourseService.findAllPurchasedCourses(userId)).thenReturn(courses);
+        when(purchasedCourseService.findAllPurchasedCourses(userId)).thenReturn(courses);
 
         RatingDto ratingDto1 = Instancio.of(RatingDto.class)
                 .set(field(RatingDto::id), 1L)
@@ -187,10 +187,10 @@ class ProfileServiceTest {
         when(user.getRole()).thenReturn(Role.USER);
         when(user.getBalance()).thenReturn(balance);
         when(user.getUserRatings()).thenReturn(List.of(ratingOld, ratingMiddle, ratingNew));
-        when(getUserInfoService.getProjectionForProfile(userId)).thenReturn(Optional.of(user));
+        when(getUserService.getProjectionForProfile(userId)).thenReturn(Optional.of(user));
 
         when(balanceMapper.toDto(balance, userId)).thenReturn(Instancio.create(BalanceDto.class));
-        when(getCourseService.findAllPurchasedCourses(userId)).thenReturn(List.of());
+        when(purchasedCourseService.findAllPurchasedCourses(userId)).thenReturn(List.of());
 
         RatingDto ratingDtoOld = Instancio.of(RatingDto.class)
                 .set(field(RatingDto::id), 1L)
@@ -228,10 +228,10 @@ class ProfileServiceTest {
         when(user.getRole()).thenReturn(Role.USER);
         when(user.getBalance()).thenReturn(balance);
         when(user.getUserRatings()).thenReturn(List.of());
-        when(getUserInfoService.getProjectionForProfile(userId)).thenReturn(Optional.of(user));
+        when(getUserService.getProjectionForProfile(userId)).thenReturn(Optional.of(user));
 
         when(balanceMapper.toDto(balance, userId)).thenReturn(Instancio.create(BalanceDto.class));
-        when(getCourseService.findAllPurchasedCourses(userId)).thenReturn(List.of());
+        when(purchasedCourseService.findAllPurchasedCourses(userId)).thenReturn(List.of());
 
         ProfileDto result = profileService.getProfile(userId);
 
@@ -253,14 +253,14 @@ class ProfileServiceTest {
         when(user.getRole()).thenReturn(Role.USER);
         when(user.getBalance()).thenReturn(balance);
         when(user.getUserRatings()).thenReturn(List.of());
-        when(getUserInfoService.getProjectionForProfile(userId)).thenReturn(Optional.of(user));
+        when(getUserService.getProjectionForProfile(userId)).thenReturn(Optional.of(user));
 
         when(balanceMapper.toDto(balance, userId)).thenReturn(Instancio.create(BalanceDto.class));
-        when(getCourseService.findAllPurchasedCourses(userId)).thenReturn(List.of());
+        when(purchasedCourseService.findAllPurchasedCourses(userId)).thenReturn(List.of());
 
         ProfileDto result = profileService.getProfile(userId);
 
         assertThat(result.balance()).isNotNull();
-        verify(getCourseService).findAllPurchasedCourses(userId);
+        verify(purchasedCourseService).findAllPurchasedCourses(userId);
     }
 }

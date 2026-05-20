@@ -9,9 +9,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import ru.tbank.knowhow.ecxeption.AttemptPayForYourselfException;
-import ru.tbank.knowhow.ecxeption.AttemptPayNotForSaleCourseException;
-import ru.tbank.knowhow.ecxeption.InsufficientFundsException;
 import ru.tbank.knowhow.model.Course;
 import ru.tbank.knowhow.model.CourseStatus;
 import ru.tbank.knowhow.model.User;
@@ -21,36 +18,36 @@ import ru.tbank.knowhow.model.dto.request.UpdateCourseRequest;
 import ru.tbank.knowhow.model.dto.response.CourseDto;
 import ru.tbank.knowhow.model.mapper.CourseMapper;
 import ru.tbank.knowhow.repository.CourseRepository;
-import ru.tbank.knowhow.service.balance.CoinsRefresher;
+import ru.tbank.knowhow.service.course.purchased.PurchasedCourseService;
 import ru.tbank.knowhow.service.moder.ModerationService;
-import ru.tbank.knowhow.service.user.GetUserInfoService;
+import ru.tbank.knowhow.service.user.GetUserService;
 
-import java.util.List;
 import java.util.Objects;
 import java.util.stream.Stream;
 
 @Service
 @Slf4j
-public class CourseService implements DeleteCourseService, GetCourseService, PurchaseCourseService, SaveCourseService {
+public class CourseService implements DeleteCourseService, GetCourseService, SaveCourseService {
 
     private final CourseRepository courseRepository;
-    private final GetUserInfoService getUserInfoService;
+    private final GetUserService getUserService;
     private final CourseMapper courseMapper;
     private final ModerationService moderationService;
-    private final CoinsRefresher coinsRefresher;
+    private final PurchasedCourseService purchasedCourseService;
     private final PriceCalculator priceCalculator;
 
     @Autowired
     public CourseService(CourseRepository courseRepository,
-                         GetUserInfoService getUserInfoService,
+                         GetUserService getUserService,
                          CourseMapper courseMapper,
+                         PurchasedCourseService purchasedCourseService,
                          ModerationService moderationService,
                          @Value("${course.price-multiplier}") int priceMultiplier) {
         this.courseRepository = courseRepository;
-        this.getUserInfoService = getUserInfoService;
+        this.getUserService = getUserService;
         this.courseMapper = courseMapper;
         this.moderationService = moderationService;
-        this.coinsRefresher = new CoinsRefresher();
+        this.purchasedCourseService = purchasedCourseService;
         this.priceCalculator = new PriceCalculator(priceMultiplier);
     }
 
@@ -60,7 +57,7 @@ public class CourseService implements DeleteCourseService, GetCourseService, Pur
         Course course = courseRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Course not found with id: " + id));
 
-        boolean isPurchased = courseRepository.existsPurchasedCourseByCourseId(id);
+        boolean isPurchased = purchasedCourseService.existsPurchasedCourseByCourseId(id);
         if (isPurchased) {
             throw new IllegalStateException("Cannot delete course that has already been purchased");
         }
@@ -70,7 +67,7 @@ public class CourseService implements DeleteCourseService, GetCourseService, Pur
     @Override
     @Transactional
     public CourseDto createCourse(CreateCourseRequest request, String username) {
-        User author = getUserInfoService.getByUsernameOrElseThrow(username);
+        User author = getUserService.getByUsernameOrElseThrow(username);
 
         User moderator = moderationService.assignModerator();
 
@@ -111,49 +108,6 @@ public class CourseService implements DeleteCourseService, GetCourseService, Pur
     }
 
     @Override
-    @Transactional
-    public CourseDto payForCourse(Long courseId, Long userId) {
-        Course course = courseRepository.findById(courseId)
-                .orElseThrow(() -> new EntityNotFoundException("Course not found with id: " + courseId));
-
-        if (course.isNotForSale()) {
-            throw new AttemptPayNotForSaleCourseException("Course not for sale");
-        }
-
-        User user = getUserInfoService.getByIdOrElseThrow(userId);
-
-        User author = course.getAuthor();
-        if (course.getStatus().equals(CourseStatus.ON_MODERATION)) {
-            throw new IllegalStateException("Can not pay for moderated courses!");
-        }
-        if (author.getId().equals(user.getId())) {
-            throw new AttemptPayForYourselfException("You can't pay for yourself!");
-        }
-        if (courseRepository.findPurchasedCourseByUserAndCourseId(userId, courseId).isPresent()) {
-            log.warn("Course with id: {} has already been purchased", courseId);
-            return courseMapper.toDto(course);
-        }
-        long coinsBalance = user.getBalance().getCoins();
-        long price = course.getPrice();
-        if (coinsBalance <= 0L || coinsBalance < price) {
-            throw new InsufficientFundsException("Insufficient funds!");
-        }
-        coinsRefresher.decrease(user.getBalance(), price);
-        coinsRefresher.increase(author.getBalance(), price);
-        courseRepository.insertCourseToPurchased(userId, courseId);
-        log.info("Course with id: {} has been purchased", courseId);
-        return courseMapper.toDto(course);
-    }
-
-    @Override
-    public List<CourseDto> findAllPurchasedCourses(Long userId) {
-        return courseRepository.findPurchasedCoursesByUserId(userId)
-                .stream()
-                .map(courseMapper::toDto)
-                .toList();
-    }
-
-    @Override
     public Page<CourseDto> searchCourses(CourseSearchRequest request, Pageable pageable) {
         log.debug("Searching courses with filters: {}", request);
 
@@ -170,11 +124,14 @@ public class CourseService implements DeleteCourseService, GetCourseService, Pur
     }
 
     @Override
-    public CourseDto findCourseById(Long id) {
-        return courseMapper.toDto(
-                courseRepository.findById(id)
-                        .orElseThrow(() -> new EntityNotFoundException("Course not found with id: " + id))
-        );
+    public CourseDto getCourseDtoByIdOrElseThrow(Long id) {
+        return courseMapper.toDto(getCourseByIdOrElseThrow(id));
+    }
+
+    @Override
+    public Course getCourseByIdOrElseThrow(Long id) {
+        return courseRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Course not found with id: " + id));
     }
 
     @Override

@@ -19,7 +19,7 @@ import ru.tbank.knowhow.model.dto.request.CourseSearchRequest;
 import ru.tbank.knowhow.service.course.GetCourseService;
 import ru.tbank.knowhow.service.course.SaveCourseService;
 import ru.tbank.knowhow.service.course.DeleteCourseService;
-import ru.tbank.knowhow.service.course.PurchaseCourseService;
+import ru.tbank.knowhow.service.course.purchase.CoursePurchaseService;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -36,7 +36,7 @@ public class CourseController {
 
     private final DeleteCourseService deleteCourseService;
     private final SaveCourseService saveCourseService;
-    private final PurchaseCourseService purchaseCourseService;
+    private final CoursePurchaseService purchaseCourseService;
     private final GetCourseService courseService;
 
     @DeleteMapping("/{id}")
@@ -83,6 +83,6 @@ public class CourseController {
 
     @GetMapping("/{id}")
     public ResponseEntity<CourseDto> getCourse(@PathVariable Long id) {
-        return ResponseEntity.ok(courseService.findCourseById(id));
+        return ResponseEntity.ok(courseService.getCourseDtoByIdOrElseThrow(id));
     }
 }

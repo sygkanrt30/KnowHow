@@ -12,7 +12,7 @@ import ru.tbank.knowhow.model.dto.request.UpdateBalanceRequest;
 import ru.tbank.knowhow.model.dto.response.BalanceDto;
 import ru.tbank.knowhow.model.dto.response.BalanceHistoryResponse;
 import ru.tbank.knowhow.model.mapper.BalanceMapper;
-import ru.tbank.knowhow.service.user.GetUserInfoService;
+import ru.tbank.knowhow.service.user.GetUserService;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -28,7 +28,7 @@ import static org.instancio.Select.field;
 class BalanceServiceImplTest {
 
     @Mock
-    private GetUserInfoService getUserInfoService;
+    private GetUserService getUserService;
 
     @Mock
     private BalanceMapper balanceMapper;
@@ -45,12 +45,12 @@ class BalanceServiceImplTest {
                 .create();
         List<String> history = List.of("+100", "-50", "+200");
         user.getBalance().setBalanceHistories(new ArrayList<>(history));
-        when(getUserInfoService.getByIdOrElseThrow(userId)).thenReturn(user);
+        when(getUserService.getByIdOrElseThrow(userId)).thenReturn(user);
 
         BalanceHistoryResponse response = balanceService.getBalanceHistory(userId);
 
         assertThat(response.history()).containsExactly("+100", "-50", "+200");
-        verify(getUserInfoService).getByIdOrElseThrow(userId);
+        verify(getUserService).getByIdOrElseThrow(userId);
     }
 
     @Test
@@ -62,12 +62,12 @@ class BalanceServiceImplTest {
                 .create();
         user.getBalance().setBalanceHistories(new ArrayList<>());
 
-        when(getUserInfoService.getByIdOrElseThrow(userId)).thenReturn(user);
+        when(getUserService.getByIdOrElseThrow(userId)).thenReturn(user);
 
         BalanceHistoryResponse response = balanceService.getBalanceHistory(userId);
 
         assertThat(response.history()).isEmpty();
-        verify(getUserInfoService).getByIdOrElseThrow(userId);
+        verify(getUserService).getByIdOrElseThrow(userId);
     }
 
     @Test
@@ -83,14 +83,14 @@ class BalanceServiceImplTest {
         UpdateBalanceRequest request = new UpdateBalanceRequest(false, 75L);
         BalanceDto expectedDto = new BalanceDto(balanceId, userId, 125L);
 
-        when(getUserInfoService.getByIdOrElseThrow(userId)).thenReturn(user);
+        when(getUserService.getByIdOrElseThrow(userId)).thenReturn(user);
         when(balanceMapper.toDto(balance, userId)).thenReturn(expectedDto);
 
         BalanceDto result = balanceService.updateBalance(request, userId);
 
         assertThat(result.coins()).isEqualTo(125L);
         assertThat(user.getBalance().getCoins()).isEqualTo(125L);
-        verify(getUserInfoService).getByIdOrElseThrow(userId);
+        verify(getUserService).getByIdOrElseThrow(userId);
         verify(balanceMapper).toDto(any(Balance.class), eq(userId));
     }
 
@@ -108,14 +108,14 @@ class BalanceServiceImplTest {
         UpdateBalanceRequest request = new UpdateBalanceRequest(true, 50L);
         BalanceDto expectedDto = new BalanceDto(balanceId, userId, 150L);
 
-        when(getUserInfoService.getByIdOrElseThrow(userId)).thenReturn(user);
+        when(getUserService.getByIdOrElseThrow(userId)).thenReturn(user);
         when(balanceMapper.toDto(balance, userId)).thenReturn(expectedDto);
 
         BalanceDto result = balanceService.updateBalance(request, userId);
 
         assertThat(result.coins()).isEqualTo(150L);
         assertThat(user.getBalance().getCoins()).isEqualTo(150L);
-        verify(getUserInfoService).getByIdOrElseThrow(userId);
+        verify(getUserService).getByIdOrElseThrow(userId);
         verify(balanceMapper).toDto(any(Balance.class), eq(userId));
     }
 
@@ -132,14 +132,14 @@ class BalanceServiceImplTest {
         UpdateBalanceRequest request = new UpdateBalanceRequest(true, 1L);
         BalanceDto expectedDto = new BalanceDto(balanceId, userId, 501L);
 
-        when(getUserInfoService.getByIdOrElseThrow(userId)).thenReturn(user);
+        when(getUserService.getByIdOrElseThrow(userId)).thenReturn(user);
         when(balanceMapper.toDto(balance, userId)).thenReturn(expectedDto);
 
         BalanceDto result = balanceService.updateBalance(request, userId);
 
         assertThat(result.coins()).isEqualTo(501L);
         assertThat(user.getBalance().getCoins()).isEqualTo(501L);
-        verify(getUserInfoService).getByIdOrElseThrow(userId);
+        verify(getUserService).getByIdOrElseThrow(userId);
         verify(balanceMapper).toDto(any(Balance.class), eq(userId));
     }
 
@@ -156,14 +156,14 @@ class BalanceServiceImplTest {
         UpdateBalanceRequest request = new UpdateBalanceRequest(false, 100L);
         BalanceDto expectedDto = new BalanceDto(balanceId, userId, -50L);
 
-        when(getUserInfoService.getByIdOrElseThrow(userId)).thenReturn(user);
+        when(getUserService.getByIdOrElseThrow(userId)).thenReturn(user);
         when(balanceMapper.toDto(balance, userId)).thenReturn(expectedDto);
 
         BalanceDto result = balanceService.updateBalance(request, userId);
 
         assertThat(result.coins()).isEqualTo(-50L);
         assertThat(user.getBalance().getCoins()).isEqualTo(-50L);
-        verify(getUserInfoService).getByIdOrElseThrow(userId);
+        verify(getUserService).getByIdOrElseThrow(userId);
         verify(balanceMapper).toDto(any(Balance.class), eq(userId));
     }
 }

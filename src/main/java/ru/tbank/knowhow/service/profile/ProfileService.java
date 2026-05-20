@@ -9,8 +9,8 @@ import ru.tbank.knowhow.model.Role;
 import ru.tbank.knowhow.model.dto.response.*;
 import ru.tbank.knowhow.model.mapper.BalanceMapper;
 import ru.tbank.knowhow.model.mapper.RatingMapper;
-import ru.tbank.knowhow.service.course.GetCourseService;
-import ru.tbank.knowhow.service.user.GetUserInfoService;
+import ru.tbank.knowhow.service.course.purchased.PurchasedCourseService;
+import ru.tbank.knowhow.service.user.GetUserService;
 
 import java.util.Comparator;
 import java.util.List;
@@ -19,15 +19,15 @@ import java.util.List;
 @Service
 public class ProfileService implements GetProfileService {
 
-    private final GetUserInfoService getUserInfoService;
-    private final GetCourseService getCourseService;
+    private final GetUserService getUserService;
+    private final PurchasedCourseService purchasedCourseService;
     private final BalanceMapper balanceMapper;
     private final RatingMapper ratingMapper;
 
     @Override
     @Transactional(readOnly = true)
     public ProfileDto getProfile(Long userId) {
-        UserProjectionForProfile user = getUserInfoService.getProjectionForProfile(userId)
+        UserProjectionForProfile user = getUserService.getProjectionForProfile(userId)
                 .orElseThrow(() -> new EntityNotFoundException("User not found"));
 
         if (user.getRole().equals(Role.MODERATOR)) {
@@ -39,7 +39,7 @@ public class ProfileService implements GetProfileService {
         }
 
         BalanceDto balanceDto = balanceMapper.toDto(user.getBalance(), user.getId());
-        List<CourseDto> purchasedCourses = getCourseService.findAllPurchasedCourses(userId);
+        List<CourseDto> purchasedCourses = purchasedCourseService.findAllPurchasedCourses(userId);
         List<RatingDto> userRatings = user.getUserRatings().stream()
                 .sorted(Comparator.comparing(Rating::getCreatedAt, Comparator.reverseOrder()))
                 .map(ratingMapper::toDto)

@@ -1,0 +1,23 @@
+package ru.tbank.knowhow.repository;
+
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
+import ru.tbank.knowhow.model.PurchasedCourse;
+import ru.tbank.knowhow.model.PurchasedCourseId;
+
+import java.util.List;
+import java.util.Optional;
+
+public interface PurchasedCourseRepository extends JpaRepository<PurchasedCourse, PurchasedCourseId> {
+
+    Optional<PurchasedCourse> findByIdCourseIdAndIdUserId(Long courseId, Long userId);
+
+    List<PurchasedCourse> findPurchasedCoursesByUserId(Long userId);
+
+    boolean existsPurchasedCourseByCourseIdAndUserId(Long courseId, Long userId);
+
+    @Modifying
+    void deleteAllPurchasedCoursesByUserId(Long userId);
+
+    boolean existsPurchasedCourseByCourseId(Long courseId);
+}

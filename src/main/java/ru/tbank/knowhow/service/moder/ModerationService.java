@@ -13,5 +13,5 @@ public interface ModerationService {
 
     void rejectCourse(Long courseId, String moderatorUsername, String rejectionReason);
 
-    List<CourseDto> findAllCoursesOnModeration(Long moderationId);
+    List<CourseDto> findAllCoursesOnModerationByModeratorId(Long moderationId);
 }

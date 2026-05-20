@@ -15,18 +15,18 @@ import ru.tbank.knowhow.model.User;
 import ru.tbank.knowhow.model.dto.response.UserProjectionForProfile;
 import ru.tbank.knowhow.model.dto.response.UsernameAndBalanceResponse;
 import ru.tbank.knowhow.model.mapper.UsernameAndBalanceResponseMapper;
-import ru.tbank.knowhow.repository.CourseRepository;
 import ru.tbank.knowhow.repository.UserRepository;
+import ru.tbank.knowhow.service.course.purchased.PurchasedCourseService;
 
 import java.util.Objects;
 import java.util.Optional;
 
 @Service
 @Slf4j
-public class UserService implements GetUserInfoService, SaveUserService, DeleteUserService {
+public class UserService implements GetUserService, SaveUserService, DeleteUserService {
 
     private final UserRepository userRepository;
-    private final CourseRepository courseRepository;
+    private final PurchasedCourseService purchasedCourseService;
     private final PasswordEncoder passwordEncoder;
     private final UsernameAndBalanceResponseMapper usernameAndBalanceResponseMapper;
     private final String moderatorCode;
@@ -34,13 +34,13 @@ public class UserService implements GetUserInfoService, SaveUserService, DeleteU
 
     @Autowired
     public UserService(UserRepository userRepository,
-                       CourseRepository courseRepository,
+                       PurchasedCourseService purchasedCourseService,
                        PasswordEncoder passwordEncoder,
                        UsernameAndBalanceResponseMapper usernameAndBalanceResponseMapper,
                        @Value("${moderator.code}") String moderatorCode,
                        @Value("${coins.start-amount}") long startCoins) {
         this.userRepository = userRepository;
-        this.courseRepository = courseRepository;
+        this.purchasedCourseService = purchasedCourseService;
         this.passwordEncoder = passwordEncoder;
         this.moderatorCode = moderatorCode;
         this.startCoins = startCoins;
@@ -117,7 +117,7 @@ public class UserService implements GetUserInfoService, SaveUserService, DeleteU
             throw new EntityNotFoundException("User not found by id: " + id);
         }
         userRepository.deleteById(id);
-        courseRepository.deleteAllPurchasedCoursesByUserId(id);
+        purchasedCourseService.deleteAllPurchasedCoursesByUserId(id);
         log.info("Deleted account for user id={}", id);
     }
 }

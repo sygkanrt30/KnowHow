@@ -32,7 +32,7 @@ import ru.tbank.knowhow.security.TokenCookieAuthenticationConfigurer;
 import ru.tbank.knowhow.security.TokenCookieSessionAuthenticationStrategy;
 import ru.tbank.knowhow.service.token.TokenCookieJweStringDeserializer;
 import ru.tbank.knowhow.service.token.TokenCookieJweStringSerializer;
-import ru.tbank.knowhow.service.user.GetUserInfoService;
+import ru.tbank.knowhow.service.user.GetUserService;
 
 import java.util.List;
 import java.util.Objects;
@@ -137,7 +137,7 @@ public class SecurityConfig {
             @Value("${jwt.cookie-token-key}") String cookieTokenKey,
             @Value("${server.base-url.auth}") String authUrl,
             JdbcTemplate jdbcTemplate,
-            GetUserInfoService getUserInfoService
+            GetUserService getUserService
     ) throws Exception {
         return new TokenCookieAuthenticationConfigurer()
                 .tokenCookieJweStringDeserializer(new TokenCookieJweStringDeserializer(
@@ -146,7 +146,7 @@ public class SecurityConfig {
                         )
                 ))
                 .jdbcTemplate(jdbcTemplate)
-                .userInfoService(getUserInfoService)
+                .userInfoService(getUserService)
                 .authUrl(authUrl);
     }
 

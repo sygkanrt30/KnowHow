@@ -46,6 +46,11 @@ public class Balance {
         this.coins = coins;
     }
 
+    public Balance(Long id, Long coins) {
+        this.id = id;
+        this.coins = coins;
+    }
+
     @Override
     public final boolean equals(Object o) {
         if (this == o) return true;

@@ -6,7 +6,7 @@ import ru.tbank.knowhow.model.dto.response.UsernameAndBalanceResponse;
 
 import java.util.Optional;
 
-public interface GetUserInfoService {
+public interface GetUserService {
 
     Optional<User> findByUsername(String username);
 

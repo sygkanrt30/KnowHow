@@ -19,7 +19,7 @@ import org.springframework.security.web.csrf.CsrfFilter;
 import ru.tbank.knowhow.model.Token;
 import ru.tbank.knowhow.model.User;
 import ru.tbank.knowhow.service.token.TokenAuthenticationUserDetailsService;
-import ru.tbank.knowhow.service.user.GetUserInfoService;
+import ru.tbank.knowhow.service.user.GetUserService;
 
 import java.util.Date;
 import java.util.Objects;
@@ -34,7 +34,7 @@ public class TokenCookieAuthenticationConfigurer
             "INSERT INTO deactivated_token (id, keep_until) VALUES (?, ?)";
 
     private JdbcTemplate jdbcTemplate;
-    private GetUserInfoService userInfoService;
+    private GetUserService userInfoService;
     private Function<String, Token> tokenCookieJweStringDeserializer;
     private String authUrl;
 

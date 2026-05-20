@@ -10,7 +10,7 @@ import ru.tbank.knowhow.model.dto.request.UpdateBalanceRequest;
 import ru.tbank.knowhow.model.dto.response.BalanceDto;
 import ru.tbank.knowhow.model.dto.response.BalanceHistoryResponse;
 import ru.tbank.knowhow.model.mapper.BalanceMapper;
-import ru.tbank.knowhow.service.user.GetUserInfoService;
+import ru.tbank.knowhow.service.user.GetUserService;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -19,12 +19,12 @@ import java.util.List;
 @Slf4j
 public class BalanceServiceImpl implements BalanceService {
 
-    private final GetUserInfoService getUserInfoService;
+    private final GetUserService getUserService;
     private final BalanceMapper balanceMapper;
     private final CoinsRefresher coinsRefresher;
 
-    public BalanceServiceImpl(GetUserInfoService getUserInfoService, BalanceMapper balanceMapper) {
-        this.getUserInfoService = getUserInfoService;
+    public BalanceServiceImpl(GetUserService getUserService, BalanceMapper balanceMapper) {
+        this.getUserService = getUserService;
         this.balanceMapper = balanceMapper;
         coinsRefresher = new CoinsRefresher();
     }
@@ -32,7 +32,7 @@ public class BalanceServiceImpl implements BalanceService {
     @Override
     @Transactional(readOnly = true)
     public BalanceHistoryResponse getBalanceHistory(Long userId) {
-        User user = getUserInfoService.getByIdOrElseThrow(userId);
+        User user = getUserService.getByIdOrElseThrow(userId);
         List<String> history = new ArrayList<>(user.getBalance().getBalanceHistories());
         return new BalanceHistoryResponse(history);
     }
@@ -40,7 +40,7 @@ public class BalanceServiceImpl implements BalanceService {
     @Override
     @Transactional(isolation = Isolation.SERIALIZABLE)
     public BalanceDto updateBalance(UpdateBalanceRequest request, Long userId) {
-        User user = getUserInfoService.getByIdOrElseThrow(userId);
+        User user = getUserService.getByIdOrElseThrow(userId);
         Balance balance = user.getBalance();
         if (request.isIncreaseBalance()) {
             coinsRefresher.increase(balance, request.coins());

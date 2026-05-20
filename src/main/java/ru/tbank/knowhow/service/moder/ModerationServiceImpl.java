@@ -4,6 +4,7 @@ import jakarta.persistence.EntityExistsException;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.stereotype.Service;
 import ru.tbank.knowhow.model.*;
@@ -12,7 +13,7 @@ import ru.tbank.knowhow.model.mapper.CourseMapper;
 import ru.tbank.knowhow.repository.CourseRepository;
 import ru.tbank.knowhow.repository.ModerationReviewRepository;
 import ru.tbank.knowhow.repository.ModeratorLoadRepository;
-import ru.tbank.knowhow.repository.UserRepository;
+import ru.tbank.knowhow.service.user.GetUserService;
 
 import java.util.List;
 
@@ -22,7 +23,7 @@ import java.util.List;
 public class ModerationServiceImpl implements ModerationService {
 
     private final ModeratorLoadRepository  moderatorLoadRepository;
-    private final UserRepository userRepository;
+    private final GetUserService getUserService;
     private final CourseRepository courseRepository;
     private final ModerationReviewRepository moderationReviewRepository;
     private final CourseMapper courseMapper;
@@ -41,8 +42,8 @@ public class ModerationServiceImpl implements ModerationService {
     @Override
     @Transactional
     public void approveCourse(Long courseId, String moderatorUsername) {
-        User moderator = userRepository.findByUsername(moderatorUsername)
-                .orElseThrow(() -> new EntityNotFoundException("Модератор не найден"));
+        User moderator = getUserService.findByUsername(moderatorUsername)
+                .orElseThrow(() -> new UsernameNotFoundException("Moderator not found"));
 
         Course course = courseRepository.findById(courseId)
                 .orElseThrow(() -> new EntityNotFoundException("Курс не найден"));
@@ -69,8 +70,8 @@ public class ModerationServiceImpl implements ModerationService {
     @Override
     @Transactional
     public void rejectCourse(Long courseId, String moderatorUsername, String rejectionReason) {
-        User moderator = userRepository.findByUsername(moderatorUsername)
-                .orElseThrow(() -> new EntityNotFoundException("Модератор не найден"));
+        User moderator = getUserService.findByUsername(moderatorUsername)
+                .orElseThrow(() -> new UsernameNotFoundException("Moderator not found"));
 
         Course course = courseRepository.findById(courseId)
                 .orElseThrow(() -> new EntityNotFoundException("Курс не найден"));
@@ -94,8 +95,8 @@ public class ModerationServiceImpl implements ModerationService {
     }
 
     @Override
-    public List<CourseDto> findAllCoursesOnModeration(Long moderationId) {
-        User moderator = userRepository.findById(moderationId)
+    public List<CourseDto> findAllCoursesOnModerationByModeratorId(Long moderationId) {
+        User moderator = getUserService.findById(moderationId)
                 .orElseThrow(() -> new EntityNotFoundException("Moderator not found"));
 
         List<Course> courses =  courseRepository.findAllByModerator(moderator);
