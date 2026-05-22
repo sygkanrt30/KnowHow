@@ -32,15 +32,19 @@ public class BalanceServiceImpl implements BalanceService {
     @Override
     @Transactional(readOnly = true)
     public BalanceHistoryResponse getBalanceHistory(Long userId) {
-        User user = getUserService.getByIdOrElseThrow(userId);
+        User user = getUser(userId);
         List<String> history = new ArrayList<>(user.getBalance().getBalanceHistories());
         return new BalanceHistoryResponse(history);
     }
 
+    private User getUser(Long userId) {
+        return getUserService.getByIdOrElseThrow(userId);
+    }
+
     @Override
-    @Transactional(isolation = Isolation.SERIALIZABLE)
+    @Transactional(isolation = Isolation.READ_COMMITTED)
     public BalanceDto updateBalance(UpdateBalanceRequest request, Long userId) {
-        User user = getUserService.getByIdOrElseThrow(userId);
+        User user = getUser(userId);
         Balance balance = user.getBalance();
         if (request.isIncreaseBalance()) {
             coinsRefresher.increase(balance, request.coins());

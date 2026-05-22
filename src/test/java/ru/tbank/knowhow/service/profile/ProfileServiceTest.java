@@ -16,7 +16,6 @@ import ru.tbank.knowhow.model.mapper.RatingMapper;
 import ru.tbank.knowhow.service.course.purchased.PurchasedCourseService;
 import ru.tbank.knowhow.service.user.GetUserService;
 
-import java.time.Instant;
 import java.util.List;
 import java.util.Optional;
 
@@ -44,22 +43,22 @@ class ProfileServiceTest {
     @InjectMocks
     private ProfileService profileService;
 
+    private static final String USERNAME = "user";
+    private static final String EMAIL = "user@test.com";
+
     @Test
     void getProfile_ShouldReturnModeratorProfile_WhenUserIsModerator() {
         Long userId = 1L;
-        UserProjectionForProfile user = mock(UserProjectionForProfile.class);
-        when(user.getId()).thenReturn(userId);
-        when(user.getUsername()).thenReturn("moderator");
-        when(user.getEmail()).thenReturn("moderator@test.com");
-        when(user.getRole()).thenReturn(Role.MODERATOR);
-        when(getUserService.getProjectionForProfile(userId)).thenReturn(Optional.of(user));
+        String username = "moderator";
+        String email = "moderator@test.com";
+        mockUserProjectionForModerator(userId,  username, email);
 
         ProfileDto result = profileService.getProfile(userId);
 
         assertThat(result).isNotNull();
         assertThat(result.id()).isEqualTo(userId);
-        assertThat(result.username()).isEqualTo("moderator");
-        assertThat(result.email()).isEqualTo("moderator@test.com");
+        assertThat(result.username()).isEqualTo(username);
+        assertThat(result.email()).isEqualTo(email);
         assertThat(result.balance()).isNull();
         assertThat(result.purchasedCourses()).isNull();
         assertThat(result.givenGrades()).isNull();
@@ -69,9 +68,11 @@ class ProfileServiceTest {
         verify(ratingMapper, never()).toDto(any());
     }
 
+
     @Test
     void getProfile_ShouldThrowEntityNotFoundException_WhenUserNotFound() {
         Long userId = 999L;
+
         when(getUserService.getProjectionForProfile(userId)).thenReturn(Optional.empty());
 
         assertThatThrownBy(() -> profileService.getProfile(userId))
@@ -83,153 +84,65 @@ class ProfileServiceTest {
     void getProfile_ShouldReturnFullProfile_WhenUserIsNotModerator() {
         Long userId = 1L;
 
-        Balance balance = Instancio.of(Balance.class)
-                .set(field(Balance::getCoins), 1000L)
-                .create();
-
-        Rating rating1 = Instancio.of(Rating.class)
-                .set(field(Rating::getId), 1L)
-                .set(field(Rating::getGrade), (short) 5)
-                .set(field(Rating::getCreatedAt), Instant.parse("2024-01-15T10:00:00Z"))
-                .create();
-
-        Rating rating2 = Instancio.of(Rating.class)
-                .set(field(Rating::getId), 2L)
-                .set(field(Rating::getGrade), (short) 4)
-                .set(field(Rating::getCreatedAt), Instant.parse("2024-01-20T10:00:00Z"))
-                .create();
-
-        List<Rating> ratings = List.of(rating1, rating2);
-
-        UserProjectionForProfile user = mock(UserProjectionForProfile.class);
-        when(user.getId()).thenReturn(userId);
-        when(user.getUsername()).thenReturn("user");
-        when(user.getEmail()).thenReturn("user@test.com");
-        when(user.getRole()).thenReturn(Role.USER);
-        when(user.getBalance()).thenReturn(balance);
-        when(user.getUserRatings()).thenReturn(ratings);
-        when(getUserService.getProjectionForProfile(userId)).thenReturn(Optional.of(user));
-
+        Balance balance = createBalance();
         BalanceDto balanceDto = Instancio.create(BalanceDto.class);
         when(balanceMapper.toDto(balance, userId)).thenReturn(balanceDto);
 
-        CourseDto course1 = Instancio.of(CourseDto.class)
-                .set(field(CourseDto::id), 1L)
-                .set(field(CourseDto::title), "Course 1")
-                .set(field(CourseDto::price), 100L)
-                .create();
+        List<Rating> ratings = ProfileTestDataFabric.createRatings();
+        List<RatingDto> ratingDtos = ProfileTestDataFabric.createRatingDtos();
+        for (int i = 0; i < ratings.size(); i++) {
+            when(ratingMapper.toDto(ratings.get(i))).thenReturn(ratingDtos.get(i));
+        }
 
-        CourseDto course2 = Instancio.of(CourseDto.class)
-                .set(field(CourseDto::id), 2L)
-                .set(field(CourseDto::title), "Course 2")
-                .set(field(CourseDto::price), 200L)
-                .create();
+        mockUserProjection(userId, balance, ratings);
 
-        List<CourseDto> courses = List.of(course1, course2);
+        List<CourseDto> courses = ProfileTestDataFabric.createCourseDtos();
         when(purchasedCourseService.findAllPurchasedCourses(userId)).thenReturn(courses);
-
-        RatingDto ratingDto1 = Instancio.of(RatingDto.class)
-                .set(field(RatingDto::id), 1L)
-                .set(field(RatingDto::grade), (short) 5)
-                .set(field(RatingDto::userId), userId)
-                .create();
-
-        RatingDto ratingDto2 = Instancio.of(RatingDto.class)
-                .set(field(RatingDto::id), 2L)
-                .set(field(RatingDto::grade), (short) 4)
-                .set(field(RatingDto::userId), userId)
-                .create();
-
-        when(ratingMapper.toDto(rating1)).thenReturn(ratingDto1);
-        when(ratingMapper.toDto(rating2)).thenReturn(ratingDto2);
 
         ProfileDto result = profileService.getProfile(userId);
 
         assertThat(result).isNotNull();
         assertThat(result.id()).isEqualTo(userId);
-        assertThat(result.username()).isEqualTo("user");
-        assertThat(result.email()).isEqualTo("user@test.com");
+        assertThat(result.username()).isEqualTo(USERNAME);
+        assertThat(result.email()).isEqualTo(EMAIL);
         assertThat(result.balance()).isEqualTo(balanceDto);
         assertThat(result.purchasedCourses()).hasSize(2);
         assertThat(result.purchasedCourses()).containsExactlyElementsOf(courses);
         assertThat(result.countOfPurchasedCourses()).isEqualTo(2);
-        assertThat(result.givenGrades()).hasSize(2);
-        assertThat(result.countOfGivenGrades()).isEqualTo(2);
+        assertThat(result.givenGrades()).hasSize(3);
+        assertThat(result.countOfGivenGrades()).isEqualTo(3);
     }
 
     @Test
     void getProfile_ShouldSortRatingsByCreatedAtDescending() {
         Long userId = 1L;
-        Balance balance = Instancio.create(Balance.class);
+        Balance balance = createBalance();
 
-        Rating ratingOld = Instancio.of(Rating.class)
-                .set(field(Rating::getId), 1L)
-                .set(field(Rating::getGrade), (short) 3)
-                .set(field(Rating::getCreatedAt), Instant.parse("2024-01-01T10:00:00Z"))
-                .create();
+        List<Rating> ratings = ProfileTestDataFabric.createRatings();
+        List<RatingDto> ratingDtos = ProfileTestDataFabric.createRatingDtos();
+        for (int i = 0; i < ratings.size(); i++) {
+            when(ratingMapper.toDto(ratings.get(i))).thenReturn(ratingDtos.get(i));
+        }
 
-        Rating ratingMiddle = Instancio.of(Rating.class)
-                .set(field(Rating::getId), 2L)
-                .set(field(Rating::getGrade), (short) 4)
-                .set(field(Rating::getCreatedAt), Instant.parse("2024-01-10T10:00:00Z"))
-                .create();
-
-        Rating ratingNew = Instancio.of(Rating.class)
-                .set(field(Rating::getId), 3L)
-                .set(field(Rating::getGrade), (short) 5)
-                .set(field(Rating::getCreatedAt), Instant.parse("2024-01-20T10:00:00Z"))
-                .create();
-
-        UserProjectionForProfile user = mock(UserProjectionForProfile.class);
-        when(user.getId()).thenReturn(userId);
-        when(user.getUsername()).thenReturn("user");
-        when(user.getEmail()).thenReturn("user@test.com");
-        when(user.getRole()).thenReturn(Role.USER);
-        when(user.getBalance()).thenReturn(balance);
-        when(user.getUserRatings()).thenReturn(List.of(ratingOld, ratingMiddle, ratingNew));
-        when(getUserService.getProjectionForProfile(userId)).thenReturn(Optional.of(user));
-
+        mockUserProjection(userId, balance, ratings);
         when(balanceMapper.toDto(balance, userId)).thenReturn(Instancio.create(BalanceDto.class));
         when(purchasedCourseService.findAllPurchasedCourses(userId)).thenReturn(List.of());
 
-        RatingDto ratingDtoOld = Instancio.of(RatingDto.class)
-                .set(field(RatingDto::id), 1L)
-                .set(field(RatingDto::grade), (short) 3)
-                .create();
-
-        RatingDto ratingDtoMiddle = Instancio.of(RatingDto.class)
-                .set(field(RatingDto::id), 2L)
-                .set(field(RatingDto::grade), (short) 4)
-                .create();
-
-        RatingDto ratingDtoNew = Instancio.of(RatingDto.class)
-                .set(field(RatingDto::id), 3L)
-                .set(field(RatingDto::grade), (short) 5)
-                .create();
-
-        when(ratingMapper.toDto(ratingOld)).thenReturn(ratingDtoOld);
-        when(ratingMapper.toDto(ratingMiddle)).thenReturn(ratingDtoMiddle);
-        when(ratingMapper.toDto(ratingNew)).thenReturn(ratingDtoNew);
-
         ProfileDto result = profileService.getProfile(userId);
 
-        assertThat(result.givenGrades()).containsExactly(ratingDtoNew, ratingDtoMiddle, ratingDtoOld);
+        assertThat(result.givenGrades()).containsExactly(
+                ratingDtos.get(2),
+                ratingDtos.get(1),
+                ratingDtos.get(0)
+        );
     }
 
     @Test
     void getProfile_ShouldHandleEmptyPurchasedCourses() {
         Long userId = 1L;
-        Balance balance = Instancio.create(Balance.class);
+        Balance balance = createBalance();
 
-        UserProjectionForProfile user = mock(UserProjectionForProfile.class);
-        when(user.getId()).thenReturn(userId);
-        when(user.getUsername()).thenReturn("user");
-        when(user.getEmail()).thenReturn("user@test.com");
-        when(user.getRole()).thenReturn(Role.USER);
-        when(user.getBalance()).thenReturn(balance);
-        when(user.getUserRatings()).thenReturn(List.of());
-        when(getUserService.getProjectionForProfile(userId)).thenReturn(Optional.of(user));
-
+        mockUserProjection(userId, balance, List.of());
         when(balanceMapper.toDto(balance, userId)).thenReturn(Instancio.create(BalanceDto.class));
         when(purchasedCourseService.findAllPurchasedCourses(userId)).thenReturn(List.of());
 
@@ -244,17 +157,9 @@ class ProfileServiceTest {
     @Test
     void getProfile_ShouldHandleUserRole() {
         Long userId = 1L;
-        Balance balance = Instancio.create(Balance.class);
+        Balance balance = createBalance();
 
-        UserProjectionForProfile user = mock(UserProjectionForProfile.class);
-        when(user.getId()).thenReturn(userId);
-        when(user.getUsername()).thenReturn("user");
-        when(user.getEmail()).thenReturn("user@test.com");
-        when(user.getRole()).thenReturn(Role.USER);
-        when(user.getBalance()).thenReturn(balance);
-        when(user.getUserRatings()).thenReturn(List.of());
-        when(getUserService.getProjectionForProfile(userId)).thenReturn(Optional.of(user));
-
+        mockUserProjection(userId, balance, List.of());
         when(balanceMapper.toDto(balance, userId)).thenReturn(Instancio.create(BalanceDto.class));
         when(purchasedCourseService.findAllPurchasedCourses(userId)).thenReturn(List.of());
 
@@ -262,5 +167,31 @@ class ProfileServiceTest {
 
         assertThat(result.balance()).isNotNull();
         verify(purchasedCourseService).findAllPurchasedCourses(userId);
+    }
+
+    private void mockUserProjection(Long userId, Balance balance, List<Rating> of) {
+        UserProjectionForProfile user = mock(UserProjectionForProfile.class);
+        when(user.getId()).thenReturn(userId);
+        when(user.getUsername()).thenReturn(USERNAME);
+        when(user.getEmail()).thenReturn(EMAIL);
+        when(user.getRole()).thenReturn(Role.USER);
+        when(user.getBalance()).thenReturn(balance);
+        when(user.getUserRatings()).thenReturn(of);
+        when(getUserService.getProjectionForProfile(userId)).thenReturn(Optional.of(user));
+    }
+
+    private Balance createBalance() {
+        return Instancio.of(Balance.class)
+                .set(field(Balance::getCoins), 1000L)
+                .create();
+    }
+
+    private void mockUserProjectionForModerator(Long userId, String username, String email) {
+        UserProjectionForProfile user = mock(UserProjectionForProfile.class);
+        when(user.getId()).thenReturn(userId);
+        when(user.getUsername()).thenReturn(username);
+        when(user.getEmail()).thenReturn(email);
+        when(user.getRole()).thenReturn(Role.MODERATOR);
+        when(getUserService.getProjectionForProfile(userId)).thenReturn(Optional.of(user));
     }
 }

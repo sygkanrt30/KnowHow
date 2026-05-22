@@ -1,15 +1,18 @@
 package ru.tbank.knowhow.service.course;
 
+import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 
 import java.util.Objects;
 
-@RequiredArgsConstructor
+@RequiredArgsConstructor(access = AccessLevel.PACKAGE)
 final class PriceCalculator {
+
+    private static final int DEFAULT_LEVEL = 1;
 
     private final int priceMultiplier;
 
     Integer calculate(Integer userLevel) {
-        return priceMultiplier * (Objects.nonNull(userLevel) ? userLevel : 1);
+        return priceMultiplier * (Objects.nonNull(userLevel) ? userLevel : DEFAULT_LEVEL);
     }
 }

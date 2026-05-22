@@ -19,6 +19,7 @@ import ru.tbank.knowhow.model.dto.request.CourseSearchRequest;
 import ru.tbank.knowhow.service.course.GetCourseService;
 import ru.tbank.knowhow.service.course.SaveCourseService;
 import ru.tbank.knowhow.service.course.DeleteCourseService;
+import ru.tbank.knowhow.service.course.UpdateCourseService;
 import ru.tbank.knowhow.service.course.purchase.CoursePurchaseService;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -37,7 +38,8 @@ public class CourseController {
     private final DeleteCourseService deleteCourseService;
     private final SaveCourseService saveCourseService;
     private final CoursePurchaseService purchaseCourseService;
-    private final GetCourseService courseService;
+    private final GetCourseService getCourseService;
+    private final UpdateCourseService updateCourseService;
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteCourse(@PathVariable Long id) {
@@ -64,7 +66,7 @@ public class CourseController {
                                                          @PathVariable Long id,
                                                          @RequestBody UpdateCourseRequest updateRequest) {
         Long userId = RequestAttributeExtractor.extractUserId(request);
-        return ResponseEntity.ok(saveCourseService.updateCourse(updateRequest, id, userId));
+        return ResponseEntity.ok(updateCourseService.updateCourse(updateRequest, id, userId));
     }
 
     @GetMapping("/search")
@@ -77,12 +79,12 @@ public class CourseController {
             @PageableDefault(size = 20, sort = "created_at", direction = Sort.Direction.DESC) Pageable pageable
     ) {
         var searchRequest = new CourseSearchRequest(title, tags, authorName, minPrice, maxPrice);
-        Page<CourseDto> result = courseService.searchCourses(searchRequest, pageable);
+        Page<CourseDto> result = getCourseService.searchCourses(searchRequest, pageable);
         return ResponseEntity.ok(result);
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<CourseDto> getCourse(@PathVariable Long id) {
-        return ResponseEntity.ok(courseService.getCourseDtoByIdOrElseThrow(id));
+        return ResponseEntity.ok(getCourseService.getCourseDtoByIdOrElseThrow(id));
     }
 }

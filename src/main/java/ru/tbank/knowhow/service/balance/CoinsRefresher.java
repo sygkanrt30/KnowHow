@@ -9,6 +9,9 @@ public final class CoinsRefresher {
     }
 
     public void decrease(Balance balance, long amount) {
+        if (balance.getCoins() < amount) {
+            throw new IllegalArgumentException("The balance cannot be negative");
+        }
         balance.setCoins(balance.getCoins() - amount);
     }
 }

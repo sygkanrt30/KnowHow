@@ -39,6 +39,7 @@ public class UserService implements GetUserService, SaveUserService, DeleteUserS
                        UsernameAndBalanceResponseMapper usernameAndBalanceResponseMapper,
                        @Value("${moderator.code}") String moderatorCode,
                        @Value("${coins.start-amount}") long startCoins) {
+
         this.userRepository = userRepository;
         this.purchasedCourseService = purchasedCourseService;
         this.passwordEncoder = passwordEncoder;

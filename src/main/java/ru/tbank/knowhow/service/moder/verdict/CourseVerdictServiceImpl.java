@@ -1,0 +1,57 @@
+package ru.tbank.knowhow.service.moder.verdict;
+
+import jakarta.persistence.EntityExistsException;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import ru.tbank.knowhow.model.Course;
+import ru.tbank.knowhow.model.ModerationReview;
+import ru.tbank.knowhow.model.User;
+import ru.tbank.knowhow.repository.ModerationReviewRepository;
+import ru.tbank.knowhow.repository.ModeratorLoadRepository;
+import ru.tbank.knowhow.service.course.GetCourseService;
+import ru.tbank.knowhow.service.user.GetUserService;
+
+@RequiredArgsConstructor
+@Service
+@Slf4j
+public class CourseVerdictServiceImpl implements CourseVerdictService {
+
+    private final GetUserService getUserService;
+    private final GetCourseService getCourseService;
+    private final ModerationReviewRepository moderationReviewRepository;
+    private final ModeratorLoadRepository moderatorLoadRepository;
+
+    @Override
+    @Transactional
+    public void approveCourse(Long courseId, String moderatorUsername) {
+        executeCommand(new ApproveCourseCommand(courseId, moderatorUsername));
+    }
+
+    @Override
+    @Transactional
+    public void rejectCourse(Long courseId, String moderatorUsername, String rejectionReason) {
+        executeCommand(new RejectCourseCommand(courseId, moderatorUsername, rejectionReason));
+    }
+
+    private void executeCommand(VerdictCommand command) {
+        User moderator = getUserService.getByUsernameOrElseThrow(command.getModeratorUsername());
+        Course course = getCourseService.getCourseByIdOrElseThrow(command.getCourseId());
+
+        validateNotAlreadyProcessed(course.getId(), moderator.getId());
+
+        ModerationReview review = command.createReview(moderator, course);
+        moderationReviewRepository.save(review);
+
+        moderatorLoadRepository.decrementCoursesInModeration(moderator.getId());
+        command.updateCourseStatusAndModeratorSetNull(course);
+        log.debug("Course {} {} by moderator {}", course.getId(), command.getActionName(), moderator.getId());
+    }
+
+    private void validateNotAlreadyProcessed(Long courseId, Long moderatorId) {
+        if (moderationReviewRepository.existsByCourseIdAndModeratorId(courseId, moderatorId)) {
+            throw new EntityExistsException("Moderator has already processed this course");
+        }
+    }
+}

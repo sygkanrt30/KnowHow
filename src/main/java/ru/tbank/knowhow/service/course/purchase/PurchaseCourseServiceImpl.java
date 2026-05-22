@@ -30,6 +30,7 @@ public class PurchaseCourseServiceImpl implements CoursePurchaseService {
                                      PurchasedCourseRepository purchasedCourseRepository,
                                      GetUserService getUserService,
                                      GetCourseService getCourseService) {
+
         this.courseMapper = courseMapper;
         this.purchasedCourseRepository = purchasedCourseRepository;
         this.coinsRefresher = new CoinsRefresher();
@@ -39,7 +40,7 @@ public class PurchaseCourseServiceImpl implements CoursePurchaseService {
     }
 
     @Override
-    @Transactional(isolation = Isolation.SERIALIZABLE)
+    @Transactional(isolation = Isolation.READ_COMMITTED)
     public CourseDto payForCourse(Long courseId, Long userId) {
         Course course = getCourseService.getCourseByIdOrElseThrow(courseId);
         User user = getUserService.getByIdOrElseThrow(userId);
@@ -51,20 +52,25 @@ public class PurchaseCourseServiceImpl implements CoursePurchaseService {
             return courseMapper.toDto(course);
         }
 
+        processPayment(course, user, author);
+        PurchasedCourse purchasedCourse = createPurchasedCourse(courseId, userId);
+        purchasedCourseRepository.saveAndFlush(purchasedCourse);
+        log.info("Course with id: {} has been purchased", courseId);
+        return courseMapper.toDto(course);
+    }
+
+    private void processPayment(Course course, User user, User author) {
         long price = course.getPrice();
         validator.validateSufficientFunds(user.getBalance().getCoins(), price);
-
         coinsRefresher.decrease(user.getBalance(), price);
         coinsRefresher.increase(author.getBalance(), price);
+    }
 
+    private PurchasedCourse createPurchasedCourse(Long courseId, Long userId) {
         var id = PurchasedCourseId.builder()
                 .courseId(courseId)
                 .userId(userId)
                 .build();
-        var purchasedCourse = new PurchasedCourse(id);
-        purchasedCourseRepository.saveAndFlush(purchasedCourse);
-
-        log.info("Course with id: {} has been purchased", courseId);
-        return courseMapper.toDto(course);
+        return new PurchasedCourse(id);
     }
 }

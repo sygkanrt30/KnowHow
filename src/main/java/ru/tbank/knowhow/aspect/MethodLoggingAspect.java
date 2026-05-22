@@ -57,20 +57,20 @@ public class MethodLoggingAspect {
         String params = Arrays.stream(args)
                 .map(arg -> Objects.nonNull(arg) ? arg.toString() : "null")
                 .collect(Collectors.joining(PARAM_DELIMITER));
-        log.trace("-> Вход в {}.{}({})", className, methodName, params);
+        log.trace("-> Entrance to {}.{}({})", className, methodName, params);
     }
 
     private void logMethodEnd(Object result, String className, String methodName, long duration) {
         String resultStr = Objects.nonNull(result) ? result.toString() : "null";
         if (resultStr.length() > RESULT_LENGHT_LIMIT) {
-            resultStr = resultStr.substring(0, RESULT_LENGHT_LIMIT) + "... [обрезано]";
+            resultStr = resultStr.substring(0, RESULT_LENGHT_LIMIT) + "... [cropped]";
         }
-        log.trace("<- Выход из {}.{} -> {} ({} мс)", className, methodName, resultStr, duration);
+        log.trace("<- Exit from {}.{} -> {} ({} ms)", className, methodName, resultStr, duration);
     }
 
     private void logIfMethodIsSlow(long duration, String className, String methodName) {
         if (duration > LOWER_TIME_LIMIT_FOR_SLOW_METHOD) {
-            log.info("Медленный метод {}.{}: {} мс", className, methodName, duration);
+            log.info("Slow method {}.{}: {} ms", className, methodName, duration);
         }
     }
 }

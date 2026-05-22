@@ -40,10 +40,7 @@ public class ProfileService implements GetProfileService {
 
         BalanceDto balanceDto = balanceMapper.toDto(user.getBalance(), user.getId());
         List<CourseDto> purchasedCourses = purchasedCourseService.findAllPurchasedCourses(userId);
-        List<RatingDto> userRatings = user.getUserRatings().stream()
-                .sorted(Comparator.comparing(Rating::getCreatedAt, Comparator.reverseOrder()))
-                .map(ratingMapper::toDto)
-                .toList();
+        List<RatingDto> userRatings = getRatings(user);
 
         return ProfileDto.builder()
                 .id(user.getId())
@@ -55,5 +52,12 @@ public class ProfileService implements GetProfileService {
                 .givenGrades(userRatings)
                 .countOfGivenGrades(userRatings.size())
                 .build();
+    }
+
+    private List<RatingDto> getRatings(UserProjectionForProfile user) {
+        return user.getUserRatings().stream()
+                .sorted(Comparator.comparing(Rating::getCreatedAt, Comparator.reverseOrder()))
+                .map(ratingMapper::toDto)
+                .toList();
     }
 }

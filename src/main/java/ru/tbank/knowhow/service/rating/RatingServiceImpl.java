@@ -1,6 +1,5 @@
 package ru.tbank.knowhow.service.rating;
 
-import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -12,6 +11,8 @@ import ru.tbank.knowhow.repository.RatingRepository;
 import ru.tbank.knowhow.service.course.GetCourseService;
 import ru.tbank.knowhow.service.course.purchased.PurchasedCourseService;
 import ru.tbank.knowhow.service.user.GetUserService;
+
+import java.util.Optional;
 
 @Slf4j
 @Service
@@ -25,20 +26,16 @@ public class RatingServiceImpl implements RatingService {
 
     @Override
     @Transactional
-    public boolean addRating(Long courseId, Integer grade, String username) {
+    public void insertRating(Long courseId, Long userId, Integer grade) {
+        Optional<Rating> ratingOptional = ratingRepository.findByCourseIdAndUserId(courseId, userId);
+        if (ratingOptional.isPresent()) {
+            ratingOptional.get().setGrade(grade.shortValue());
+            return;
+        }
+
         Course course = getCourseService.getCourseByIdOrElseThrow(courseId);
-        User user = getUserService.getByUsernameOrElseThrow(username);
-
-        boolean hasPurchased = purchasedCourseService.existsPurchasedCourse(courseId, user.getId());
-        if (!hasPurchased) {
-            log.debug("User {} tried to rate course {} without purchasing", username, courseId);
-            return false;
-        }
-
-        boolean alreadyRated = ratingRepository.existsByCourseAndUser(course, user);
-        if (alreadyRated) {
-            return false;
-        }
+        User user = getUserService.getByIdOrElseThrow(userId);
+        throwIfCourseNotPurchased(courseId, user);
 
         var rating = Rating.builder()
                 .grade(grade.shortValue())
@@ -46,16 +43,12 @@ public class RatingServiceImpl implements RatingService {
                 .user(user)
                 .build();
         ratingRepository.save(rating);
-        return true;
     }
 
-    @Override
-    @Transactional
-    public void updateRating(Long courseId, Long userId, Integer newGrade) {
-        Rating rating = ratingRepository.findByCourseIdAndUserId(courseId, userId)
-                .orElseThrow(() -> new EntityNotFoundException("You haven't evaluated this course."));
-
-        rating.setGrade(newGrade.shortValue());
-        log.debug("User {} updated rating for course {} to {}", userId, courseId, newGrade);
+    private void throwIfCourseNotPurchased(Long courseId, User user) {
+        boolean hasPurchased = purchasedCourseService.existsPurchasedCourse(courseId, user.getId());
+        if (!hasPurchased) {
+            throw new IllegalStateException("You can not rate course without purchasing");
+        }
     }
 }
