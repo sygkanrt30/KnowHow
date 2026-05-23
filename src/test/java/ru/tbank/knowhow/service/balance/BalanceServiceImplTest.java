@@ -1,6 +1,7 @@
 package ru.tbank.knowhow.service.balance;
 
 import org.instancio.Instancio;
+import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -26,6 +27,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
+@Tag("unit")
 class BalanceServiceImplTest {
 
     @Mock
