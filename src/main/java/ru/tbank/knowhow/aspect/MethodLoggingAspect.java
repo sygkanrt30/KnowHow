@@ -6,11 +6,15 @@ import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Pointcut;
 import org.aspectj.lang.reflect.MethodSignature;
+import org.slf4j.MDC;
 import org.springframework.stereotype.Component;
 
 import java.util.Arrays;
 import java.util.Objects;
+import java.util.UUID;
 import java.util.stream.Collectors;
+
+import static ru.tbank.knowhow.aspect.MDCContextKey.*;
 
 @Aspect
 @Component
@@ -20,11 +24,17 @@ public class MethodLoggingAspect {
     private static final int LOWER_TIME_LIMIT_FOR_SLOW_METHOD = 1000;
     private static final int RESULT_LENGHT_LIMIT = 500;
     private static final String PARAM_DELIMITER = ", ";
+    private static final String TRACE_ID = "traceId";
 
-    @Pointcut("""
+    @Pointcut(value = """
                     execution(* ru.tbank.knowhow..*.*(..)) &&
                     !within(ru.tbank.knowhow.ecxeption..*) &&
-                    !within(ru.tbank.knowhow.config..*)
+                    !within(ru.tbank.knowhow.config..*) &&
+                    !execution(* ru.tbank.knowhow..*.get*(..)) &&
+                    !execution(* ru.tbank.knowhow..*.set*(..)) &&
+                    !execution(* ru.tbank.knowhow..*.toString()) &&
+                    !execution(* ru.tbank.knowhow..*.hashCode()) &&
+                    !execution(* ru.tbank.knowhow..*.equals(..))
             """)
     public void applicationPackageMethods() {}
 
@@ -34,43 +44,70 @@ public class MethodLoggingAspect {
         String className = signature.getDeclaringType().getSimpleName();
         String methodName = signature.getName();
 
-        if (log.isTraceEnabled()) {
-            logMethodStart(joinPoint, className, methodName);
-        }
-
-        long startTime = System.currentTimeMillis();
-        Object result = null;
         try {
-            result = joinPoint.proceed();
-            return result;
-        } finally {
-            long duration = System.currentTimeMillis() - startTime;
-            if (log.isTraceEnabled()) {
-                logMethodEnd(result, className, methodName, duration);
+            MDC.put(EXECUTION_CLASS.value(), className);
+            MDC.put(EXECUTION_METHOD.value(), methodName);
+
+            if (MDC.get(TRACE_ID) == null) {
+                MDC.put(TRACE_ID, UUID.randomUUID().toString());
             }
-            logIfMethodIsSlow(duration, className, methodName);
+            if (log.isTraceEnabled()) {
+                logMethodStart(joinPoint);
+            }
+
+            long startTime = System.currentTimeMillis();
+            Object result = null;
+            try {
+                result = joinPoint.proceed();
+                return result;
+            } finally {
+                long duration = System.currentTimeMillis() - startTime;
+                if (log.isTraceEnabled()) {
+                    logMethodEndStructured(result, duration);
+                }
+                if (duration > LOWER_TIME_LIMIT_FOR_SLOW_METHOD) {
+                    logSlowMethodStructured(duration, className, methodName, joinPoint.getArgs());
+                }
+            }
+        } finally {
+            MDC.clear();
         }
     }
 
-    private void logMethodStart(ProceedingJoinPoint joinPoint, String className, String methodName) {
-        Object[] args = joinPoint.getArgs();
+    private void logMethodStart(ProceedingJoinPoint joinPoint) {
+        MDC.put(ARGS.value(), truncateArgs(joinPoint.getArgs()));
+        log.trace("Method execution started");
+    }
+
+    private void logMethodEndStructured(Object result, long duration) {
+        MDC.put(EXECUTION_TIME_MS.value(), String.valueOf(duration));
+        MDC.put(METHOD_RESULT.value(), truncateResult(result));
+        log.trace("Method execution finished");
+    }
+
+    private void logSlowMethodStructured(long duration, String className, String methodName, Object[] args) {
+        MDC.put(METHOD_DURATION_MS.value(), String.valueOf(duration));
+        MDC.put(SLOW_METHOD_CLASS.value(), className);
+        MDC.put(SLOW_METHOD_NAME.value(), methodName);
+        MDC.put(ARGS.value(), truncateArgs(args));
+        log.info("Slow method detected");
+    }
+
+    private String truncateArgs(Object[] args) {
         String params = Arrays.stream(args)
                 .map(arg -> Objects.nonNull(arg) ? arg.toString() : "null")
+                .limit(10)
                 .collect(Collectors.joining(PARAM_DELIMITER));
-        log.trace("-> Entrance to {}.{}({})", className, methodName, params);
+        return params.length() > RESULT_LENGHT_LIMIT
+                ? params.substring(0, RESULT_LENGHT_LIMIT) + "..."
+                : params;
     }
 
-    private void logMethodEnd(Object result, String className, String methodName, long duration) {
-        String resultStr = Objects.nonNull(result) ? result.toString() : "null";
-        if (resultStr.length() > RESULT_LENGHT_LIMIT) {
-            resultStr = resultStr.substring(0, RESULT_LENGHT_LIMIT) + "... [cropped]";
-        }
-        log.trace("<- Exit from {}.{} -> {} ({} ms)", className, methodName, resultStr, duration);
-    }
-
-    private void logIfMethodIsSlow(long duration, String className, String methodName) {
-        if (duration > LOWER_TIME_LIMIT_FOR_SLOW_METHOD) {
-            log.info("Slow method {}.{}: {} ms", className, methodName, duration);
-        }
+    private String truncateResult(Object result) {
+        if (result == null) return "null";
+        String resultStr = result.toString();
+        return resultStr.length() > RESULT_LENGHT_LIMIT
+                ? resultStr.substring(0, RESULT_LENGHT_LIMIT) + "... [cropped]"
+                : resultStr;
     }
 }

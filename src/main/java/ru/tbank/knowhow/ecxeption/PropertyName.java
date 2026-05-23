@@ -9,7 +9,12 @@ import lombok.experimental.Accessors;
 @Accessors(fluent = true)
 enum PropertyName {
     ERROR_CODE("errorCode"),
-    TIMESTAMP("timestamp");
+    TIMESTAMP("timestamp"),
+    DETAILS("details"),
+    PATH("path"),
+    EXCEPTION_TYPE("exceptionType"),
+    STATUS("status");
+
 
     private final String value;
 }
