@@ -15,19 +15,19 @@ final class ProfileTestDataFabric {
     static List<Rating> createRatings() {
         Rating ratingOld = Instancio.of(Rating.class)
                 .set(field(Rating::getId), 1L)
-                .set(field(Rating::getGrade), (short) 3)
+                .set(field(Rating::getGrade), 3)
                 .set(field(Rating::getCreatedAt), Instant.parse("2024-01-01T10:00:00Z"))
                 .create();
 
         Rating ratingMiddle = Instancio.of(Rating.class)
                 .set(field(Rating::getId), 2L)
-                .set(field(Rating::getGrade), (short) 4)
+                .set(field(Rating::getGrade), 4)
                 .set(field(Rating::getCreatedAt), Instant.parse("2024-01-10T10:00:00Z"))
                 .create();
 
         Rating ratingNew = Instancio.of(Rating.class)
                 .set(field(Rating::getId), 3L)
-                .set(field(Rating::getGrade), (short) 5)
+                .set(field(Rating::getGrade),  5)
                 .set(field(Rating::getCreatedAt), Instant.parse("2024-01-20T10:00:00Z"))
                 .create();
         return List.of(ratingOld, ratingMiddle, ratingNew);
@@ -36,17 +36,17 @@ final class ProfileTestDataFabric {
     static List<RatingDto> createRatingDtos() {
         RatingDto ratingDtoOld = Instancio.of(RatingDto.class)
                 .set(field(RatingDto::id), 1L)
-                .set(field(RatingDto::grade), (short) 3)
+                .set(field(RatingDto::grade), 3)
                 .create();
 
         RatingDto ratingDtoMiddle = Instancio.of(RatingDto.class)
                 .set(field(RatingDto::id), 2L)
-                .set(field(RatingDto::grade), (short) 4)
+                .set(field(RatingDto::grade), 4)
                 .create();
 
         RatingDto ratingDtoNew = Instancio.of(RatingDto.class)
                 .set(field(RatingDto::id), 3L)
-                .set(field(RatingDto::grade), (short) 5)
+                .set(field(RatingDto::grade),  5)
                 .create();
 
         return List.of(ratingDtoOld, ratingDtoMiddle, ratingDtoNew);

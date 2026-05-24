@@ -65,7 +65,7 @@ public class CourseService implements DeleteCourseService, GetCourseService, Sav
     private void throwIfCourseAlreadyBeenPurchased(Long id) {
         boolean isPurchased = purchasedCourseService.existsPurchasedCourseByCourseId(id);
         if (isPurchased) {
-            throw new IllegalStateException("Cannot delete course that has already been purchased");
+            throw new IllegalArgumentException("Cannot delete course that has already been purchased");
         }
     }
 

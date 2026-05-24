@@ -78,9 +78,7 @@ public class UserService implements GetUserService, SaveUserService, DeleteUserS
     @Override
     @Transactional
     public UsernameAndBalanceResponse getCurrentUser(Long id) {
-        User user = userRepository.findById(id).orElseThrow(
-                () -> new EntityNotFoundException("User not found with id: " + id)
-        );
+        User user = getByIdOrElseThrow(id);
         return usernameAndBalanceResponseMapper.toUsernameAndBalanceResponse(user);
     }
 

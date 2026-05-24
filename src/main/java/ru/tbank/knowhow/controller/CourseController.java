@@ -48,11 +48,11 @@ public class CourseController {
     }
 
     @PostMapping
-    @ResponseStatus(HttpStatus.CREATED)
     public ResponseEntity<CourseDto> createCourse(
             @RequestBody @Valid CreateCourseRequest request,
             @AuthenticationPrincipal UserDetails userDetails) {
-        return ResponseEntity.ok(saveCourseService.createCourse(request, userDetails.getUsername()));
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body(saveCourseService.createCourse(request, userDetails.getUsername()));
     }
 
     @PostMapping("/pay/{id}")

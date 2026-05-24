@@ -27,9 +27,10 @@ public class RatingServiceImpl implements RatingService {
     @Override
     @Transactional
     public void insertRating(Long courseId, Long userId, Integer grade) {
+        validateGrade(grade);
         Optional<Rating> ratingOptional = ratingRepository.findByCourseIdAndUserId(courseId, userId);
         if (ratingOptional.isPresent()) {
-            ratingOptional.get().setGrade(grade.shortValue());
+            ratingOptional.get().setGrade(grade);
             return;
         }
 
@@ -38,17 +39,23 @@ public class RatingServiceImpl implements RatingService {
         throwIfCourseNotPurchased(courseId, user);
 
         var rating = Rating.builder()
-                .grade(grade.shortValue())
+                .grade(grade)
                 .course(course)
                 .user(user)
                 .build();
         ratingRepository.save(rating);
     }
 
+    private void validateGrade(Integer grade) {
+        if (grade < 1 || grade > 5) {
+            throw new IllegalArgumentException("Grade must be between 1 and 5");
+        }
+    }
+
     private void throwIfCourseNotPurchased(Long courseId, User user) {
         boolean hasPurchased = purchasedCourseService.existsPurchasedCourse(courseId, user.getId());
         if (!hasPurchased) {
-            throw new IllegalStateException("You can not rate course without purchasing");
+            throw new IllegalArgumentException("You can not rate course without purchasing");
         }
     }
 }

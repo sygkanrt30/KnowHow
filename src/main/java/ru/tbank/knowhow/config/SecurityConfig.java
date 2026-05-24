@@ -69,6 +69,7 @@ public class SecurityConfig {
                 .addFilterAfter(new GetCsrfTokenFilter(), ExceptionTranslationFilter.class)
                 .authorizeHttpRequests(authorizeHttpRequests ->
                         authorizeHttpRequests
+                                .requestMatchers(HttpMethod.GET, tagUrl).permitAll()
                                 .requestMatchers(authUrl + "/me").authenticated()
                                 .requestMatchers(authUrl + "/**").permitAll()
                                 .requestMatchers(HttpMethod.GET, profileUrl).authenticated()
@@ -83,7 +84,6 @@ public class SecurityConfig {
                                 .requestMatchers(courseUrl + "/retry-pass-moderation/{id}").hasRole(Role.USER.name())
                                 .requestMatchers(courseUrl + "/moderation/**").hasRole(Role.MODERATOR.name())
                                 .requestMatchers(courseUrl + "/search").permitAll()
-                                .requestMatchers(HttpMethod.GET, tagUrl).permitAll()
                                 .requestMatchers(
                                         "/swagger-ui/**",
                                         "/swagger-ui.html",

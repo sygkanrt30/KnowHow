@@ -2,7 +2,7 @@ package ru.tbank.knowhow.model.dto.response;
 
 public record RatingDto(
         Long id,
-        Short grade,
+        Integer grade,
         Long userId,
         CourseDto course
 ) {

@@ -1,5 +1,6 @@
 package ru.tbank.knowhow.service.rating;
 
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
@@ -59,7 +60,7 @@ class RatingServiceImplTest {
 
         var existingRating = Rating.builder()
                 .id(10L)
-                .grade((short) 3)
+                .grade(3)
                 .build();
 
         when(ratingRepository.findByCourseIdAndUserId(courseId, userId))
@@ -67,11 +68,21 @@ class RatingServiceImplTest {
 
         ratingService.insertRating(courseId, userId, newGrade);
 
-        assertThat(existingRating.getGrade()).isEqualTo((short) 4);
+        assertThat(existingRating.getGrade()).isEqualTo(4);
         verify(ratingRepository, never()).save(any(Rating.class));
         verify(getCourseService, never()).getCourseByIdOrElseThrow(courseId);
         verify(getUserService, never()).getByIdOrElseThrow(userId);
         verify(purchasedCourseService, never()).existsPurchasedCourse(courseId, userId);
+    }
+
+    @Test
+    void insertRating_ShouldThrowException_WhenRatingNotBetween1And5() {
+        Integer newGrade = 12;
+
+        Assertions.assertThrows(IllegalArgumentException.class,
+                () -> ratingService.insertRating(courseId, userId, newGrade));
+
+        verify(ratingRepository, never()).findByCourseIdAndUserId(any(Long.class), any(Long.class));
     }
 
     @Test
@@ -95,7 +106,7 @@ class RatingServiceImplTest {
         verify(ratingRepository).save(ratingCaptor.capture());
 
         Rating savedRating = ratingCaptor.getValue();
-        assertThat(savedRating.getGrade()).isEqualTo((short) 5);
+        assertThat(savedRating.getGrade()).isEqualTo(5);
         assertThat(savedRating.getCourse()).isEqualTo(course);
         assertThat(savedRating.getUser()).isEqualTo(user);
     }
@@ -115,7 +126,7 @@ class RatingServiceImplTest {
                 .thenReturn(false);
 
         assertThatThrownBy(() -> ratingService.insertRating(courseId, userId, grade))
-                .isInstanceOf(IllegalStateException.class)
+                .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("You can not rate course without purchasing");
 
         verify(ratingRepository, never()).save(any(Rating.class));
@@ -141,7 +152,7 @@ class RatingServiceImplTest {
         ArgumentCaptor<Rating> ratingCaptor = ArgumentCaptor.forClass(Rating.class);
         verify(ratingRepository).save(ratingCaptor.capture());
 
-        assertThat(ratingCaptor.getValue().getGrade()).isEqualTo((short) 1);
+        assertThat(ratingCaptor.getValue().getGrade()).isEqualTo(1);
     }
 
     @Test
@@ -164,7 +175,7 @@ class RatingServiceImplTest {
         ArgumentCaptor<Rating> ratingCaptor = ArgumentCaptor.forClass(Rating.class);
         verify(ratingRepository).save(ratingCaptor.capture());
 
-        assertThat(ratingCaptor.getValue().getGrade()).isEqualTo((short) 5);
+        assertThat(ratingCaptor.getValue().getGrade()).isEqualTo(5);
     }
 
     private Course createCourseWithId(Long courseId) {

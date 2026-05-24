@@ -23,7 +23,7 @@ public class Rating {
     private Long id;
 
     @Column(nullable = false)
-    private Short grade;
+    private Integer grade;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "course_id")

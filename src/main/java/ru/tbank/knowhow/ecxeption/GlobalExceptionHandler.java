@@ -2,6 +2,7 @@ package ru.tbank.knowhow.ecxeption;
 
 import jakarta.persistence.EntityExistsException;
 import jakarta.persistence.EntityNotFoundException;
+import jakarta.validation.ConstraintViolationException;
 import lombok.extern.slf4j.Slf4j;
 import org.slf4j.MDC;
 import org.springframework.http.HttpStatus;
@@ -10,6 +11,7 @@ import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 
 import java.time.Instant;
 
@@ -34,7 +36,22 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler
     public ProblemDetail catchIllegalArgumentException(IllegalArgumentException e) {
-        return handleException(e, HttpStatus.INTERNAL_SERVER_ERROR, "ILLEGAL_ARGUMENT");
+        return handleException(e, HttpStatus.BAD_REQUEST, "ILLEGAL_ARGUMENT");
+    }
+
+    @ExceptionHandler
+    public ProblemDetail catchNullPointerException(NullPointerException e) {
+        return handleException(e, HttpStatus.INTERNAL_SERVER_ERROR, "NULL_ARGUMENT");
+    }
+
+    @ExceptionHandler
+    public ProblemDetail catchMethodArgumentTypeMismatchException(MethodArgumentTypeMismatchException e) {
+        return handleException(e, HttpStatus.BAD_REQUEST, "METHOD_ARGUMENT_TYPE_MISMATCH");
+    }
+
+    @ExceptionHandler
+    public ProblemDetail catchConstraintViolationException(ConstraintViolationException e) {
+        return handleException(e, HttpStatus.BAD_REQUEST, "CONSTRAINT_VIOLATION");
     }
 
     @ExceptionHandler
@@ -44,7 +61,7 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(IllegalStateException.class)
     public ProblemDetail catchIllegalStateException(IllegalStateException e) {
-        return handleException(e, HttpStatus.BAD_REQUEST, "ILLEGAL_STATE");
+        return handleException(e, HttpStatus.INTERNAL_SERVER_ERROR, "ILLEGAL_STATE");
     }
 
     private ProblemDetail handleException(Exception e, HttpStatus status, String errorCode) {

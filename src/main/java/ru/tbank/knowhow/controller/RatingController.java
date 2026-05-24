@@ -16,7 +16,7 @@ public class RatingController {
     private final RatingService ratingService;
 
     @PostMapping("/{courseId}/rating")
-    public ResponseEntity<String> addRating(
+    public ResponseEntity<String> insertRating(
             @PathVariable Long courseId,
             @RequestParam Integer grade,
             HttpServletRequest httpRequest) {
