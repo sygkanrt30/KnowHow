@@ -51,7 +51,7 @@ public class User implements UserDetails {
     private Integer level = 1;
 
     @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "balance_id", nullable = false, unique = true)
+    @JoinColumn(name = "balance_id", unique = true)
     @ToString.Exclude
     private Balance balance;
 

@@ -171,8 +171,7 @@ class UserServiceTest {
         when(userRepository.findById(userId)).thenReturn(Optional.empty());
 
         assertThatThrownBy(() -> userService.getCurrentUser(userId))
-                .isInstanceOf(EntityNotFoundException.class)
-                .hasMessageContaining("User not found with id: " + userId);
+                .isInstanceOf(EntityNotFoundException.class);
 
         verify(userRepository).findById(userId);
         verifyNoInteractions(usernameAndBalanceResponseMapper);

@@ -85,16 +85,13 @@ public class UserService implements GetUserService, SaveUserService, DeleteUserS
     @Override
     @Transactional
     public void save(String username, byte[] password, String email, String moderatorCode) {
-        Role role = getRole(moderatorCode);
         try {
-            var balance = new Balance(startCoins);
             var user = User.builder()
                     .username(username)
                     .email(email)
-                    .role(role)
                     .password(passwordEncoder.encode(new String(password)))
-                    .balance(balance)
                     .build();
+            setNotCommonAttribute(user, moderatorCode);
             userRepository.saveAndFlush(user);
             log.info("Saved user: {}", user);
         } catch (Exception e) {
@@ -102,11 +99,13 @@ public class UserService implements GetUserService, SaveUserService, DeleteUserS
         }
     }
 
-    private Role getRole(String moderatorCode) {
-        if (Objects.nonNull(moderatorCode) && this.moderatorCode.equals(moderatorCode)) {
-            return Role.MODERATOR;
+    private void setNotCommonAttribute(User user, String moderatorCode) {
+        if (!(Objects.nonNull(moderatorCode) && this.moderatorCode.equals(moderatorCode))) {
+            user.setRole(Role.USER);
+            user.setBalance(new Balance(startCoins));
+            return;
         }
-        return Role.USER;
+        user.setRole(Role.MODERATOR);
     }
 
     @Override

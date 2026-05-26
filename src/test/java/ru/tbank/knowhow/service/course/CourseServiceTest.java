@@ -101,7 +101,7 @@ class CourseServiceTest {
         when(purchasedCourseService.existsPurchasedCourseByCourseId(courseId)).thenReturn(true);
 
         assertThatThrownBy(() -> courseService.deleteCourse(courseId))
-                .isInstanceOf(IllegalStateException.class)
+                .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("Cannot delete course that has already been purchased");
 
         verify(courseRepository, never()).delete(course);

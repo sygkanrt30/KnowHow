@@ -63,7 +63,7 @@ class ModerationControllerTest {
                 .hasStatus(HttpStatus.OK)
                 .body()
                 .asString()
-                .isEqualTo("Курс одобрен");
+                .isEqualTo("Course approved");
 
         verify(courseVerdictService, times(1)).approveCourse(courseId, moderatorUsername);
     }
@@ -120,7 +120,7 @@ class ModerationControllerTest {
                 .hasStatus(HttpStatus.OK)
                 .body()
                 .asString()
-                .isEqualTo("Курс отклонён");
+                .isEqualTo("Course rejected");
 
         verify(courseVerdictService, times(1)).rejectCourse(courseId, moderatorUsername, rejectionReason);
     }

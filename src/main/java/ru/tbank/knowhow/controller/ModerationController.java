@@ -31,7 +31,7 @@ public class ModerationController {
             @AuthenticationPrincipal UserDetails userDetails) {
 
         courseVerdictService.approveCourse(id, userDetails.getUsername());
-        return ResponseEntity.ok("Курс одобрен");
+        return ResponseEntity.ok("Course approved");
     }
 
     @PostMapping("/{id}/reject")
@@ -41,7 +41,7 @@ public class ModerationController {
             @Valid @RequestBody ModerationRejectRequest request) {
 
         courseVerdictService.rejectCourse(id, userDetails.getUsername(), request.reason());
-        return ResponseEntity.ok("Курс отклонён");
+        return ResponseEntity.ok("Course rejected");
     }
 
     @GetMapping("/queue/on_moderation")
