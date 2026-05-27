@@ -145,7 +145,7 @@ class PurchaseCourseServiceImplTest {
     void payForCourse_ShouldThrowException_WhenInsufficientFunds() {
         Long lowBalance = 300L;
         User userWithLowBalance = createUser(USER_ID, lowBalance);
-        course.setPrice(500L);
+        course.getBusinessDetails().setPrice(500L);
 
         when(getCourseService.getCourseByIdOrElseThrow(COURSE_ID)).thenReturn(course);
         when(getUserService.getByIdOrElseThrow(USER_ID)).thenReturn(userWithLowBalance);
@@ -174,10 +174,12 @@ class PurchaseCourseServiceImplTest {
     }
 
     private Course createDefaultCourse() {
+        CourseBusinessDetails businessDetails = new CourseBusinessDetails();
+        businessDetails.setPrice(COURSE_PRICE);
         return Instancio.of(Course.class)
                 .set(field(Course::isNotForSale), false)
                 .set(field(Course::getStatus), CourseStatus.PASSED_MODERATION)
-                .set(field(Course::getPrice), COURSE_PRICE)
+                .set(field(Course::getBusinessDetails), businessDetails)
                 .set(field(Course::getAuthor), author)
                 .create();
     }

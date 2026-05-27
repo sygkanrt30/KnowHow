@@ -7,7 +7,6 @@ import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.proxy.HibernateProxy;
 import org.hibernate.type.SqlTypes;
 
-import java.math.BigDecimal;
 import java.time.Instant;
 import java.util.Objects;
 
@@ -15,7 +14,6 @@ import java.util.Objects;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-@Builder
 @Entity
 @ToString
 @Table(name = "course")
@@ -25,35 +23,19 @@ public class Course {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false, length = 100, unique = true)
-    private String title;
-
-    @Column(nullable = false, columnDefinition = "TEXT")
-    private String description;
-
     @JdbcTypeCode(SqlTypes.NAMED_ENUM)
     @Column(nullable = false, columnDefinition = "status")
     private CourseStatus status;
 
-    @Column(name = "course_text", nullable = false, columnDefinition = "TEXT")
-    private String courseText;
-
-    @Column(nullable = false)
-    private Long price;
-
-    @JdbcTypeCode(SqlTypes.ARRAY)
-    @Column(columnDefinition = "VARCHAR(50)[]")
-    @Builder.Default
-    private String[] tags = new String[0];
+    @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
+    @JoinColumn(name = "business_details_id")
+    @ToString.Exclude
+    private CourseBusinessDetails businessDetails;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "moderator_id")
     @ToString.Exclude
     private User moderator;
-
-    @Column(precision = 2, scale = 1, nullable = false)
-    @Builder.Default
-    private BigDecimal rating = BigDecimal.ZERO;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
@@ -61,7 +43,6 @@ public class Course {
     private User author;
 
     @Column(name = "not_for_sale")
-    @Builder.Default
     private boolean notForSale = false;
 
     @CreationTimestamp

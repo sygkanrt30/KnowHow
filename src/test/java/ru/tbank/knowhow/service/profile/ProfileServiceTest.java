@@ -11,6 +11,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import ru.tbank.knowhow.model.Balance;
 import ru.tbank.knowhow.model.Rating;
 import ru.tbank.knowhow.model.Role;
+import ru.tbank.knowhow.model.UserContact;
 import ru.tbank.knowhow.model.dto.response.*;
 import ru.tbank.knowhow.model.mapper.BalanceMapper;
 import ru.tbank.knowhow.model.mapper.RatingMapper;
@@ -173,9 +174,10 @@ class ProfileServiceTest {
 
     private void mockUserProjection(Long userId, Balance balance, List<Rating> of) {
         UserProjectionForProfile user = mock(UserProjectionForProfile.class);
+        UserContact userContact = new UserContact(EMAIL);
         when(user.getId()).thenReturn(userId);
         when(user.getUsername()).thenReturn(USERNAME);
-        when(user.getEmail()).thenReturn(EMAIL);
+        when(user.getUserContact()).thenReturn(userContact);
         when(user.getRole()).thenReturn(Role.USER);
         when(user.getBalance()).thenReturn(balance);
         when(user.getUserRatings()).thenReturn(of);
@@ -190,9 +192,10 @@ class ProfileServiceTest {
 
     private void mockUserProjectionForModerator(Long userId, String username, String email) {
         UserProjectionForProfile user = mock(UserProjectionForProfile.class);
+        UserContact userContact = new UserContact(email);
         when(user.getId()).thenReturn(userId);
         when(user.getUsername()).thenReturn(username);
-        when(user.getEmail()).thenReturn(email);
+        when(user.getUserContact()).thenReturn(userContact);
         when(user.getRole()).thenReturn(Role.MODERATOR);
         when(getUserService.getProjectionForProfile(userId)).thenReturn(Optional.of(user));
     }

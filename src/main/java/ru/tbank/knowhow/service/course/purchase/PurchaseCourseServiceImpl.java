@@ -60,7 +60,7 @@ public class PurchaseCourseServiceImpl implements CoursePurchaseService {
     }
 
     private void processPayment(Course course, User user, User author) {
-        long price = course.getPrice();
+        long price = course.getBusinessDetails().getPrice();
         validator.validateSufficientFunds(user.getBalance().getCoins(), price);
         coinsRefresher.decrease(user.getBalance(), price);
         coinsRefresher.increase(author.getBalance(), price);

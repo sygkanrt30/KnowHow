@@ -12,6 +12,7 @@ import ru.tbank.knowhow.ecxeption.RegistrationException;
 import ru.tbank.knowhow.model.Balance;
 import ru.tbank.knowhow.model.Role;
 import ru.tbank.knowhow.model.User;
+import ru.tbank.knowhow.model.UserContact;
 import ru.tbank.knowhow.model.dto.response.UserProjectionForProfile;
 import ru.tbank.knowhow.model.dto.response.UsernameAndBalanceResponse;
 import ru.tbank.knowhow.model.mapper.UsernameAndBalanceResponseMapper;
@@ -86,9 +87,10 @@ public class UserService implements GetUserService, SaveUserService, DeleteUserS
     @Transactional
     public void save(String username, byte[] password, String email, String moderatorCode) {
         try {
+            UserContact userContact = new UserContact(email);
             var user = User.builder()
                     .username(username)
-                    .email(email)
+                    .userContact(userContact)
                     .password(passwordEncoder.encode(new String(password)))
                     .build();
             setNotCommonAttribute(user, moderatorCode);

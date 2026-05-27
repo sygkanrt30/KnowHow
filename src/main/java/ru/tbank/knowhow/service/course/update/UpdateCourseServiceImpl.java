@@ -6,6 +6,7 @@ import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.tbank.knowhow.model.Course;
+import ru.tbank.knowhow.model.CourseBusinessDetails;
 import ru.tbank.knowhow.model.CourseStatus;
 import ru.tbank.knowhow.model.dto.request.UpdateCourseRequest;
 import ru.tbank.knowhow.model.dto.response.CourseDto;
@@ -53,12 +54,13 @@ public class UpdateCourseServiceImpl implements UpdateCourseService {
     }
 
     private void applyUpdates(Course course, UpdateCourseRequest request) {
-        Optional.ofNullable(request.title()).ifPresent(course::setTitle);
-        Optional.ofNullable(request.courseText()).ifPresent(course::setCourseText);
-        Optional.ofNullable(request.description()).ifPresent(course::setDescription);
+        CourseBusinessDetails businessDetails = course.getBusinessDetails();
+        Optional.ofNullable(request.title()).ifPresent(businessDetails::setTitle);
+        Optional.ofNullable(request.courseText()).ifPresent(businessDetails::setCourseText);
+        Optional.ofNullable(request.description()).ifPresent(businessDetails::setDescription);
         Optional.ofNullable(request.tags())
                 .filter(tags -> tags.length > 0)
-                .ifPresent(course::setTags);
+                .ifPresent(businessDetails::setTags);
     }
 
     private void sendToModeration(Course course) {

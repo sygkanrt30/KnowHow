@@ -34,7 +34,7 @@ public class ProfileService implements GetProfileService {
             return ProfileDto.builder()
                     .id(user.getId())
                     .username(user.getUsername())
-                    .email(user.getEmail())
+                    .email(user.getUserContact().getEmail())
                     .build();
         }
 
@@ -45,7 +45,7 @@ public class ProfileService implements GetProfileService {
         return ProfileDto.builder()
                 .id(user.getId())
                 .username(user.getUsername())
-                .email(user.getEmail())
+                .email(user.getUserContact().getEmail())
                 .balance(balanceDto)
                 .purchasedCourses(purchasedCourses)
                 .countOfPurchasedCourses(purchasedCourses.size())

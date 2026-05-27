@@ -38,9 +38,10 @@ public class User implements UserDetails {
     @ToString.Exclude
     private String password;
 
-    @Column(nullable = false, length = 50, unique = true, name = "email")
+    @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
+    @JoinColumn(name = "contact_id")
     @ToString.Exclude
-    private String email;
+    private UserContact userContact;
 
     @JdbcTypeCode(SqlTypes.NAMED_ENUM)
     @Column(nullable = false, name = "role", columnDefinition = "usr_role")
@@ -50,14 +51,13 @@ public class User implements UserDetails {
     @Builder.Default
     private Integer level = 1;
 
-    @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY, optional = false)
+    @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "balance_id", unique = true)
     @ToString.Exclude
     private Balance balance;
 
     @Column(name = "created_at")
     @CreationTimestamp
-    @ToString.Exclude
     private Instant createdAt;
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)

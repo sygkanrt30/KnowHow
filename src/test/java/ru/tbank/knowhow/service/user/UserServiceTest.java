@@ -202,7 +202,7 @@ class UserServiceTest {
         verify(userRepository).saveAndFlush(argThat(user ->
                 user.getRole() == Role.USER &&
                         user.getUsername().equals(USERNAME) &&
-                        user.getEmail().equals(email) &&
+                        user.getUserContact().getEmail().equals(email) &&
                         user.getBalance().getCoins() == START_COINS
         ));
     }
