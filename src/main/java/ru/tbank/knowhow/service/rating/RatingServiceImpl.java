@@ -4,13 +4,13 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import ru.tbank.knowhow.model.Course;
-import ru.tbank.knowhow.model.Rating;
-import ru.tbank.knowhow.model.User;
+import ru.tbank.knowhow.model.courses.Course;
+import ru.tbank.knowhow.model.ratings.Rating;
+import ru.tbank.knowhow.model.users.User;
 import ru.tbank.knowhow.repository.RatingRepository;
-import ru.tbank.knowhow.service.course.GetCourseService;
-import ru.tbank.knowhow.service.course.purchased.PurchasedCourseService;
-import ru.tbank.knowhow.service.user.GetUserService;
+import ru.tbank.knowhow.service.courses.GetCourseService;
+import ru.tbank.knowhow.service.purchased.PurchasedCourseService;
+import ru.tbank.knowhow.service.users.GetUserService;
 
 import java.util.Optional;
 

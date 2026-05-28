@@ -2,8 +2,8 @@ package ru.tbank.knowhow.repository;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
-import ru.tbank.knowhow.model.PurchasedCourse;
-import ru.tbank.knowhow.model.PurchasedCourseId;
+import ru.tbank.knowhow.model.purchase.PurchasedCourse;
+import ru.tbank.knowhow.model.purchase.PurchasedCourseId;
 
 import java.util.List;
 import java.util.Optional;

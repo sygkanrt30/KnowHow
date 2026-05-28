@@ -16,10 +16,10 @@ import org.springframework.security.web.authentication.Http403ForbiddenEntryPoin
 import org.springframework.security.web.authentication.logout.CookieClearingLogoutHandler;
 import org.springframework.security.web.authentication.preauth.PreAuthenticatedAuthenticationProvider;
 import org.springframework.security.web.csrf.CsrfFilter;
-import ru.tbank.knowhow.model.Token;
-import ru.tbank.knowhow.model.User;
-import ru.tbank.knowhow.service.token.TokenAuthenticationUserDetailsService;
-import ru.tbank.knowhow.service.user.GetUserService;
+import ru.tbank.knowhow.model.users.auth.Token;
+import ru.tbank.knowhow.model.users.User;
+import ru.tbank.knowhow.service.users.token.TokenAuthenticationUserDetailsService;
+import ru.tbank.knowhow.service.users.GetUserService;
 
 import java.util.Date;
 import java.util.Objects;

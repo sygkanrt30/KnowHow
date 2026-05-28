@@ -9,8 +9,8 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.web.authentication.session.SessionAuthenticationException;
 import org.springframework.security.web.authentication.session.SessionAuthenticationStrategy;
-import ru.tbank.knowhow.model.Token;
-import ru.tbank.knowhow.service.token.TokenCookieFactory;
+import ru.tbank.knowhow.model.users.auth.Token;
+import ru.tbank.knowhow.service.users.token.TokenCookieFactory;
 
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;

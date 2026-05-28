@@ -2,8 +2,8 @@ package ru.tbank.knowhow.repository;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
-import ru.tbank.knowhow.model.User;
-import ru.tbank.knowhow.model.dto.response.UserProjectionForProfile;
+import ru.tbank.knowhow.model.users.User;
+import ru.tbank.knowhow.model.dto.user.response.UserProjectionForProfile;
 
 import java.util.Optional;
 

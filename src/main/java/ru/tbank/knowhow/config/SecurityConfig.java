@@ -26,13 +26,13 @@ import org.springframework.security.web.csrf.CsrfTokenRequestAttributeHandler;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
-import ru.tbank.knowhow.model.Role;
+import ru.tbank.knowhow.model.users.Role;
 import ru.tbank.knowhow.security.GetCsrfTokenFilter;
 import ru.tbank.knowhow.security.TokenCookieAuthenticationConfigurer;
 import ru.tbank.knowhow.security.TokenCookieSessionAuthenticationStrategy;
-import ru.tbank.knowhow.service.token.TokenCookieJweStringDeserializer;
-import ru.tbank.knowhow.service.token.TokenCookieJweStringSerializer;
-import ru.tbank.knowhow.service.user.GetUserService;
+import ru.tbank.knowhow.service.users.token.TokenCookieJweStringDeserializer;
+import ru.tbank.knowhow.service.users.token.TokenCookieJweStringSerializer;
+import ru.tbank.knowhow.service.users.GetUserService;
 
 import java.util.List;
 import java.util.Objects;
@@ -73,9 +73,9 @@ public class SecurityConfig {
                                 .requestMatchers(authUrl + "/me").authenticated()
                                 .requestMatchers(authUrl + "/**").permitAll()
                                 .requestMatchers(HttpMethod.GET, profileUrl).authenticated()
+                                .requestMatchers(userUrl + "/contact/**").authenticated()
                                 .requestMatchers(userUrl + "/purchased-courses").hasRole(Role.USER.name())
                                 .requestMatchers(HttpMethod.DELETE, userUrl).hasRole(Role.USER.name())
-                                .requestMatchers(userUrl + "/contact/**").authenticated()
                                 .requestMatchers(balanceUrl + "/**").hasRole(Role.USER.name())
                                 .requestMatchers(courseUrl + "/{courseId}/rating").hasRole(Role.USER.name())
                                 .requestMatchers(HttpMethod.DELETE, courseUrl + "/{id}").hasRole(Role.USER.name())

@@ -11,7 +11,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.web.authentication.preauth.PreAuthenticatedAuthenticationToken;
-import ru.tbank.knowhow.model.Token;
+import ru.tbank.knowhow.model.users.auth.Token;
 
 import java.util.function.Function;
 
