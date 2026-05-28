@@ -38,7 +38,7 @@ public class User implements UserDetails {
     @ToString.Exclude
     private String password;
 
-    @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
+    @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true, optional = false)
     @JoinColumn(name = "contact_id")
     @ToString.Exclude
     private UserContact userContact;

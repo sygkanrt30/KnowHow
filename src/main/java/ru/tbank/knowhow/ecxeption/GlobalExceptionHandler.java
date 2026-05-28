@@ -4,7 +4,9 @@ import jakarta.persistence.EntityExistsException;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.validation.ConstraintViolationException;
 import lombok.extern.slf4j.Slf4j;
+import org.hibernate.ObjectNotFoundException;
 import org.slf4j.MDC;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ProblemDetail;
 import org.springframework.security.access.AccessDeniedException;
@@ -24,9 +26,14 @@ public class GlobalExceptionHandler {
         return handleException(e, HttpStatus.CONFLICT, "ENTITY_ALREADY_EXISTS");
     }
 
-    @ExceptionHandler({EntityNotFoundException.class, UsernameNotFoundException.class})
+    @ExceptionHandler({EntityNotFoundException.class, UsernameNotFoundException.class, ObjectNotFoundException.class})
     public ProblemDetail catchNotFoundException(Exception e) {
         return handleException(e, HttpStatus.NOT_FOUND, "ENTITY_NOT_FOUND");
+    }
+
+    @ExceptionHandler
+    public ProblemDetail catchEmptyResultDataAccessException(EmptyResultDataAccessException e) {
+        return handleException(e, HttpStatus.NO_CONTENT, "EMPTY_RESULT");
     }
 
     @ExceptionHandler

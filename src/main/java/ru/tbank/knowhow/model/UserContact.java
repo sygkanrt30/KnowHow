@@ -35,7 +35,7 @@ public class UserContact {
 
     @Column(length = 25, nullable = false, name = "primary_contact")
     @Enumerated(EnumType.STRING)
-    private CommunicationType primaryContactType = CommunicationType.EMAIL;
+    private NotificationContact primaryNotificationContact = NotificationContact.EMAIL;
 
     @CreationTimestamp
     @Column(name = "created_at", updatable = false)

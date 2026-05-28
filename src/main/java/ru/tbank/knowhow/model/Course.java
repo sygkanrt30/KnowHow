@@ -27,7 +27,7 @@ public class Course {
     @Column(nullable = false, columnDefinition = "status")
     private CourseStatus status;
 
-    @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
+    @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true, optional = false)
     @JoinColumn(name = "business_details_id")
     @ToString.Exclude
     private CourseBusinessDetails businessDetails;
