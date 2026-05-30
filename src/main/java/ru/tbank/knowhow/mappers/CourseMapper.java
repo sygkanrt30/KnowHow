@@ -4,9 +4,9 @@ import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.ReportingPolicy;
 import ru.tbank.knowhow.model.courses.Course;
-import ru.tbank.knowhow.model.users.User;
 import ru.tbank.knowhow.model.dto.course.request.CreateCourseRequest;
 import ru.tbank.knowhow.model.dto.course.response.CourseDto;
+import ru.tbank.knowhow.model.users.User;
 
 @Mapper(componentModel = "spring", unmappedTargetPolicy = ReportingPolicy.IGNORE)
 public interface CourseMapper {

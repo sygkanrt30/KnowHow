@@ -8,15 +8,15 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import ru.tbank.knowhow.mappers.CourseMapper;
 import ru.tbank.knowhow.model.courses.Course;
-import ru.tbank.knowhow.model.users.User;
 import ru.tbank.knowhow.model.dto.course.request.CourseSearchRequest;
 import ru.tbank.knowhow.model.dto.course.request.CreateCourseRequest;
 import ru.tbank.knowhow.model.dto.course.response.CourseDto;
-import ru.tbank.knowhow.mappers.CourseMapper;
+import ru.tbank.knowhow.model.users.User;
 import ru.tbank.knowhow.repository.CourseRepository;
-import ru.tbank.knowhow.service.purchased.PurchasedCourseService;
 import ru.tbank.knowhow.service.moderation.ModeratorManager;
+import ru.tbank.knowhow.service.purchased.PurchasedCourseService;
 import ru.tbank.knowhow.service.users.GetUserService;
 
 import java.util.List;
