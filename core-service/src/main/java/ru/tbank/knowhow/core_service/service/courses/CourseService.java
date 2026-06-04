@@ -15,6 +15,7 @@ import ru.tbank.knowhow.core_service.model.dto.course.request.CreateCourseReques
 import ru.tbank.knowhow.core_service.model.dto.course.response.CourseDto;
 import ru.tbank.knowhow.core_service.model.users.User;
 import ru.tbank.knowhow.core_service.repository.CourseRepository;
+import ru.tbank.knowhow.core_service.service.event.NotificationEventPublisher;
 import ru.tbank.knowhow.core_service.service.moderation.ModeratorManager;
 import ru.tbank.knowhow.core_service.service.purchased.PurchasedCourseService;
 import ru.tbank.knowhow.core_service.service.users.GetUserService;
@@ -30,6 +31,7 @@ public class CourseService implements DeleteCourseService, GetCourseService, Sav
     private final GetUserService getUserService;
     private final CourseMapper courseMapper;
     private final ModeratorManager moderatorManager;
+    private final NotificationEventPublisher notificationEventPublisher;
     private final PurchasedCourseService purchasedCourseService;
     private final PriceCalculator priceCalculator;
 
@@ -38,14 +40,16 @@ public class CourseService implements DeleteCourseService, GetCourseService, Sav
                          GetUserService getUserService,
                          CourseMapper courseMapper,
                          PurchasedCourseService purchasedCourseService,
+                         NotificationEventPublisher notificationEventPublisher,
                          ModeratorManager moderatorManager,
                          @Value("${course.price-multiplier}") int priceMultiplier) {
 
         this.courseRepository = courseRepository;
         this.getUserService = getUserService;
         this.courseMapper = courseMapper;
-        this.moderatorManager = moderatorManager;
         this.purchasedCourseService = purchasedCourseService;
+        this.notificationEventPublisher = notificationEventPublisher;
+        this.moderatorManager = moderatorManager;
         this.priceCalculator = new PriceCalculator(priceMultiplier);
     }
 
@@ -79,7 +83,11 @@ public class CourseService implements DeleteCourseService, GetCourseService, Sav
         Integer price = priceCalculator.calculate(author.getLevel());
         Course course = courseMapper.toEntity(request, author, moderator, price);
         Course saved = courseRepository.save(course);
-        // todo notification
+        notificationEventPublisher.createAndPublishAddCourseForModerationEventAsync(
+                moderator.getUserContact(),
+                course.getBusinessDetails().getTitle(),
+                moderator.getUsername()
+        );
         return courseMapper.toDto(saved);
     }
 

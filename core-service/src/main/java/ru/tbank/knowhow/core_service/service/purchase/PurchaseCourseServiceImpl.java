@@ -11,6 +11,7 @@ import ru.tbank.knowhow.core_service.model.users.User;
 import ru.tbank.knowhow.core_service.model.dto.course.response.CourseDto;
 import ru.tbank.knowhow.core_service.mappers.CourseMapper;
 import ru.tbank.knowhow.core_service.repository.PurchasedCourseRepository;
+import ru.tbank.knowhow.core_service.service.event.NotificationEventPublisher;
 import ru.tbank.knowhow.core_service.service.users.balance.CoinsRefresher;
 import ru.tbank.knowhow.core_service.service.courses.GetCourseService;
 import ru.tbank.knowhow.core_service.service.users.GetUserService;
@@ -23,19 +24,22 @@ public class PurchaseCourseServiceImpl implements CoursePurchaseService {
     private final PurchasedCourseRepository purchasedCourseRepository;
     private final GetUserService getUserService;
     private final GetCourseService getCourseService;
+    private final NotificationEventPublisher notificationEventPublisher;
     private final CoinsRefresher coinsRefresher;
     private final PurchasePreconditionValidator validator;
 
     public PurchaseCourseServiceImpl(CourseMapper courseMapper,
                                      PurchasedCourseRepository purchasedCourseRepository,
                                      GetUserService getUserService,
-                                     GetCourseService getCourseService) {
+                                     GetCourseService getCourseService,
+                                     NotificationEventPublisher notificationEventPublisher) {
 
         this.courseMapper = courseMapper;
         this.purchasedCourseRepository = purchasedCourseRepository;
         this.coinsRefresher = new CoinsRefresher();
         this.getUserService = getUserService;
         this.getCourseService = getCourseService;
+        this.notificationEventPublisher = notificationEventPublisher;
         this.validator = new PurchasePreconditionValidator();
     }
 
@@ -56,7 +60,11 @@ public class PurchaseCourseServiceImpl implements CoursePurchaseService {
         PurchasedCourse purchasedCourse = createPurchasedCourse(courseId, userId);
         purchasedCourseRepository.saveAndFlush(purchasedCourse);
         log.info("Course with id: {} has been purchased", courseId);
-        //todo notification Author about every n courses
+        notificationEventPublisher.createAndPublishCoursePurchaseEventAsync(
+                user.getUserContact(),
+                author.getUsername(),
+                courseId
+        );
         return courseMapper.toDto(course);
     }
 

@@ -19,6 +19,7 @@ import ru.tbank.knowhow.core_service.model.dto.course.request.CreateCourseReques
 import ru.tbank.knowhow.core_service.model.dto.course.response.CourseDto;
 import ru.tbank.knowhow.core_service.mappers.CourseMapper;
 import ru.tbank.knowhow.core_service.repository.CourseRepository;
+import ru.tbank.knowhow.core_service.service.event.NotificationEventPublisher;
 import ru.tbank.knowhow.core_service.service.purchased.PurchasedCourseService;
 import ru.tbank.knowhow.core_service.service.moderation.ModeratorManager;
 import ru.tbank.knowhow.core_service.service.users.GetUserService;
@@ -64,6 +65,7 @@ class CourseServiceTest {
                 getUserService,
                 courseMapper,
                 purchasedCourseService,
+                mock(NotificationEventPublisher.class),
                 moderatorManager,
                 20
         );
@@ -90,7 +92,7 @@ class CourseServiceTest {
                 .isInstanceOf(EntityNotFoundException.class)
                 .hasMessage("Course not found with id: " + courseId);
 
-        verify(courseRepository, never()).delete(any());
+        verify(courseRepository, never()).delete(any(Course.class));
     }
 
     @Test

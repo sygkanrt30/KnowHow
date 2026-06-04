@@ -29,6 +29,39 @@ spring:
           jta:
             platform: none
     database: postgresql
+  rabbitmq:
+    host: localhost
+    port: 5672
+    username: admin
+    password: admin123
+    virtual-host: /
+    connection-timeout: 5000
+    publisher-confirm-type: correlated
+    publisher-returns: true
+    confirms:
+      statistic:
+        log:
+          delay:
+            min:
+              fixed: 10
+              initial: 5
+    notification-service:
+      exchange: main.direct.exchange
+      queues:
+        verification:
+          queue: verification.queue
+          ttl: 180000
+          key: verification.key
+        notification:
+          queue: notification.queue
+          key: notification.key
+  retry-template:
+    max-retry: 3
+    back-off:
+      interval:
+        init: 1000
+        max: 5000
+      multiplier: 1.5
 
 
 server:

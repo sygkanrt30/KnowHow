@@ -13,4 +13,6 @@ public interface PurchasedCourseService {
     boolean existsPurchasedCourseByCourseId(Long courseId);
 
     boolean existsPurchasedCourse(Long courseId, Long userId);
+
+    int getNumberOfPurchasedCourseByCourseId(Long courseId);
 }

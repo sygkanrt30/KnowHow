@@ -7,7 +7,8 @@ import lombok.experimental.Accessors;
 @RequiredArgsConstructor
 @Getter
 @Accessors(fluent = true)
-enum MDCContextKey {
+enum LoggingAspectMDCContextKey {
+
     ARGS("methodArgs"),
 
     SLOW_METHOD_NAME("slowMethodName"),

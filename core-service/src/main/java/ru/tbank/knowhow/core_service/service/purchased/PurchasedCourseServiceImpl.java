@@ -45,4 +45,9 @@ public class PurchasedCourseServiceImpl implements PurchasedCourseService {
     public boolean existsPurchasedCourse(Long courseId, Long userId) {
         return purchasedCourseRepository.existsPurchasedCourseByCourseIdAndUserId(courseId, userId);
     }
+
+    @Override
+    public int getNumberOfPurchasedCourseByCourseId(Long courseId) {
+        return purchasedCourseRepository.getNumberOfPurchasedCourseByCourseId(courseId);
+    }
 }

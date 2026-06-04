@@ -14,7 +14,7 @@ import java.util.Objects;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
-import static ru.tbank.knowhow.core_service.aspect.MDCContextKey.*;
+import static ru.tbank.knowhow.core_service.aspect.LoggingAspectMDCContextKey.*;
 
 @Aspect
 @Component
@@ -34,7 +34,8 @@ public class MethodLoggingAspect {
                     !execution(* ru.tbank.knowhow.core_service..*.set*(..)) &&
                     !execution(* ru.tbank.knowhow.core_service..*.toString()) &&
                     !execution(* ru.tbank.knowhow.core_service..*.hashCode()) &&
-                    !execution(* ru.tbank.knowhow.core_service..*.equals(..))
+                    !execution(* ru.tbank.knowhow.core_service..*.equals(..)) &&
+                    !within(ru.tbank.knowhow.core_service.service.messaging)
             """)
     public void applicationPackageMethods() {}
 

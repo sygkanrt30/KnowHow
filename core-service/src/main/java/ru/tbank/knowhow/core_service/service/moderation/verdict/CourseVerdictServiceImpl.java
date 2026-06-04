@@ -11,6 +11,7 @@ import ru.tbank.knowhow.core_service.model.users.User;
 import ru.tbank.knowhow.core_service.repository.moderation.ModerationReviewRepository;
 import ru.tbank.knowhow.core_service.repository.moderation.ModeratorLoadRepository;
 import ru.tbank.knowhow.core_service.service.courses.GetCourseService;
+import ru.tbank.knowhow.core_service.service.event.NotificationEventPublisher;
 import ru.tbank.knowhow.core_service.service.users.GetUserService;
 
 @RequiredArgsConstructor
@@ -22,6 +23,7 @@ public class CourseVerdictServiceImpl implements CourseVerdictService {
     private final GetCourseService getCourseService;
     private final ModerationReviewRepository moderationReviewRepository;
     private final ModeratorLoadRepository moderatorLoadRepository;
+    private final NotificationEventPublisher notificationEventPublisher;
 
     @Override
     @Transactional
@@ -46,7 +48,11 @@ public class CourseVerdictServiceImpl implements CourseVerdictService {
 
         moderatorLoadRepository.decrementCoursesInModeration(moderator.getId());
         command.updateCourseStatusAndModeratorSetNull(course);
-        // todo user notification
+        notificationEventPublisher.createAndPublishResultReviewEventAsync(
+                course.getAuthor().getUserContact(),
+                command.getActionName(),
+                course.getAuthor().getUsername()
+        );
         log.debug("Course {} {} by moderator {}", course.getId(), command.getActionName(), moderator.getId());
     }
 

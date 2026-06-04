@@ -20,4 +20,6 @@ public interface PurchasedCourseRepository extends JpaRepository<PurchasedCourse
     void deleteAllPurchasedCoursesByUserId(Long userId);
 
     boolean existsPurchasedCourseByCourseId(Long courseId);
+
+    int getNumberOfPurchasedCourseByCourseId(Long courseId);
 }

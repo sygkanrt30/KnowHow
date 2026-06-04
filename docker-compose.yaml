@@ -21,9 +21,30 @@ services:
       timeout: 5s
       retries: 5
 
-  server:
+  rabbitmq:
+    container_name: rabbitmq
+    image: rabbitmq:4.2-management
+    restart: unless-stopped
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    environment:
+      - RABBITMQ_DEFAULT_USER=admin
+      - RABBITMQ_DEFAULT_PASS=admin123
+      - RABBITMQ_DEFAULT_VHOST=/
+    volumes:
+      - rabbitmq_data:/var/lib/rabbitmq
+    networks:
+      - general-network
+    healthcheck:
+      test: [ "CMD", "rabbitmq-diagnostics", "ping" ]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+
+  core-service:
     image: slavyanin30/know_how:latest
-    container_name: server
+    container_name: core-service
     restart: always
     depends_on:
       db:
@@ -43,3 +64,4 @@ networks:
 
 volumes:
   postgres_data:
+  rabbitmq_data:

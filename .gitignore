@@ -12,3 +12,4 @@ HELP.md
 *.sh
 
 .vscode/
+/amplicode.xml
