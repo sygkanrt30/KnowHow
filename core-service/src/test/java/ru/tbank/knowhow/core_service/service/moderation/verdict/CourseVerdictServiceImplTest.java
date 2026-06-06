@@ -16,6 +16,7 @@ import ru.tbank.knowhow.core_service.model.users.User;
 import ru.tbank.knowhow.core_service.repository.moderation.ModerationReviewRepository;
 import ru.tbank.knowhow.core_service.repository.moderation.ModeratorLoadRepository;
 import ru.tbank.knowhow.core_service.service.courses.GetCourseService;
+import ru.tbank.knowhow.core_service.service.event.NotificationEventPublisher;
 import ru.tbank.knowhow.core_service.service.users.GetUserService;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -38,6 +39,9 @@ class CourseVerdictServiceImplTest {
 
     @Mock
     private ModeratorLoadRepository moderatorLoadRepository;
+
+    @Mock
+    private NotificationEventPublisher notificationEventPublisher;
 
     @InjectMocks
     private CourseVerdictServiceImpl courseVerdictService;

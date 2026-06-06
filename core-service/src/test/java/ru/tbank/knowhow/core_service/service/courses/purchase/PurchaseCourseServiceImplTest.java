@@ -22,6 +22,7 @@ import ru.tbank.knowhow.core_service.model.users.balance.Balance;
 import ru.tbank.knowhow.core_service.model.users.User;
 import ru.tbank.knowhow.core_service.repository.PurchasedCourseRepository;
 import ru.tbank.knowhow.core_service.service.courses.GetCourseService;
+import ru.tbank.knowhow.core_service.service.event.NotificationEventPublisher;
 import ru.tbank.knowhow.core_service.service.purchase.PurchaseCourseServiceImpl;
 import ru.tbank.knowhow.core_service.service.users.GetUserService;
 
@@ -48,6 +49,9 @@ class PurchaseCourseServiceImplTest {
 
     @Mock
     private GetCourseService getCourseService;
+
+    @Mock
+    private NotificationEventPublisher notificationEventPublisher;
 
     @InjectMocks
     private PurchaseCourseServiceImpl purchaseCourseService;
