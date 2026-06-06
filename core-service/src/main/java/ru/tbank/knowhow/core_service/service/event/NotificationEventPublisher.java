@@ -2,7 +2,6 @@ package ru.tbank.knowhow.core_service.service.event;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.ApplicationEventPublisher;
-import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import ru.tbank.knowhow.core_service.model.users.NotificationContact;
 import ru.tbank.knowhow.core_service.model.users.UserContact;
@@ -27,23 +26,20 @@ public class NotificationEventPublisher {
         this.eventFabric = new NotificationEventFabric();
     }
 
-    @Async("eventPublisherExecutor")
-    public void createAndPublishResultReviewEventAsync(UserContact userContact, String reviewResult, String username) {
+    public void createAndPublishResultReviewEvent(UserContact userContact, String reviewResult, String username) {
         publishEvent(userContact, username,
                 contact -> eventFabric.createResultReviewEvent(contact, reviewResult, username));
     }
 
-    @Async("eventPublisherExecutor")
-    public void createAndPublishCoursePurchaseEventAsync(UserContact userContact, String authorName, Long courseId) {
+    public void createAndPublishCoursePurchaseEvent(UserContact userContact, String authorName, Long courseId) {
         publishEvent(userContact, authorName, contact -> {
             int n = safeGetPurchasedCourseCount(courseId);
             return eventFabric.createCoursePurchaseEvent(contact, n, authorName);
         });
     }
 
-    @Async("eventPublisherExecutor")
-    public void createAndPublishAddCourseForModerationEventAsync(UserContact userContact, String title,
-                                                                 String moderatorUsername) {
+    public void createAndPublishAddCourseForModerationEvent(UserContact userContact, String title,
+                                                            String moderatorUsername) {
         publishEvent(userContact, moderatorUsername,
                 contact -> eventFabric.createAddCourseForModerationEvent(contact, title, moderatorUsername));
     }
@@ -55,7 +51,7 @@ public class NotificationEventPublisher {
             if (Objects.nonNull(contact)) {
                 Event event = eventCreator.apply(contact);
                 delegate.publishEvent(event);
-                log.debug("Event published: {}", event.getClass().getSimpleName());
+                log.info("Event published: {}", event.getClass().getSimpleName());
             } else {
                 log.warn("No verified contact for: {}", entityName);
             }
@@ -70,7 +66,9 @@ public class NotificationEventPublisher {
         }
 
         try {
-            boolean isPrimaryContactIsEmail = NotificationContact.EMAIL.equals(userContact.getPrimaryNotificationContact());
+            boolean isPrimaryContactIsEmail = NotificationContact.EMAIL
+                    .equals(userContact.getPrimaryNotificationContact());
+
             if (isPrimaryContactIsEmail && userContact.isEmailVerified()) {
                 return userContact.getEmail();
             }

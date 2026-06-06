@@ -83,7 +83,7 @@ public class CourseService implements DeleteCourseService, GetCourseService, Sav
         Integer price = priceCalculator.calculate(author.getLevel());
         Course course = courseMapper.toEntity(request, author, moderator, price);
         Course saved = courseRepository.save(course);
-        notificationEventPublisher.createAndPublishAddCourseForModerationEventAsync(
+        notificationEventPublisher.createAndPublishAddCourseForModerationEvent(
                 moderator.getUserContact(),
                 course.getBusinessDetails().getTitle(),
                 moderator.getUsername()

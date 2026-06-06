@@ -4,17 +4,17 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
+import ru.tbank.knowhow.core_service.mappers.CourseMapper;
 import ru.tbank.knowhow.core_service.model.courses.Course;
+import ru.tbank.knowhow.core_service.model.dto.course.response.CourseDto;
 import ru.tbank.knowhow.core_service.model.purchase.PurchasedCourse;
 import ru.tbank.knowhow.core_service.model.purchase.PurchasedCourseId;
 import ru.tbank.knowhow.core_service.model.users.User;
-import ru.tbank.knowhow.core_service.model.dto.course.response.CourseDto;
-import ru.tbank.knowhow.core_service.mappers.CourseMapper;
 import ru.tbank.knowhow.core_service.repository.PurchasedCourseRepository;
-import ru.tbank.knowhow.core_service.service.event.NotificationEventPublisher;
-import ru.tbank.knowhow.core_service.service.users.balance.CoinsRefresher;
 import ru.tbank.knowhow.core_service.service.courses.GetCourseService;
+import ru.tbank.knowhow.core_service.service.event.NotificationEventPublisher;
 import ru.tbank.knowhow.core_service.service.users.GetUserService;
+import ru.tbank.knowhow.core_service.service.users.balance.CoinsRefresher;
 
 @Service
 @Slf4j
@@ -60,7 +60,7 @@ public class PurchaseCourseServiceImpl implements CoursePurchaseService {
         PurchasedCourse purchasedCourse = createPurchasedCourse(courseId, userId);
         purchasedCourseRepository.saveAndFlush(purchasedCourse);
         log.info("Course with id: {} has been purchased", courseId);
-        notificationEventPublisher.createAndPublishCoursePurchaseEventAsync(
+        notificationEventPublisher.createAndPublishCoursePurchaseEvent(
                 user.getUserContact(),
                 author.getUsername(),
                 courseId

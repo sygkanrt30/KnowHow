@@ -58,6 +58,7 @@ spring:
   retry-template:
     max-retry: 3
     back-off:
+      jitter: 300
       interval:
         init: 1000
         max: 5000

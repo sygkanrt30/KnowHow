@@ -53,7 +53,7 @@ public class User implements UserDetails {
     @Builder.Default
     private Integer level = 1;
 
-    @OneToOne(cascade = CascadeType.ALL)
+    @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
     @JoinColumn(name = "balance_id", unique = true)
     @ToString.Exclude
     private Balance balance;

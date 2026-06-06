@@ -25,15 +25,17 @@ public class SpringRetryConfig {
             @Value("${spring.retry-template.max-retry}") int maxAttempts,
             @Value("${spring.retry-template.back-off.interval.init}") long initInterval,
             @Value("${spring.retry-template.back-off.interval.max}") long maxInterval,
-            @Value("${spring.retry-template.back-off.multiplier}") double multiplier) {
+            @Value("${spring.retry-template.back-off.multiplier}") double multiplier,
+            @Value("${spring.retry-template.back-off.jitter}") long jitter) {
 
         var backOff = new ExponentialBackOff();
+        backOff.setMaxAttempts(maxAttempts);
         backOff.setInitialInterval(initInterval);
         backOff.setMultiplier(multiplier);
         backOff.setMaxInterval(maxInterval);
+        backOff.setJitter(jitter);
 
         var retryPolicy = RetryPolicy.builder()
-                .maxRetries(maxAttempts)
                 .backOff(backOff)
                 .includes(AmqpConnectException.class, AmqpResourceNotAvailableException.class)
                 .excludes(

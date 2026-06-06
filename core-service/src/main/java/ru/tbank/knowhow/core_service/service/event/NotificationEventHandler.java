@@ -26,7 +26,7 @@ public class NotificationEventHandler {
     public NotificationEventHandler(
             RabbitTemplate rabbitTemplate,
             ExecutorService notificationExecutor,
-            @Value("${spring.rabbitmq.notification-service.exchanger}") String exchange,
+            @Value("${spring.rabbitmq.notification-service.exchange}") String exchange,
             @Value("${spring.rabbitmq.notification-service.queues.notification.key}") String notificationRoutingKey,
             @Value("${spring.rabbitmq.notification-service.queues.verification.key}") String verificationRoutingKey) {
 

@@ -48,7 +48,7 @@ public class CourseVerdictServiceImpl implements CourseVerdictService {
 
         moderatorLoadRepository.decrementCoursesInModeration(moderator.getId());
         command.updateCourseStatusAndModeratorSetNull(course);
-        notificationEventPublisher.createAndPublishResultReviewEventAsync(
+        notificationEventPublisher.createAndPublishResultReviewEvent(
                 course.getAuthor().getUserContact(),
                 command.getActionName(),
                 course.getAuthor().getUsername()
