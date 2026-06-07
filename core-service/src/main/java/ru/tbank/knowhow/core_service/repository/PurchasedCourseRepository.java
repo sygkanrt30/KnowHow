@@ -21,5 +21,5 @@ public interface PurchasedCourseRepository extends JpaRepository<PurchasedCourse
 
     boolean existsPurchasedCourseByCourseId(Long courseId);
 
-    int getNumberOfPurchasedCourseByCourseId(Long courseId);
+    int countByCourseId(Long courseId);
 }

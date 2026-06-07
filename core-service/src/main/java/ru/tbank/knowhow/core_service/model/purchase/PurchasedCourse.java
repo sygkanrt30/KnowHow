@@ -42,6 +42,12 @@ public class PurchasedCourse {
         this.id = id;
     }
 
+    public PurchasedCourse(PurchasedCourseId id, Course course,  User user) {
+        this.id = id;
+        this.course = course;
+        this.user = user;
+    }
+
     @Override
     public final boolean equals(Object o) {
         if (this == o) return true;

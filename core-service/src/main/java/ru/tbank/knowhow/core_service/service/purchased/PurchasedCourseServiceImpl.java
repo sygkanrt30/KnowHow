@@ -47,7 +47,7 @@ public class PurchasedCourseServiceImpl implements PurchasedCourseService {
     }
 
     @Override
-    public int getNumberOfPurchasedCourseByCourseId(Long courseId) {
-        return purchasedCourseRepository.getNumberOfPurchasedCourseByCourseId(courseId);
+    public int numberOfPurchaseByCourseId(Long courseId) {
+        return purchasedCourseRepository.countByCourseId(courseId);
     }
 }

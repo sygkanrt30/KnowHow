@@ -57,7 +57,7 @@ public class PurchaseCourseServiceImpl implements CoursePurchaseService {
         }
 
         processPayment(course, user, author);
-        PurchasedCourse purchasedCourse = createPurchasedCourse(courseId, userId);
+        PurchasedCourse purchasedCourse = createPurchasedCourse(courseId, userId, user, course);
         purchasedCourseRepository.saveAndFlush(purchasedCourse);
         log.info("Course with id: {} has been purchased", courseId);
         notificationEventPublisher.createAndPublishCoursePurchaseEvent(
@@ -75,11 +75,11 @@ public class PurchaseCourseServiceImpl implements CoursePurchaseService {
         coinsRefresher.increase(author.getBalance(), price);
     }
 
-    private PurchasedCourse createPurchasedCourse(Long courseId, Long userId) {
+    private PurchasedCourse createPurchasedCourse(Long courseId, Long userId, User user, Course course) {
         var id = PurchasedCourseId.builder()
                 .courseId(courseId)
                 .userId(userId)
                 .build();
-        return new PurchasedCourse(id);
+        return new PurchasedCourse(id, course, user);
     }
 }

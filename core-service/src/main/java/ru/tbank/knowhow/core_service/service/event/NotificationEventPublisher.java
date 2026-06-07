@@ -83,7 +83,7 @@ public class NotificationEventPublisher {
 
     private int safeGetPurchasedCourseCount(Long courseId) {
         try {
-            return Objects.nonNull(courseId) ? purchasedCourseService.getNumberOfPurchasedCourseByCourseId(courseId) : 0;
+            return Objects.nonNull(courseId) ? purchasedCourseService.numberOfPurchaseByCourseId(courseId) : 0;
         } catch (Exception e) {
             log.error("Failed to get purchased course count for courseId: {}", courseId, e);
             return 0;
