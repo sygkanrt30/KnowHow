@@ -15,7 +15,7 @@ import java.util.concurrent.ExecutorService;
 
 @Component
 @Slf4j
-public class NotificationEventHandler {
+public class EventHandler {
 
     private final RabbitTemplate rabbitTemplate;
     private final ExecutorService notificationExecutor;
@@ -23,7 +23,7 @@ public class NotificationEventHandler {
     private final String notificationRoutingKey;
     private final String verificationRoutingKey;
 
-    public NotificationEventHandler(
+    public EventHandler(
             RabbitTemplate rabbitTemplate,
             ExecutorService notificationExecutor,
             @Value("${spring.rabbitmq.notification-service.exchange}") String exchange,

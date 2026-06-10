@@ -42,6 +42,28 @@ services:
       timeout: 10s
       retries: 5
 
+  redis:
+    container_name: redis
+    image: redis:7.2-alpine
+    ports:
+      - "6379:6379"
+    restart: unless-stopped
+    command: redis-server --save 20 1 --loglevel warning --requirepass ${REDIS_PASSWORD:-redispass123}
+    volumes:
+      - redis_data:/data
+    healthcheck:
+      test: [ "CMD", "redis-cli", "-a", "${REDIS_PASSWORD:-redispass123}", "ping" ]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
+    networks:
+      - general-network
+    environment:
+      - REDIS_PASSWORD=${REDIS_PASSWORD:-redispass123}
+      - REDIS_PORT=6379
+      - REDIS_HOST=localhost
+
   core-service:
     image: slavyanin30/know_how:latest
     container_name: core-service
@@ -65,3 +87,4 @@ networks:
 volumes:
   postgres_data:
   rabbitmq_data:
+  redis_data:

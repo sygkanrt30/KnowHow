@@ -77,4 +77,20 @@ public class UserContactServiceImpl implements UserContactService {
         log.info("Primary notification contact has been changed to {}", notificationContact);
         return notificationContact;
     }
+
+    @Override
+    @Transactional
+    public void verifyContact(Long userId, NotificationContact notificationContact) {
+        UserContact userContact = getUserContact(userId);
+        switch (notificationContact) {
+            case EMAIL -> {
+                userContact.setEmailVerified(true);
+                log.debug("Email: {} has been verified", userContact.getEmail());
+            }
+            case TELEGRAM -> {
+                userContact.setTgUsernameVerified(true);
+                log.debug("Tg: {} has been verified", userContact.getTgUsername());
+            }
+        }
+    }
 }

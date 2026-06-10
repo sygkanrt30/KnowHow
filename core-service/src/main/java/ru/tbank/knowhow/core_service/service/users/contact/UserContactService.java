@@ -13,4 +13,6 @@ public interface UserContactService {
     NotificationContact getPrimaryNotificationContact(Long userId);
 
     NotificationContact changePrimaryNotificationContact(Long userId, NotificationContact notificationContact);
+
+    void verifyContact(Long userId, NotificationContact notificationContact);
 }

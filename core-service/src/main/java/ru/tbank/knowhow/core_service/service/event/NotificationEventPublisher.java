@@ -89,9 +89,4 @@ public class NotificationEventPublisher {
             return 0;
         }
     }
-
-    @FunctionalInterface
-    private interface ThrowingFunction<T, R> {
-        R apply(T t) throws Exception;
-    }
 }

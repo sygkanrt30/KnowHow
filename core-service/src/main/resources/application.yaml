@@ -29,6 +29,32 @@ spring:
           jta:
             platform: none
     database: postgresql
+  data:
+    redis:
+      host: ${REDIS_HOST:localhost}
+      port: ${REDIS_PORT:6379}
+      password: ${REDIS_PASSWORD:redispass123}
+      database: 1
+      timeout: 10s
+      connect-timeout: 10s
+      lettuce:
+        pool:
+          max-active: 8
+          max-idle: 8
+          min-idle: 0
+          max-wait: -1ms
+        shutdown-timeout: 100ms
+      storage:
+        code:
+          expiration:
+            sec:
+              key: 180
+              block: 60
+        attempt:
+          limit: 3
+          expiration:
+            sec:
+              attempt-key: 200
   rabbitmq:
     host: localhost
     port: 5672
