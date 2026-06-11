@@ -1,0 +1,24 @@
+spring:
+  application:
+    name: notification-service
+  rabbitmq:
+    host: localhost
+    port: 5672
+    username: admin
+    password: admin123
+    virtual-host: /
+    notification-service:
+      queues:
+        verification:
+          queue: verification.queue
+          key: verification.key
+        notification:
+          queue: notification.queue
+          key: notification.key
+
+
+logging:
+  level:
+    root: info
+  pattern:
+    console: '%d{dd.MM.yyyy HH:mm:ss.SSS} [%thread] %clr(%-5level) %logger{36} - %msg%n'

@@ -12,6 +12,7 @@
     <modules>
         <module>core-service</module>
         <module>shared</module>
+        <module>notification-service</module>
     </modules>
 
     <properties>
