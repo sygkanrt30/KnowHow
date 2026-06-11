@@ -3,7 +3,7 @@ package ru.tbank.knowhow.core_service.service.event;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
-import ru.tbank.knowhow.core_service.model.users.NotificationContact;
+import ru.tbank.shared.events.NotificationContactType;
 import ru.tbank.knowhow.core_service.model.users.UserContact;
 import ru.tbank.knowhow.core_service.service.purchased.PurchasedCourseService;
 import ru.tbank.knowhow.core_service.util.NotificationEventFabric;
@@ -66,8 +66,8 @@ public class NotificationEventPublisher {
         }
 
         try {
-            boolean isPrimaryContactIsEmail = NotificationContact.EMAIL
-                    .equals(userContact.getPrimaryNotificationContact());
+            boolean isPrimaryContactIsEmail = NotificationContactType.EMAIL
+                    .equals(userContact.getPrimaryNotificationContactType());
 
             if (isPrimaryContactIsEmail && userContact.isEmailVerified()) {
                 return userContact.getEmail();

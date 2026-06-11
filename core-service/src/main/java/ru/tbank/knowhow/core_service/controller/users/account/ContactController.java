@@ -7,7 +7,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
-import ru.tbank.knowhow.core_service.model.users.NotificationContact;
+import ru.tbank.shared.events.NotificationContactType;
 import ru.tbank.knowhow.core_service.service.users.contact.UserContactService;
 import ru.tbank.knowhow.core_service.util.RequestAttributeExtractor;
 
@@ -44,17 +44,17 @@ public class ContactController {
     }
 
     @GetMapping("/primary_notification")
-    public ResponseEntity<NotificationContact> getPrimaryNotificationContact(HttpServletRequest request) {
+    public ResponseEntity<NotificationContactType> getPrimaryNotificationContact(HttpServletRequest request) {
         Long userId = RequestAttributeExtractor.extractUserId(request);
         return ResponseEntity.ok(userContactService.getPrimaryNotificationContact(userId));
     }
 
     @PatchMapping("/primary_notification")
-    public ResponseEntity<NotificationContact> updatePrimaryNotificationContact(
+    public ResponseEntity<NotificationContactType> updatePrimaryNotificationContact(
             HttpServletRequest request,
             @RequestParam String notificationContact) {
         Long userId = RequestAttributeExtractor.extractUserId(request);
-        NotificationContact enumNotificationContact = NotificationContact.fromString(notificationContact);
-        return ResponseEntity.ok(userContactService.changePrimaryNotificationContact(userId, enumNotificationContact));
+        NotificationContactType enumNotificationContactType = NotificationContactType.fromString(notificationContact);
+        return ResponseEntity.ok(userContactService.changePrimaryNotificationContact(userId, enumNotificationContactType));
     }
 }

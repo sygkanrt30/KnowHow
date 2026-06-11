@@ -5,7 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import ru.tbank.knowhow.core_service.model.users.NotificationContact;
+import ru.tbank.shared.events.NotificationContactType;
 import ru.tbank.knowhow.core_service.model.users.UserContact;
 import ru.tbank.knowhow.core_service.service.users.GetUserService;
 
@@ -59,30 +59,30 @@ public class UserContactServiceImpl implements UserContactService {
 
     @Override
     @Transactional(readOnly = true)
-    public NotificationContact getPrimaryNotificationContact(Long userId) {
-        return getUserContact(userId).getPrimaryNotificationContact();
+    public NotificationContactType getPrimaryNotificationContact(Long userId) {
+        return getUserContact(userId).getPrimaryNotificationContactType();
     }
 
     @Override
     @Transactional
-    public NotificationContact changePrimaryNotificationContact(Long userId, NotificationContact notificationContact) {
+    public NotificationContactType changePrimaryNotificationContact(Long userId, NotificationContactType notificationContactType) {
         UserContact userContact = getUserContact(userId);
-        NotificationContact currentNotificationContact = userContact.getPrimaryNotificationContact();
+        NotificationContactType currentNotificationContactType = userContact.getPrimaryNotificationContactType();
 
-        if (Objects.nonNull(currentNotificationContact) && currentNotificationContact.equals(notificationContact)) {
+        if (Objects.nonNull(currentNotificationContactType) && currentNotificationContactType.equals(notificationContactType)) {
             log.debug("Current primary notification contact is equal to new notification contact");
-            return currentNotificationContact;
+            return currentNotificationContactType;
         }
-        userContact.setPrimaryNotificationContact(notificationContact);
-        log.info("Primary notification contact has been changed to {}", notificationContact);
-        return notificationContact;
+        userContact.setPrimaryNotificationContactType(notificationContactType);
+        log.info("Primary notification contact has been changed to {}", notificationContactType);
+        return notificationContactType;
     }
 
     @Override
     @Transactional
-    public void verifyContact(Long userId, NotificationContact notificationContact) {
+    public void verifyContact(Long userId, NotificationContactType notificationContactType) {
         UserContact userContact = getUserContact(userId);
-        switch (notificationContact) {
+        switch (notificationContactType) {
             case EMAIL -> {
                 userContact.setEmailVerified(true);
                 log.debug("Email: {} has been verified", userContact.getEmail());

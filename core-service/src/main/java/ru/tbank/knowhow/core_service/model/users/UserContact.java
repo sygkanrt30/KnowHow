@@ -35,7 +35,7 @@ public class UserContact {
 
     @Column(length = 25, nullable = false, name = "primary_contact")
     @Enumerated(EnumType.STRING)
-    private NotificationContact primaryNotificationContact = NotificationContact.EMAIL;
+    private ru.tbank.shared.events.NotificationContactType primaryNotificationContactType = ru.tbank.shared.events.NotificationContactType.EMAIL;
 
     @CreationTimestamp
     @Column(name = "created_at", updatable = false)

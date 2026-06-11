@@ -3,9 +3,9 @@ package ru.tbank.knowhow.core_service.service.event;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
-import ru.tbank.knowhow.core_service.ecxeption.VerificationException;
 import ru.tbank.knowhow.core_service.util.VerificationEventFabric;
 import ru.tbank.shared.events.Event;
+import ru.tbank.shared.events.NotificationContactType;
 
 import java.util.Objects;
 
@@ -21,20 +21,15 @@ public class VerificationEventPublisher {
         this.eventFabric = new VerificationEventFabric();
     }
 
-    public void createAndPublishVerificationEvent(String contact, String code) {
-        publishEvent(contact, ct -> eventFabric.createVerificationEvent(ct, code));
-    }
-
-    private void publishEvent(String contact, ThrowingFunction<String, Event> eventCreator) {
-
+    public void createAndPublishVerificationEvent(String contact, String code, NotificationContactType type) {
         try {
             if (Objects.nonNull(contact)) {
-                Event event = eventCreator.apply(contact);
+                Event event = eventFabric.createVerificationEvent(contact, code, type);
                 delegate.publishEvent(event);
                 log.info("Event published: {}", event.getClass().getSimpleName());
             }
         } catch (Exception e) {
-            throw new VerificationException("Failed to publish event for: " + contact, e);
+            log.error("Failed to publish event for: {}", contact, e);
         }
     }
 }

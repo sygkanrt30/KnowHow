@@ -1,6 +1,6 @@
 package ru.tbank.knowhow.core_service.service.users.contact;
 
-import ru.tbank.knowhow.core_service.model.users.NotificationContact;
+import ru.tbank.shared.events.NotificationContactType;
 
 public interface UserContactService {
 
@@ -10,9 +10,9 @@ public interface UserContactService {
 
     String getTgUsername(Long userId);
 
-    NotificationContact getPrimaryNotificationContact(Long userId);
+    NotificationContactType getPrimaryNotificationContact(Long userId);
 
-    NotificationContact changePrimaryNotificationContact(Long userId, NotificationContact notificationContact);
+    NotificationContactType changePrimaryNotificationContact(Long userId, NotificationContactType notificationContactType);
 
-    void verifyContact(Long userId, NotificationContact notificationContact);
+    void verifyContact(Long userId, NotificationContactType notificationContactType);
 }

@@ -1,12 +1,12 @@
-package ru.tbank.knowhow.core_service.model.users;
+package ru.tbank.shared.events;
 
-public enum NotificationContact {
+public enum NotificationContactType {
     EMAIL,
     TELEGRAM;
 
 
-    public static NotificationContact fromString(String value) {
-        for (var type : NotificationContact.values()) {
+    public static NotificationContactType fromString(String value) {
+        for (var type : NotificationContactType.values()) {
             if (type.toString().equalsIgnoreCase(value)) {
                 return type;
             }
