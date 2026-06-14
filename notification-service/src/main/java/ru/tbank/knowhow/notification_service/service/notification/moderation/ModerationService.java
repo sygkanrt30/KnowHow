@@ -1,4 +1,4 @@
-package ru.tbank.knowhow.notification_service.event.rabbitmq.service.notification.moderation;
+package ru.tbank.knowhow.notification_service.service.notification.moderation;
 
 public interface ModerationService {
 

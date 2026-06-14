@@ -7,15 +7,18 @@ spring:
     username: admin
     password: admin123
     virtual-host: /
-    notification-service:
-      queues:
-        verification:
-          queue: verification.queue
-          key: verification.key
-        notification:
-          queue: notification.queue
-          key: notification.key
-
+    concurrency:
+      min: 5
+      max: 20
+    queues:
+      verification:
+        queue: verification.queue
+      notification:
+        queue: notification.queue
+statistics:
+  logging:
+    interval:
+      minutes: 120
 
 logging:
   level:

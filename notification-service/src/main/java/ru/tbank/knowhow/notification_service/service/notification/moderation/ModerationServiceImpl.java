@@ -1,8 +1,6 @@
-package ru.tbank.knowhow.notification_service.event.rabbitmq.service.notification.moderation;
+package ru.tbank.knowhow.notification_service.service.notification.moderation;
 
 import org.springframework.stereotype.Service;
-import ru.tbank.shared.events.notification.AddCourseForModerationNotificationEvent;
-import ru.tbank.shared.events.notification.ResultReviewNotificationEvent;
 
 @Service
 public class ModerationServiceImpl implements ModerationService {

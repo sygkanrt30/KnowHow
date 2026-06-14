@@ -1,4 +1,4 @@
-package ru.tbank.knowhow.notification_service.event.rabbitmq.service.verification;
+package ru.tbank.knowhow.notification_service.service.verification;
 
 public interface VerificationService {
 

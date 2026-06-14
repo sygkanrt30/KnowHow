@@ -1,4 +1,4 @@
-package ru.tbank.knowhow.notification_service.event.rabbitmq.service.notification.purchase;
+package ru.tbank.knowhow.notification_service.service.notification.purchase;
 
 public interface PurchaseCourseService {
 

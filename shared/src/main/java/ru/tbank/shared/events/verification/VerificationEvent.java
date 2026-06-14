@@ -9,13 +9,11 @@ import java.util.Objects;
 public class VerificationEvent extends AbstractEvent {
 
     private final String code;
-    private final NotificationContactType type;
 
     public VerificationEvent(String contact, String code, NotificationContactType type) {
-        super(EventType.VERIFICATION, contact);
+        super(EventType.VERIFICATION, contact, type);
         validateCode(code, type);
         this.code = code;
-        this.type = type;
     }
 
     private void validateCode(String code, NotificationContactType type) {
@@ -29,9 +27,5 @@ public class VerificationEvent extends AbstractEvent {
 
     public String getCode() {
         return code;
-    }
-
-    public NotificationContactType getType() {
-        return type;
     }
 }
