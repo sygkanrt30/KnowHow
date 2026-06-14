@@ -1,7 +1,6 @@
 package ru.tbank.knowhow.notification_service.event.rabbitmq;
 
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
@@ -17,7 +16,10 @@ public class ProcessingStatisticsCollector {
     private final AtomicLong totalAttempts = new AtomicLong(0L);
     private final AtomicLong lastResetTime = new AtomicLong(System.currentTimeMillis());
 
-    @Scheduled(fixedDelayString = "${statistics.logging.interval.minutes}", timeUnit = TimeUnit.MINUTES)
+    @Scheduled(
+            fixedDelayString = "${statistics.logging.interval.minutes}",
+            initialDelayString = "${statistics.logging.interval.initial.minutes}",
+            timeUnit = TimeUnit.MINUTES)
     public void logStatistics() {
         long success = successfulAttempts.getAndSet(0L);
         long failure = failedAttempts.getAndSet(0L);
@@ -29,6 +31,7 @@ public class ProcessingStatisticsCollector {
         double roundSuccessRate = Math.round(successRate);
 
         log.info("""
+                
                 ===== Processing Statistics =====
                 Time window: {} seconds
                 Total attempts: {}

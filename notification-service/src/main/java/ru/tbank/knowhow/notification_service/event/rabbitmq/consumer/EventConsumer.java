@@ -8,7 +8,9 @@ import ru.tbank.knowhow.notification_service.event.rabbitmq.ProcessingStatistics
 import ru.tbank.knowhow.notification_service.service.notification.moderation.ModerationService;
 import ru.tbank.knowhow.notification_service.service.notification.purchase.PurchaseCourseService;
 import ru.tbank.knowhow.notification_service.service.verification.VerificationService;
+import ru.tbank.shared.events.AbstractEvent;
 import ru.tbank.shared.events.Event;
+import ru.tbank.shared.events.NotificationContactType;
 import ru.tbank.shared.events.notification.AddCourseForModerationNotificationEvent;
 import ru.tbank.shared.events.notification.CoursePurchaseNotificationEvent;
 import ru.tbank.shared.events.notification.ResultReviewNotificationEvent;
@@ -51,19 +53,45 @@ public class EventConsumer {
     @RabbitListener(queues = "${spring.rabbitmq.queues.notification.queue}")
     public void handleNotification(Event event) {
         log.info("Received notification event: {}", event.getEventType());
+        mapEventAndNotify(event);
+    }
 
-        switch (event) {
-            case AddCourseForModerationNotificationEvent e -> {
-
+    private void mapEventAndNotify(Event event) {
+        try {
+            AbstractEvent abstractEvent = (AbstractEvent) event;
+            NotificationContactType contactType = abstractEvent.getContactType();
+            String contact = abstractEvent.getContact();
+            switch (event) {
+                case AddCourseForModerationNotificationEvent e -> {
+                    moderationService.notifyModeratorCourseAddOnModeration(contact,
+                            e.getTitle(),
+                            e.getUsername(),
+                            contactType);
+                    statisticsCollector.recordSuccess();
+                }
+                case CoursePurchaseNotificationEvent e -> {
+                    purchaseCourseService.notifyAuthorCoursePurchase(contact,
+                            e.getNumberOfPurchasedCourse(),
+                            e.getAuthorName(),
+                            contactType);
+                    statisticsCollector.recordSuccess();
+                }
+                case ResultReviewNotificationEvent e -> {
+                    moderationService.notifyUserResultOfModeration(contact,
+                            e.getReviewResult(),
+                            e.getUsername(),
+                            contactType);
+                    statisticsCollector.recordSuccess();
+                }
+                default -> {
+                    log.warn("Unexpected event type in notifications queue: {}",
+                            event.getClass().getSimpleName());
+                    statisticsCollector.recordFailure();
+                }
             }
-            case CoursePurchaseNotificationEvent e -> {
-
-            }
-            case ResultReviewNotificationEvent e -> {
-
-            }
-            default -> log.warn("Unexpected event type in notifications queue: {}",
-                    event.getClass().getSimpleName());
+        } catch (Exception ex) {
+            statisticsCollector.recordFailure();
+            log.error(ex.getMessage(), ex);
         }
     }
 }

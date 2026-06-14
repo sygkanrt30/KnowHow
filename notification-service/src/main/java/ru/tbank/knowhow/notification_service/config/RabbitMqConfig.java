@@ -17,6 +17,8 @@ import tools.jackson.databind.json.JsonMapper;
 @Slf4j
 public class RabbitMqConfig {
 
+    private static final int CONCURRENCY_LIMIT = 2000;
+
     @Bean
     public MessageConverter jsonMessageConverter(@Qualifier("rabbitJsonMapper") JsonMapper jsonMapper) {
         var converter = new JacksonJsonMessageConverter(jsonMapper);
@@ -49,6 +51,7 @@ public class RabbitMqConfig {
     private SimpleAsyncTaskExecutor getSimpleAsyncTaskExecutor() {
         var executor = new SimpleAsyncTaskExecutor("rabbit-");
         executor.setVirtualThreads(true);
+        executor.setConcurrencyLimit(CONCURRENCY_LIMIT);
         return executor;
     }
 }

@@ -1,5 +1,7 @@
 package ru.tbank.shared.events.verification;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import ru.tbank.shared.events.AbstractEvent;
 import ru.tbank.shared.events.EventType;
 import ru.tbank.shared.events.NotificationContactType;
@@ -10,7 +12,12 @@ public class VerificationEvent extends AbstractEvent {
 
     private final String code;
 
-    public VerificationEvent(String contact, String code, NotificationContactType type) {
+    @JsonCreator
+    public VerificationEvent(
+            @JsonProperty("contact") String contact,
+            @JsonProperty("code") String code,
+            @JsonProperty("contactType") NotificationContactType type
+    ) {
         super(EventType.VERIFICATION, contact, type);
         validateCode(code, type);
         this.code = code;

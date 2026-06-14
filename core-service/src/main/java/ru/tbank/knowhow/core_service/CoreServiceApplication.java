@@ -8,10 +8,10 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 @SpringBootApplication
 @EnableSpringDataWebSupport(pageSerializationMode = EnableSpringDataWebSupport.PageSerializationMode.VIA_DTO)
 @EnableScheduling
-public class KnowHowApplicationCoreService {
+public class CoreServiceApplication {
 
     public static void main(String[] args) {
-        SpringApplication.run(KnowHowApplicationCoreService.class, args);
+        SpringApplication.run(CoreServiceApplication.class, args);
     }
 
 }

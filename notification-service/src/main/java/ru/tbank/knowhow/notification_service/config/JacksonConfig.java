@@ -14,7 +14,7 @@ import java.util.TimeZone;
 @Configuration
 public class JacksonConfig {
 
-    private static final String EVENT_PACKAGE = "ru.tbank.shared.event.";
+    private static final String EVENT_PACKAGE = "ru.tbank.shared.events.";
 
     @Bean
     @Qualifier("rabbitJsonMapper")

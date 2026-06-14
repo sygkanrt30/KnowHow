@@ -1,5 +1,8 @@
 package ru.tbank.shared.events;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 import java.time.LocalDateTime;
 import java.util.Objects;
 import java.util.UUID;
@@ -12,7 +15,12 @@ public abstract class AbstractEvent implements Event {
     private final String contact;
     private final NotificationContactType contactType;
 
-    protected AbstractEvent(EventType eventType, String contact, NotificationContactType contactType) {
+    @JsonCreator
+    protected AbstractEvent(
+            @JsonProperty("eventType") EventType eventType,
+            @JsonProperty("contact") String contact,
+            @JsonProperty("contactType") NotificationContactType contactType
+    ) {
         validateContact(contact);
         this.eventType = eventType;
         this.contact = contact;

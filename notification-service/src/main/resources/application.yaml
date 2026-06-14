@@ -18,7 +18,9 @@ spring:
 statistics:
   logging:
     interval:
-      minutes: 120
+      minutes: 60
+      initial:
+        minutes: 3
 
 logging:
   level:

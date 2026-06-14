@@ -1,7 +1,10 @@
 package ru.tbank.shared.events.notification;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import ru.tbank.shared.events.AbstractEvent;
 import ru.tbank.shared.events.EventType;
+import ru.tbank.shared.events.NotificationContactType;
 
 import java.util.Objects;
 
@@ -10,8 +13,13 @@ public final class CoursePurchaseNotificationEvent extends AbstractEvent {
     private final int numberOfPurchasedCourse;
     private final String authorName;
 
-    public CoursePurchaseNotificationEvent(String contact, int numberOfPurchasedCourse, String authorName) {
-        super(EventType.NOTIFICATION, contact);
+    @JsonCreator
+    public CoursePurchaseNotificationEvent(
+            @JsonProperty("contact") String contact,
+            @JsonProperty("numberOfPurchasedCourse") int numberOfPurchasedCourse,
+            @JsonProperty("authorName") String authorName,
+            @JsonProperty("contactType") NotificationContactType contactType) {
+        super(EventType.NOTIFICATION, contact, contactType);
         validateParams(numberOfPurchasedCourse, authorName);
         this.numberOfPurchasedCourse = numberOfPurchasedCourse;
         this.authorName = authorName;
