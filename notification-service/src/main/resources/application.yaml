@@ -1,6 +1,18 @@
 spring:
   application:
     name: notification-service
+  mail:
+    host: smtp.gmail.com
+    port: 465
+    properties:
+      mail:
+      smtp:
+        auth: true
+        starttls:
+          enable: true
+    username: todolistapplication252@gmail.com
+    password: idvpbbqibkfawmxl
+
   rabbitmq:
     host: localhost
     port: 5672

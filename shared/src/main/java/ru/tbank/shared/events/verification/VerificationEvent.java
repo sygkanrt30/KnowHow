@@ -4,7 +4,6 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import ru.tbank.shared.events.AbstractEvent;
 import ru.tbank.shared.events.EventType;
-import ru.tbank.shared.events.NotificationContactType;
 
 import java.util.Objects;
 
@@ -15,20 +14,16 @@ public class VerificationEvent extends AbstractEvent {
     @JsonCreator
     public VerificationEvent(
             @JsonProperty("contact") String contact,
-            @JsonProperty("code") String code,
-            @JsonProperty("contactType") NotificationContactType type
+            @JsonProperty("code") String code
     ) {
-        super(EventType.VERIFICATION, contact, type);
-        validateCode(code, type);
+        super(EventType.VERIFICATION, contact);
+        validateCode(code);
         this.code = code;
     }
 
-    private void validateCode(String code, NotificationContactType type) {
+    private void validateCode(String code) {
         if (Objects.isNull(code) || code.length() != 6) {
             throw new IllegalArgumentException("Invalid code");
-        }
-        if (Objects.isNull(type)) {
-            throw new IllegalArgumentException("Invalid type");
         }
     }
 

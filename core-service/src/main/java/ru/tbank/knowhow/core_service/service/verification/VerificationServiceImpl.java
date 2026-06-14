@@ -7,7 +7,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.tbank.knowhow.core_service.ecxeption.VerificationException;
-import ru.tbank.shared.events.NotificationContactType;
 import ru.tbank.knowhow.core_service.model.users.UserContact;
 import ru.tbank.knowhow.core_service.service.event.VerificationEventPublisher;
 import ru.tbank.knowhow.core_service.service.users.GetUserService;
@@ -31,13 +30,13 @@ public class VerificationServiceImpl implements VerificationService {
 
     @Override
     @Transactional(readOnly = true)
-    public void generateAndSendCode(NotificationContactType contactType, Long userId) {
-        String contact = getContact(contactType, userId);
+    public void generateAndSendCode(Long userId) {
+        String contact = getContact(userId);
         if (codeStorage.isBlocked(contact)) {
             throw new VerificationException("To many request!", HttpStatus.TOO_MANY_REQUESTS);
         }
         String code = CodeGenerator.generateCode();
-        eventPublisher.createAndPublishVerificationEvent(contact, code, contactType);
+        eventPublisher.createAndPublishVerificationEvent(contact, code);
         saveAndCreateLockForResend(code, contact);
         log.debug("Code sent to contact {} successfully", contact);
     }
@@ -47,34 +46,24 @@ public class VerificationServiceImpl implements VerificationService {
         codeStorage.blockForResend(contact);
     }
 
-    private @NonNull String getContact(NotificationContactType contactType, Long userId) {
+    private @NonNull String getContact(Long userId) {
         UserContact userContact = getUserService.getByIdOrElseThrow(userId).getUserContact();
-        return switch (contactType) {
-            case EMAIL -> {
-                String email = userContact.getEmail();
-                boolean emailVerified = userContact.isEmailVerified();
-                validateContact(email, emailVerified);
-                yield email;
-            }
-            case TELEGRAM -> {
-                String tg = userContact.getTgUsername();
-                boolean tgUsernameVerified = userContact.isTgUsernameVerified();
-                validateContact(tg, tgUsernameVerified);
-                yield tg;
-            }
-        };
+        String email = userContact.getEmail();
+        boolean emailVerified = userContact.isEmailVerified();
+        validateContact(email, emailVerified);
+        return email;
     }
 
     private void validateContact(String email, boolean emailVerified) {
         if (Objects.isNull(email) && emailVerified) {
-            throw new VerificationException("Either contact is not specified in DB, or it has already been verified");
+            throw new VerificationException("Either email is not specified in DB, or it has already been verified");
         }
     }
 
     @Override
     @Transactional
-    public boolean verifyContact(NotificationContactType notificationContactType, String code, Long userId) {
-        String contact = getContact(notificationContactType, userId);
+    public boolean verifyContact(String code, Long userId) {
+        String contact = getContact(userId);
         if (!attemptLimiter.isAttemptAllowed(contact)) {
             throw new VerificationException("Attempt limit reached", HttpStatus.TOO_MANY_REQUESTS);
         }
@@ -83,7 +72,7 @@ public class VerificationServiceImpl implements VerificationService {
             attemptLimiter.registerFailedAttempt(contact);
             return false;
         }
-        userContactService.verifyContact(userId, notificationContactType);
+        userContactService.verifyEmail(userId);
         resetStorageForThisContact(contact);
         log.info("Email verification successful");
         return true;

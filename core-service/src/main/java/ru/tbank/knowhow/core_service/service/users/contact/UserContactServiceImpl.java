@@ -2,10 +2,8 @@ package ru.tbank.knowhow.core_service.service.users.contact;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import ru.tbank.shared.events.NotificationContactType;
 import ru.tbank.knowhow.core_service.model.users.UserContact;
 import ru.tbank.knowhow.core_service.service.users.GetUserService;
 
@@ -20,22 +18,6 @@ public class UserContactServiceImpl implements UserContactService {
 
     @Override
     @Transactional
-    public void insertTgUsername(String tgUsername, Long userId) {
-        UserContact userContact = getUserContact(userId);
-        String currentTgUsername = userContact.getTgUsername();
-        if (Objects.nonNull(currentTgUsername) && currentTgUsername.equals(tgUsername)) {
-            log.debug("Current and new Tg username same");
-            return;
-        }
-        userContact.setTgUsername(tgUsername);
-    }
-
-    private UserContact getUserContact(Long userId) {
-        return getUserService.getByIdOrElseThrow(userId).getUserContact();
-    }
-
-    @Override
-    @Transactional
     public void updateEmail(String email, Long userId) {
         UserContact userContact = getUserContact(userId);
         String currentEmail = userContact.getEmail();
@@ -46,51 +28,15 @@ public class UserContactServiceImpl implements UserContactService {
         userContact.setEmail(email);
     }
 
-    @Override
-    @Transactional(readOnly = true)
-    public String getTgUsername(Long userId) {
-        UserContact userContact = getUserContact(userId);
-        String currentTgUsername = userContact.getTgUsername();
-        if (Objects.isNull(currentTgUsername)) {
-            throw new EmptyResultDataAccessException("Tg username is null", 1);
-        }
-        return currentTgUsername;
-    }
-
-    @Override
-    @Transactional(readOnly = true)
-    public NotificationContactType getPrimaryNotificationContact(Long userId) {
-        return getUserContact(userId).getPrimaryNotificationContactType();
+    private UserContact getUserContact(Long userId) {
+        return getUserService.getByIdOrElseThrow(userId).getUserContact();
     }
 
     @Override
     @Transactional
-    public NotificationContactType changePrimaryNotificationContact(Long userId, NotificationContactType notificationContactType) {
+    public void verifyEmail(Long userId) {
         UserContact userContact = getUserContact(userId);
-        NotificationContactType currentNotificationContactType = userContact.getPrimaryNotificationContactType();
-
-        if (Objects.nonNull(currentNotificationContactType) && currentNotificationContactType.equals(notificationContactType)) {
-            log.debug("Current primary notification contact is equal to new notification contact");
-            return currentNotificationContactType;
-        }
-        userContact.setPrimaryNotificationContactType(notificationContactType);
-        log.info("Primary notification contact has been changed to {}", notificationContactType);
-        return notificationContactType;
-    }
-
-    @Override
-    @Transactional
-    public void verifyContact(Long userId, NotificationContactType notificationContactType) {
-        UserContact userContact = getUserContact(userId);
-        switch (notificationContactType) {
-            case EMAIL -> {
-                userContact.setEmailVerified(true);
-                log.debug("Email: {} has been verified", userContact.getEmail());
-            }
-            case TELEGRAM -> {
-                userContact.setTgUsernameVerified(true);
-                log.debug("Tg: {} has been verified", userContact.getTgUsername());
-            }
-        }
+        userContact.setEmailVerified(true);
+        log.debug("Email: {} has been verified", userContact.getEmail());
     }
 }

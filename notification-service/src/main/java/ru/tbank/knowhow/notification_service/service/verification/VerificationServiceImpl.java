@@ -6,12 +6,12 @@ import org.springframework.stereotype.Service;
 public class VerificationServiceImpl implements VerificationService {
 
     @Override
-    public void sendVerificationCodeOnEmail(String email) {
+    public void sendVerificationCodeOnEmail(String email, String code) {
 
     }
 
     @Override
-    public void sendVerificationCodeOnTg(String tg) {
+    public void sendVerificationCodeOnTg(String tg, String code) {
 
     }
 }

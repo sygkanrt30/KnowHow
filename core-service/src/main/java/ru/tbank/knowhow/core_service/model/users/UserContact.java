@@ -27,16 +27,6 @@ public class UserContact {
     @Column(nullable = false, name = "email_verified")
     private boolean isEmailVerified = false;
 
-    @Column(unique = true, length = 50, name = "tg_username")
-    private String tgUsername;
-
-    @Column(nullable = false, name = "tg_username_verified")
-    private boolean isTgUsernameVerified = false;
-
-    @Column(length = 25, nullable = false, name = "primary_contact")
-    @Enumerated(EnumType.STRING)
-    private ru.tbank.shared.events.NotificationContactType primaryNotificationContactType = ru.tbank.shared.events.NotificationContactType.EMAIL;
-
     @CreationTimestamp
     @Column(name = "created_at", updatable = false)
     private Instant createdAt;

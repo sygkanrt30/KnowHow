@@ -13,18 +13,15 @@ public abstract class AbstractEvent implements Event {
     private final LocalDateTime createdAt;
     private final EventType eventType;
     private final String contact;
-    private final NotificationContactType contactType;
 
     @JsonCreator
     protected AbstractEvent(
             @JsonProperty("eventType") EventType eventType,
-            @JsonProperty("contact") String contact,
-            @JsonProperty("contactType") NotificationContactType contactType
+            @JsonProperty("contact") String contact
     ) {
         validateContact(contact);
         this.eventType = eventType;
         this.contact = contact;
-        this.contactType = contactType;
         this.eventId = UUID.randomUUID();
         this.createdAt = LocalDateTime.now();
     }
@@ -52,9 +49,5 @@ public abstract class AbstractEvent implements Event {
 
     public String getContact() {
         return contact;
-    }
-
-    public NotificationContactType getContactType() {
-        return contactType;
     }
 }

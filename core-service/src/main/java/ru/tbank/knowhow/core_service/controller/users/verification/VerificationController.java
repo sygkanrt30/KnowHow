@@ -3,8 +3,10 @@ package ru.tbank.knowhow.core_service.controller.users.verification;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
-import ru.tbank.shared.events.NotificationContactType;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 import ru.tbank.knowhow.core_service.service.verification.VerificationService;
 import ru.tbank.knowhow.core_service.util.RequestAttributeExtractor;
 
@@ -16,21 +18,17 @@ public class VerificationController {
     private final VerificationService verificationService;
 
     @PostMapping("/send-code")
-    public ResponseEntity<?> sendCode(@RequestParam String contact, HttpServletRequest request) {
+    public ResponseEntity<?> sendCode(HttpServletRequest request) {
         Long userId = RequestAttributeExtractor.extractUserId(request);
-        NotificationContactType contactEnum = NotificationContactType.fromString(contact);
-        verificationService.generateAndSendCode(contactEnum, userId);
+        verificationService.generateAndSendCode(userId);
         return ResponseEntity.ok("Code sent");
     }
 
     @PostMapping("/verify-email")
-    public ResponseEntity<?> verifyEmail(HttpServletRequest request,
-                                         @RequestParam String contact,
-                                         @RequestParam String code) {
+    public ResponseEntity<?> verifyEmail(HttpServletRequest request, @RequestParam String code) {
 
         Long userId = RequestAttributeExtractor.extractUserId(request);
-        NotificationContactType contactEnum = NotificationContactType.fromString(contact);
-        boolean isVerified = verificationService.verifyContact(contactEnum, code, userId);
+        boolean isVerified = verificationService.verifyContact(code, userId);
         if (isVerified) {
             return ResponseEntity.ok("Email confirmed!");
         } else {

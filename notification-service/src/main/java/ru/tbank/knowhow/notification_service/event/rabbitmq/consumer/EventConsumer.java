@@ -10,7 +10,6 @@ import ru.tbank.knowhow.notification_service.service.notification.purchase.Purch
 import ru.tbank.knowhow.notification_service.service.verification.VerificationService;
 import ru.tbank.shared.events.AbstractEvent;
 import ru.tbank.shared.events.Event;
-import ru.tbank.shared.events.NotificationContactType;
 import ru.tbank.shared.events.notification.AddCourseForModerationNotificationEvent;
 import ru.tbank.shared.events.notification.CoursePurchaseNotificationEvent;
 import ru.tbank.shared.events.notification.ResultReviewNotificationEvent;
@@ -39,10 +38,7 @@ public class EventConsumer {
 
     private void sendVerification(VerificationEvent e) {
         try {
-            switch (e.getContactType()) {
-                case EMAIL -> verificationService.sendVerificationCodeOnEmail(e.getContact());
-                case TELEGRAM -> verificationService.sendVerificationCodeOnTg(e.getContact());
-            }
+            verificationService.sendVerificationCodeOnEmail(e.getContact(), e.getCode());
         } catch (Exception ex) {
             statisticsCollector.recordFailure();
             log.error(ex.getMessage(), ex);
@@ -59,28 +55,24 @@ public class EventConsumer {
     private void mapEventAndNotify(Event event) {
         try {
             AbstractEvent abstractEvent = (AbstractEvent) event;
-            NotificationContactType contactType = abstractEvent.getContactType();
             String contact = abstractEvent.getContact();
             switch (event) {
                 case AddCourseForModerationNotificationEvent e -> {
                     moderationService.notifyModeratorCourseAddOnModeration(contact,
                             e.getTitle(),
-                            e.getUsername(),
-                            contactType);
+                            e.getUsername());
                     statisticsCollector.recordSuccess();
                 }
                 case CoursePurchaseNotificationEvent e -> {
                     purchaseCourseService.notifyAuthorCoursePurchase(contact,
                             e.getNumberOfPurchasedCourse(),
-                            e.getAuthorName(),
-                            contactType);
+                            e.getAuthorName());
                     statisticsCollector.recordSuccess();
                 }
                 case ResultReviewNotificationEvent e -> {
                     moderationService.notifyUserResultOfModeration(contact,
                             e.getReviewResult(),
-                            e.getUsername(),
-                            contactType);
+                            e.getUsername());
                     statisticsCollector.recordSuccess();
                 }
                 default -> {

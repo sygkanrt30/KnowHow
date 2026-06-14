@@ -2,7 +2,7 @@ package ru.tbank.knowhow.notification_service.service.verification;
 
 public interface VerificationService {
 
-    void sendVerificationCodeOnEmail(String email);
+    void sendVerificationCodeOnEmail(String email, String code);
 
-    void sendVerificationCodeOnTg(String tg);
+    void sendVerificationCodeOnTg(String tg, String code);
 }

@@ -37,14 +37,9 @@ CREATE TABLE IF NOT EXISTS user_contacts
     id                   BIGSERIAL PRIMARY KEY,
     email                VARCHAR(150) NOT NULL UNIQUE,
     email_verified       BOOLEAN      NOT NULL DEFAULT FALSE,
-    tg_username          VARCHAR(50) UNIQUE,
-    tg_username_verified BOOLEAN      NOT NULL DEFAULT FALSE,
-    primary_contact      VARCHAR(25)  NOT NULL DEFAULT 'EMAIL',
     created_at           TIMESTAMP             DEFAULT CURRENT_TIMESTAMP,
     CONSTRAINT email_check
-        CHECK (LENGTH(email) >= 5 AND is_not_empty_string(email)),
-    CONSTRAINT tg_username_check
-        CHECK ( LENGTH(tg_username) >= 5 AND is_not_empty_string(tg_username))
+        CHECK (LENGTH(email) >= 5 AND is_not_empty_string(email))
 );
 
 CREATE TABLE IF NOT EXISTS app_user
