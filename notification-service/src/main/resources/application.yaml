@@ -3,15 +3,19 @@ spring:
     name: notification-service
   mail:
     host: smtp.gmail.com
-    port: 465
+    port: 587
+    username: know.how.12312@gmail.com
+    password: gxigfstxhxvndvtq
     properties:
       mail:
-      smtp:
-        auth: true
-        starttls:
-          enable: true
-    username: todolistapplication252@gmail.com
-    password: idvpbbqibkfawmxl
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+            required: true
+          connectiontimeout: 5000
+          timeout: 5000
+          writetimeout: 5000
 
   rabbitmq:
     host: localhost

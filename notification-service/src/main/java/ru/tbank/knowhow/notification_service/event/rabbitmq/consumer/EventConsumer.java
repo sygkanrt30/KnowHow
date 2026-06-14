@@ -39,11 +39,11 @@ public class EventConsumer {
     private void sendVerification(VerificationEvent e) {
         try {
             verificationService.sendVerificationCodeOnEmail(e.getContact(), e.getCode());
+            statisticsCollector.recordSuccess();
         } catch (Exception ex) {
             statisticsCollector.recordFailure();
             log.error(ex.getMessage(), ex);
         }
-        statisticsCollector.recordSuccess();
     }
 
     @RabbitListener(queues = "${spring.rabbitmq.queues.notification.queue}")
