@@ -11,6 +11,8 @@ import org.springframework.stereotype.Component;
 @Slf4j
 public class EmailSender implements Sender {
 
+    private static final String ENCODING = "UTF-8";
+
     private final JavaMailSender mailSender;
     private final String from;
 
@@ -23,8 +25,7 @@ public class EmailSender implements Sender {
     public void send(String contact, String body, String subject) {
         try {
             MimeMessage message = mailSender.createMimeMessage();
-            MimeMessageHelper helper = new MimeMessageHelper(message, true, "UTF-8");
-
+            var helper = new MimeMessageHelper(message, true, ENCODING);
             helper.setTo(contact);
             helper.setSubject(subject);
             helper.setText(body, true);

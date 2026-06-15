@@ -61,7 +61,7 @@ public class PurchaseCourseServiceImpl implements CoursePurchaseService {
         purchasedCourseRepository.saveAndFlush(purchasedCourse);
         log.info("Course with id: {} has been purchased", courseId);
         notificationEventPublisher.createAndPublishCoursePurchaseEvent(
-                user.getUserContact(),
+                author.getUserContact(),
                 author.getUsername(),
                 courseId
         );

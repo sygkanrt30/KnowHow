@@ -53,7 +53,7 @@ public class CourseVerdictServiceImpl implements CourseVerdictService {
                 command.getActionName(),
                 course.getAuthor().getUsername()
         );
-        log.debug("Course {} {} by moderator {}", course.getId(), command.getActionName(), moderator.getId());
+        log.debug("Course {} {} by moderator {}", course.getId(), command.getActionName().value(), moderator.getId());
     }
 
     private void validateNotAlreadyProcessed(Long courseId, Long moderatorId) {

@@ -38,6 +38,13 @@ statistics:
       initial:
         minutes: 3
 
+email:
+  subject:
+    verification: Email Verification
+    purchase: Course Purchase
+    add_to_moderation: Course Add To Moderation
+    review_result: Moderation result
+
 logging:
   level:
     root: info

@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="color-scheme" content="light dark">
+    <meta name="supported-color-schemes" content="light dark">
+    <title>KnowHow — Course moderation emails</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            padding: 30px 0;
+            background-color: #f5f7fb;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        .greeting strong {
+            font-weight: 600;
+            background: #f0f4fa;
+            padding: 2px 8px;
+            border-radius: 12px;
+        }
+
+        @media (max-width: 560px) {
+        }
+
+        @media (prefers-color-scheme: dark) {
+            body {
+                background-color: #1a2128;
+            }
+
+            .greeting strong {
+                background: #2d3640;
+                color: #e2e8f0;
+            }
+
+        }
+    </style>
+</head>
+
+<body style="margin:0; padding:30px 0; background:#f5f7fb; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;">
+<div style="max-width:520px; margin:0 auto; background:#fff; border-radius:24px; border:1px solid #eef2f8;">
+    <div style="padding:36px 32px;">
+        <div style="font-size:20px; font-weight:500; margin-bottom:28px;">KnowHow · Moderation result</div>
+
+        <div style="font-size:16px; margin-bottom:16px;">Hello, <strong>{{username}}</strong></div>
+
+        <div style="font-size:15px; line-height:1.45; color:#334553; margin-bottom:20px;">
+            The moderation of your course has been completed.
+        </div>
+
+        {{reviewResult}}
+
+        <div style="font-size:13px; color:#4f6479; margin-top:24px;">
+            Best regards,<br>KnowHow Moderation Team
+        </div>
+
+        <div style="margin-top:28px; padding-top:20px; border-top:1px solid #eef2f8; font-size:12px; color:#7e8e9f; text-align:center;">
+            If you have questions, please contact support@knowhow.com
+        </div>
+    </div>
+</div>
+</body>
+</html>

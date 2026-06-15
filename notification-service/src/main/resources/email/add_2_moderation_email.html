@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="color-scheme" content="light dark">
+    <meta name="supported-color-schemes" content="light dark">
+    <title>KnowHow — Course moderation emails</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            padding: 30px 0;
+            background-color: #f5f7fb;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        .email-wrapper {
+            max-width: 520px;
+            margin: 0 auto;
+            background: #ffffff;
+            border-radius: 24px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.02);
+            border: 1px solid #eef2f8;
+            overflow: hidden;
+        }
+
+        .inner {
+            padding: 36px 32px 40px;
+        }
+
+        .company {
+            font-size: 20px;
+            font-weight: 500;
+            letter-spacing: -0.2px;
+            color: #11181c;
+            margin-bottom: 28px;
+        }
+
+        .greeting {
+            font-size: 16px;
+            color: #1f2a35;
+            margin-bottom: 16px;
+        }
+
+        .greeting strong {
+            font-weight: 600;
+            background: #f0f4fa;
+            padding: 2px 8px;
+            border-radius: 12px;
+        }
+
+        .message {
+            font-size: 15px;
+            line-height: 1.45;
+            color: #334553;
+            margin-bottom: 24px;
+        }
+
+        .course-card {
+            background: #fafcff;
+            border: 1px solid #eef2f8;
+            border-radius: 18px;
+            padding: 18px 22px;
+            margin: 16px 0 20px;
+        }
+
+        .course-title {
+            font-size: 17px;
+            font-weight: 600;
+            color: #0c4e6e;
+            margin-bottom: 6px;
+        }
+
+        .badge {
+            font-size: 12px;
+            font-weight: 500;
+            background: #eef2f8;
+            display: inline-block;
+            padding: 4px 10px;
+            border-radius: 40px;
+            color: #2c5a7a;
+        }
+
+        .footer-note {
+            font-size: 12px;
+            color: #7e8e9f;
+            margin-top: 28px;
+            padding-top: 20px;
+            border-top: 1px solid #eef2f8;
+            text-align: center;
+        }
+
+        .signature {
+            font-size: 13px;
+            color: #4f6479;
+            margin-top: 20px;
+        }
+
+        @media (max-width: 560px) {
+            .inner {
+                padding: 28px 22px 32px;
+            }
+        }
+
+        @media (prefers-color-scheme: dark) {
+            body {
+                background-color: #1a2128;
+            }
+
+            .email-wrapper {
+                background: #242b33;
+                border-color: #2f3a46;
+            }
+
+            .company, .course-title {
+                color: #eef3fc;
+            }
+
+            .greeting, .message, .signature {
+                color: #cbdae6;
+            }
+
+            .greeting strong {
+                background: #2d3640;
+                color: #e2e8f0;
+            }
+
+            .course-card {
+                background: #1e262f;
+                border-color: #2f3a46;
+            }
+
+            .badge {
+                background: #2d3640;
+                color: #bbd4f0;
+            }
+
+            .footer-note {
+                color: #8e9fb0;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<div style="margin-bottom: 48px;">
+    <div class="email-wrapper" style="margin-bottom: 0;">
+        <div class="inner">
+            <div class="company">KnowHow · Moderation</div>
+
+            <div class="greeting">
+                Hello, <strong>Moderator</strong> 👋
+            </div>
+
+            <div class="message">
+                A new course has been submitted for review by author <strong>{{username}}</strong>.
+                Please check the details below and take the necessary action.
+            </div>
+
+            <div class="course-card">
+                <div class="course-title">📘 {{title}}</div>
+                <div class="badge" style="margin-top: 8px;">pending moderation</div>
+            </div>
+
+            <div class="message" style="margin-bottom: 8px;">
+                Review the course content, pricing, and compliance with platform guidelines.
+            </div>
+
+            <div class="signature">
+                — KnowHow Moderation System
+            </div>
+
+            <div class="footer-note">
+                This is an automated message. No reply needed.
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>

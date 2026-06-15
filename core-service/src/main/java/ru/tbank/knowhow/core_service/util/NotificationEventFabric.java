@@ -1,13 +1,14 @@
 package ru.tbank.knowhow.core_service.util;
 
 import ru.tbank.shared.events.Event;
+import ru.tbank.shared.events.ReviewResult;
 import ru.tbank.shared.events.notification.AddCourseForModerationNotificationEvent;
 import ru.tbank.shared.events.notification.CoursePurchaseNotificationEvent;
 import ru.tbank.shared.events.notification.ResultReviewNotificationEvent;
 
 public final class NotificationEventFabric {
 
-    public Event createResultReviewEvent(String contact, String reviewResult, String username) {
+    public Event createResultReviewEvent(String contact, ReviewResult reviewResult, String username) {
         return new ResultReviewNotificationEvent(contact, reviewResult, username);
     }
 

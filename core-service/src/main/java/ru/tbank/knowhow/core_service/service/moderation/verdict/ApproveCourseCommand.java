@@ -6,12 +6,11 @@ import ru.tbank.knowhow.core_service.model.courses.Course;
 import ru.tbank.knowhow.core_service.model.courses.CourseStatus;
 import ru.tbank.knowhow.core_service.model.moderation.ModerationReview;
 import ru.tbank.knowhow.core_service.model.users.User;
+import ru.tbank.shared.events.ReviewResult;
 
 
 @RequiredArgsConstructor(access = AccessLevel.PACKAGE)
 class ApproveCourseCommand implements VerdictCommand {
-
-    private static final String APPROVED = "approved";
 
     private final Long courseId;
     private final String moderatorUsername;
@@ -42,7 +41,7 @@ class ApproveCourseCommand implements VerdictCommand {
     }
 
     @Override
-    public String getActionName() {
-        return APPROVED;
+    public ReviewResult getActionName() {
+        return ReviewResult.APPROVE;
     }
 }

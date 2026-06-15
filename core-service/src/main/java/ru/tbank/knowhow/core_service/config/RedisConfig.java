@@ -14,12 +14,10 @@ public class RedisConfig {
 
     @Bean
     @ConditionalOnMissingBean(name = "redisTemplate")
-    public RedisTemplate<String, Integer> redisTemplate(
-            RedisConnectionFactory connectionFactory
-    ) {
-        RedisTemplate<String, Integer> template = new RedisTemplate<>();
+    public RedisTemplate<String, Integer> redisTemplate(RedisConnectionFactory connectionFactory) {
+        var template = new RedisTemplate<String, Integer>();
         template.setConnectionFactory(connectionFactory);
-        ObjectMapper om = new ObjectMapper();
+        var om = new ObjectMapper();
 
         template.setKeySerializer(new StringRedisSerializer());
         template.setValueSerializer(new GenericJacksonJsonRedisSerializer(om));

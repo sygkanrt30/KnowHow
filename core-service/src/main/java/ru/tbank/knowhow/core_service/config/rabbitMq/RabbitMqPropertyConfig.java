@@ -25,5 +25,4 @@ public class RabbitMqPropertyConfig {
 
     @Value("${spring.rabbitmq.notification-service.queues.notification.key}")
     private String notificationQueueRoutingKey;
-
 }

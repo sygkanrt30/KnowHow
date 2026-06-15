@@ -7,12 +7,11 @@ import ru.tbank.knowhow.core_service.model.courses.Course;
 import ru.tbank.knowhow.core_service.model.courses.CourseStatus;
 import ru.tbank.knowhow.core_service.model.moderation.ModerationReview;
 import ru.tbank.knowhow.core_service.model.users.User;
+import ru.tbank.shared.events.ReviewResult;
 
 @RequiredArgsConstructor(access = AccessLevel.PACKAGE)
 @Slf4j
 class RejectCourseCommand implements VerdictCommand {
-
-    private static final String REJECTED = "rejected";
 
     private final Long courseId;
     private final String moderatorUsername;
@@ -46,7 +45,7 @@ class RejectCourseCommand implements VerdictCommand {
     }
 
     @Override
-    public String getActionName() {
-        return REJECTED;
+    public ReviewResult getActionName() {
+        return ReviewResult.REJECT;
     }
 }

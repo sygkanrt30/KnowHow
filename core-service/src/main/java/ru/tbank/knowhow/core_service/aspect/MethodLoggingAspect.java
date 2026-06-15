@@ -49,7 +49,7 @@ public class MethodLoggingAspect {
             MDC.put(EXECUTION_CLASS.value(), className);
             MDC.put(EXECUTION_METHOD.value(), methodName);
 
-            if (MDC.get(TRACE_ID) == null) {
+            if (Objects.isNull(MDC.get(TRACE_ID))) {
                 MDC.put(TRACE_ID, UUID.randomUUID().toString());
             }
             if (log.isTraceEnabled()) {

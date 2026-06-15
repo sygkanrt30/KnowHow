@@ -17,4 +17,20 @@ public class EmailSamples {
     public String getCoursePurchaseSample() {
         return reader.readSample("/course_purchase_email.html");
     }
+
+    public String getAddToModerationSample() {
+        return reader.readSample("/add_2_moderation_email.html");
+    }
+
+    public String getModerationResultSample() {
+        return reader.readSample("/result_moderation_email.html");
+    }
+
+    public String getApproveSample() {
+        return reader.readSample("/review_results/approve.html");
+    }
+
+    public String getRejectSample() {
+        return reader.readSample("/review_results/reject.html");
+    }
 }

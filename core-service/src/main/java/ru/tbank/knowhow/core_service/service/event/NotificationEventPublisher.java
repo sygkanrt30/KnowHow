@@ -7,6 +7,7 @@ import ru.tbank.knowhow.core_service.model.users.UserContact;
 import ru.tbank.knowhow.core_service.service.purchased.PurchasedCourseService;
 import ru.tbank.knowhow.core_service.util.NotificationEventFabric;
 import ru.tbank.shared.events.Event;
+import ru.tbank.shared.events.ReviewResult;
 
 import java.util.Objects;
 
@@ -25,7 +26,7 @@ public class NotificationEventPublisher {
         this.eventFabric = new NotificationEventFabric();
     }
 
-    public void createAndPublishResultReviewEvent(UserContact userContact, String reviewResult, String username) {
+    public void createAndPublishResultReviewEvent(UserContact userContact, ReviewResult reviewResult, String username) {
         publishEvent(userContact, username,
                 contact -> eventFabric.createResultReviewEvent(contact, reviewResult, username));
     }
