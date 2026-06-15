@@ -24,7 +24,7 @@ public class VerificationServiceImpl implements VerificationService {
     public void sendVerificationCodeOnEmail(String email, String code) {
         String sample = emailSamples.getVerificationSample();
         String body = sample.replace(CODE_PLACEHOLDER, code);
-        emailSender.send(email, body, null, SUBJECT);
+        emailSender.send(email, body, SUBJECT);
         log.info("Email verification code sent to {}", email);
     }
 }

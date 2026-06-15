@@ -20,7 +20,7 @@ public class EmailSender implements Sender {
     }
 
     @Override
-    public void send(String contact, String body, String username, String subject) {
+    public void send(String contact, String body, String subject) {
         try {
             MimeMessage message = mailSender.createMimeMessage();
             MimeMessageHelper helper = new MimeMessageHelper(message, true, "UTF-8");

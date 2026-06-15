@@ -13,4 +13,8 @@ public class EmailSamples {
     public String getVerificationSample() {
         return reader.readSample("/verification_email.html");
     }
+
+    public String getCoursePurchaseSample() {
+        return reader.readSample("/course_purchase_email.html");
+    }
 }
