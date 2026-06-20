@@ -217,7 +217,7 @@ This project is distributed under the MIT License. See LICENSE file for details.
 ## Contact
 
 - **Email**: slava.vy.2006@gmail.com
-- **GitHub**: [slavyanin30](https://github.com/slavyanin30)
+- **Telegram**: [@perunve](https://t.me/perunve)
 
 ---
 
